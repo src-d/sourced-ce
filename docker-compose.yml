@@ -1,0 +1,63 @@
+version: '3'
+services:
+  bblfsh:
+    image: bblfsh/bblfshd:v2.12.1-drivers
+    ports:
+      - 9432:9432
+
+  gitbase:
+    image: smacker/gitbase:superset
+    ports:
+      - 3306:3306
+    environment:
+      BBLFSH_ENDPOINT: bblfsh:9432
+    depends_on:
+      - bblfsh
+    volumes:
+      - ${GITBASE_REPOS_DIR}:/opt/repos
+
+  redis:
+    image: redis:3.2
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+  postgres:
+    image: postgres:10
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_PASSWORD: superset
+      POSTGRES_USER: superset
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  superset:
+    image: smacker/superset:demo
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: superset
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SUPERSET_ENV: production
+    ports:
+      - 8088:8088
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./superset_config.py:/home/superset/superset/superset_config.py
+
+volumes:
+  postgres:
+    external: false
+  redis:
+    external: false
