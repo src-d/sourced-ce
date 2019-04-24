@@ -1,20 +1,6 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
 import os
+
+from werkzeug.contrib.cache import RedisCache
 
 
 def get_env_variable(var_name, default=None):
@@ -49,10 +35,22 @@ REDIS_PORT = get_env_variable('REDIS_PORT')
 
 class CeleryConfig(object):
     BROKER_URL = 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
-    CELERY_IMPORTS = ('superset.sql_lab', )
+    CELERY_IMPORTS = ('superset.sql_lab', 'superset.tasks')
     CELERY_RESULT_BACKEND = 'redis://%s:%s/1' % (REDIS_HOST, REDIS_PORT)
     CELERY_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}
     CELERY_TASK_PROTOCOL = 1
 
 
 CELERY_CONFIG = CeleryConfig
+
+CACHE_CONFIG = {
+    'CACHE_TYPE': 'redis',
+    'CACHE_DEFAULT_TIMEOUT': 60 * 60 * 24,  # 1 day default (in secs)
+    'CACHE_KEY_PREFIX': 'superset_results',
+    'CACHE_REDIS_URL': 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT),
+}
+
+RESULTS_BACKEND = RedisCache(
+    host=REDIS_HOST, port=REDIS_PORT, key_prefix='superset_results')
+
+SUPERSET_WEBSERVER_TIMEOUT = 300
