@@ -54,3 +54,15 @@ RESULTS_BACKEND = RedisCache(
     host=REDIS_HOST, port=REDIS_PORT, key_prefix='superset_results')
 
 SUPERSET_WEBSERVER_TIMEOUT = 300
+
+
+GITBASE_USER = get_env_variable('GITBASE_USER')
+GITBASE_PASSWORD = get_env_variable('GITBASE_PASSWORD', '')
+GITBASE_HOST = get_env_variable('GITBASE_HOST')
+GITBASE_PORT = get_env_variable('GITBASE_PORT')
+GITBASE_DB = get_env_variable('GITBASE_DB')
+GITBASE_DATABASE_URI = 'mysql://%s:%s@%s:%s/%s' % (GITBASE_USER,
+                                                   GITBASE_PASSWORD,
+                                                   GITBASE_HOST,
+                                                   GITBASE_PORT,
+                                                   GITBASE_DB)

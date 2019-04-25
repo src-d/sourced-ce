@@ -47,6 +47,11 @@ services:
       POSTGRES_PORT: 5432
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      GITBASE_DB: gitbase
+      GITBASE_USER: root
+      GITBASE_PASSWORD:
+      GITBASE_HOST: gitbase
+      GITBASE_PORT: 3306
       SUPERSET_ENV: production
     ports:
       - 8088:8088
