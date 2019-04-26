@@ -2,6 +2,7 @@ version: '3'
 services:
   bblfsh:
     image: bblfsh/bblfshd:v2.12.1-drivers
+    privileged: true
     ports:
       - 9432:9432
 
