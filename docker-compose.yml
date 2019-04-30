@@ -7,7 +7,7 @@ services:
       - 9432:9432
 
   gitbase:
-    image: smacker/gitbase:superset
+    image: srcd/gitbase:v0.20.0-beta4
     ports:
       - 3306:3306
     environment:
