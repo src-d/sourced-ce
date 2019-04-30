@@ -17,6 +17,12 @@ services:
     volumes:
       - ${GITBASE_REPOS_DIR}:/opt/repos
 
+  bblfsh-web:
+    image: bblfsh/web:v0.11.0
+    command: -bblfsh-addr bblfsh:9432
+    ports:
+      - 9999:8080
+
   redis:
     image: redis:3.2
     restart: unless-stopped
