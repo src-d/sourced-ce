@@ -59,8 +59,6 @@ services:
     depends_on:
       - postgres
       - redis
-    volumes:
-      - ./superset_config.py:/home/superset/superset/superset_config.py
 
 volumes:
   postgres:
