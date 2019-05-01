@@ -35,4 +35,4 @@ patch-dev:
 # Create docker image
 .PHONY: build
 build: superset patch
-	docker build -t smacker/superset:demo -f docker/Dockerfile .
+	docker build -t smacker/superset:demo-with-bblfsh -f docker/Dockerfile .

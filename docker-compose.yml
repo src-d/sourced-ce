@@ -44,7 +44,7 @@ services:
       - postgres:/var/lib/postgresql/data
 
   superset:
-    image: smacker/superset:demo
+    image: smacker/superset:demo-with-bblfsh
     restart: unless-stopped
     environment:
       POSTGRES_DB: superset
