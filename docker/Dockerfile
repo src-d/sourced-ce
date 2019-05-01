@@ -48,6 +48,7 @@ COPY superset/requirements-dev.txt .
 
 RUN pip install --upgrade setuptools pip \
     && pip install -r requirements.txt -r requirements-dev.txt \
+    && pip install sqlalchemy==1.3.1 \
     && rm -rf /root/.cache/pip
 
 COPY --chown=superset:superset superset/superset superset
