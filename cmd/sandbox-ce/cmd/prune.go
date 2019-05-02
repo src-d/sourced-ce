@@ -11,7 +11,7 @@ type pruneCmd struct {
 }
 
 func (c *pruneCmd) Execute(args []string) error {
-	return compose.Run(context.Background(), "down")
+	return compose.Run(context.Background(), "down", "--volumes")
 }
 
 func init() {
