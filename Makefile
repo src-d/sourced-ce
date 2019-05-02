@@ -2,7 +2,11 @@ SUPERSET_REPO = https://github.com/apache/incubator-superset.git
 SUPERSET_VERSION = release--0.32
 SUPERSET_DIR = superset
 PATCH_SOURCE_DIR = srcd
-ADD_FILES = superset/superset_config.py superset/bblfsh superset/assets/src/uast
+ADD_FILES = \
+	superset/superset_config.py \
+	superset/bblfsh \
+	superset/assets/src/uast \
+	superset/assets/images/sourced-logo-2x.png
 OVERRIDE_FILES = \
 	superset/assets/package.json \
 	superset/assets/package-lock.json \
