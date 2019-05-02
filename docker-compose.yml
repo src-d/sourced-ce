@@ -65,6 +65,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - gitbase
 
 volumes:
   postgres:

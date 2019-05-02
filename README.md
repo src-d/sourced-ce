@@ -3,10 +3,12 @@
 ### Init
 
 ```
-docker-compose run --rm superset ./docker-init.sh
+GITBASE_REPOS_DIR=/some/path  docker-compose run --rm superset ./docker-init.sh
 ```
 
 to create admin user and initialize superset.
+
+Currently it would print some exceptions, just ignore them. It will be fixed after [the issue](https://github.com/src-d/gitbase/issues/808) is resolved.
 
 ### Run
 
