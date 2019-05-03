@@ -20,7 +20,7 @@ patch: clean
 # Allows to run flask locally and work only inside superset directory.
 .PHONY: patch-dev
 patch-dev: clean
-	@diff=`diff -r $(PATCH_SOURCE_DIR) $(SUPERSET_DIR) | grep "$(PATCH_SOURCE_DIR)" | awk '{gsub(/: /,"\/");print $$3}'`; \
+	@diff=`diff -r $(PATCH_SOURCE_DIR) $(SUPERSET_DIR) | grep "$(PATCH_SOURCE_DIR)" | awk '{gsub(/: /,"/");print $$3}'`; \
 	for file in $${diff}; do \
 		to=`echo $${file} | cut -d'/' -f2-`; \
 		ln -s "$(PWD)/$${file}" "$(SUPERSET_DIR)/$${to}"; \
