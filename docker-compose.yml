@@ -22,6 +22,8 @@ services:
     command: -bblfsh-addr bblfsh:9432
     ports:
       - 9999:8080
+    depends_on:
+      - bblfsh
 
   redis:
     image: redis:3.2

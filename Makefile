@@ -1,42 +1,62 @@
+# superset upstream configuration
 SUPERSET_REPO = https://github.com/apache/incubator-superset.git
 SUPERSET_VERSION = release--0.32
+SUPERSET_REMOTE = superset
+# directory to sync superset upstream with
 SUPERSET_DIR = superset
+# directory with custom code to copy into SUPERSET_DIR
 PATCH_SOURCE_DIR = srcd
-ADD_FILES = \
-	superset/superset_config.py \
-	superset/bblfsh \
-	superset/assets/src/uast \
-	superset/assets/images/sourced-logo-2x.png
-OVERRIDE_FILES = \
-	superset/assets/package.json \
-	superset/assets/package-lock.json \
-	superset/assets/webpack.config.js
+# name of the image to build
+IMAGE_NAME = smacker/superset:demo-with-bblfsh
 
-all: superset patch
+all: superset-remote-add
 
-# Clone superset repository
-superset:
-	git clone --quiet --branch $(SUPERSET_VERSION) $(SUPERSET_REPO) $(SUPERSET_DIR)
-
-# Overrides files in the superset repository
+# Copy src-d files in the superset repository
 .PHONY: patch
-patch:
-	@for file in $(ADD_FILES) $(OVERRIDE_FILES); do \
-		echo "patching $${file}"; \
-		rm -rf "$(SUPERSET_DIR)/$${file}"; \
-		cp -r "$(PATCH_SOURCE_DIR)/$${file}" "$(SUPERSET_DIR)/$${file}"; \
-	done; \
+patch: clean
+	cp -r $(PATCH_SOURCE_DIR)/* $(SUPERSET_DIR)/
 
-# Overrides files in the superset repository using symlinks
+# Copy src-d files in the superset repository using symlinks. it's useful for development.
+# Allows to run flask locally and work only inside superset directory.
 .PHONY: patch-dev
-patch-dev:
-	@for file in $(ADD_FILES) $(OVERRIDE_FILES); do \
-		echo "patching $${file}"; \
-		rm -rf "$(SUPERSET_DIR)/$${file}"; \
-		ln -s "$(PATCH_SOURCE_DIR)/$${file}" "$(SUPERSET_DIR)/$${file}"; \
+patch-dev: clean
+	@diff=`diff -r $(PATCH_SOURCE_DIR) $(SUPERSET_DIR) | grep "$(PATCH_SOURCE_DIR)" | awk '{gsub(/: /,"/");print $$3}'`; \
+	for file in $${diff}; do \
+		to=`echo $${file} | cut -d'/' -f2-`; \
+		ln -s "$(PWD)/$${file}" "$(SUPERSET_DIR)/$${to}"; \
 	done; \
+	ln -s "$(PWD)/$(PATCH_SOURCE_DIR)/superset/superset_config_dev.py" "$(SUPERSET_DIR)/superset_config.py"; \
 
 # Create docker image
 .PHONY: build
-build: superset patch
-	docker build -t smacker/superset:demo-with-bblfsh -f docker/Dockerfile .
+build: patch
+	docker build -t $(IMAGE_NAME) -f docker/Dockerfile .
+
+# Clean superset directory from copied files
+.PHONY: clean
+clean:
+	rm -f "$(SUPERSET_DIR)/superset_config.py"
+	rm -f "$(SUPERSET_DIR)/superset/superset_config.py"
+	git clean -fd $(SUPERSET_DIR)
+
+# Add superset upstream remote if doesn't exists
+.PHONY: superset-remote-add
+superset-remote-add:
+	@if ! git remote | grep -q superset; then \
+		git remote add -f $(SUPERSET_REMOTE) $(SUPERSET_REPO); \
+	fi; \
+
+# Prints list of changed files in local superset and upstream
+.PHONY: superset-diff-stat
+superset-diff-stat: superset-remote-add
+	git diff-tree --stat $(SUPERSET_REMOTE)/$(SUPERSET_VERSION) HEAD:$(SUPERSET_DIR)/ 
+
+# Prints unified diff of local superset  and upstream
+.PHONY: superset-diff
+superset-diff: superset-remote-add
+	git diff-tree -p $(SUPERSET_REMOTE)/$(SUPERSET_VERSION) HEAD:$(SUPERSET_DIR)/
+
+# Merge remote superset into SUPERSET_DIR as squashed commit
+.PHONY: superset-merge
+superset-merge: superset-remote-add
+	git merge --squash -s subtree --no-commit remotes/$(SUPERSET_REMOTE)/$(SUPERSET_VERSION)
