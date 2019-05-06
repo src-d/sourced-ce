@@ -12,14 +12,14 @@ IMAGE_NAME = smacker/superset:demo-with-bblfsh
 all: superset-remote-add
 
 # Copy src-d files in the superset repository
-.PHONY: patch
-patch: clean
+.PHONY: superset-patch
+superset-patch: superset-clean
 	cp -r $(PATCH_SOURCE_DIR)/* $(SUPERSET_DIR)/
 
 # Copy src-d files in the superset repository using symlinks. it's useful for development.
 # Allows to run flask locally and work only inside superset directory.
-.PHONY: patch-dev
-patch-dev: clean
+.PHONY: superset-patch-dev
+superset-patch-dev: superset-clean
 	@diff=`diff -r $(PATCH_SOURCE_DIR) $(SUPERSET_DIR) | grep "$(PATCH_SOURCE_DIR)" | awk '{gsub(/: /,"/");print $$3}'`; \
 	for file in $${diff}; do \
 		to=`echo $${file} | cut -d'/' -f2-`; \
@@ -28,13 +28,13 @@ patch-dev: clean
 	ln -s "$(PWD)/$(PATCH_SOURCE_DIR)/superset/superset_config_dev.py" "$(SUPERSET_DIR)/superset_config.py"; \
 
 # Create docker image
-.PHONY: build
-build: patch
+.PHONY: superset-build
+superset-build: superset-patch
 	docker build -t $(IMAGE_NAME) -f docker/Dockerfile .
 
 # Clean superset directory from copied files
-.PHONY: clean
-clean:
+.PHONY: superset-clean
+superset-clean:
 	rm -f "$(SUPERSET_DIR)/superset_config.py"
 	rm -f "$(SUPERSET_DIR)/superset/superset_config.py"
 	git clean -fd $(SUPERSET_DIR)
@@ -49,7 +49,7 @@ superset-remote-add:
 # Prints list of changed files in local superset and upstream
 .PHONY: superset-diff-stat
 superset-diff-stat: superset-remote-add
-	git diff-tree --stat $(SUPERSET_REMOTE)/$(SUPERSET_VERSION) HEAD:$(SUPERSET_DIR)/ 
+	git diff-tree --stat $(SUPERSET_REMOTE)/$(SUPERSET_VERSION) HEAD:$(SUPERSET_DIR)/
 
 # Prints unified diff of local superset  and upstream
 .PHONY: superset-diff
