@@ -76,3 +76,6 @@ superset-diff: superset-remote-add
 .PHONY: superset-merge
 superset-merge: superset-remote-add
 	git merge --squash -s subtree --no-commit remotes/$(SUPERSET_REMOTE)/$(SUPERSET_VERSION)
+
+build-all: build superset-build
+clean-all: clean superset-clean
