@@ -14,6 +14,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// composeContainerPath is the url docker-compose is downloaded from in case
+// that it's not already present in the system
 const composeContainerPath = "https://github.com/docker/compose/releases/download/1.24.0/run.sh"
 
 var envKeys = map[string]bool{
