@@ -26,6 +26,11 @@ type Compose struct {
 }
 
 func (c *Compose) Run(ctx context.Context, arg ...string) error {
+	return c.RunWithIO(ctx, os.Stdin, os.Stdout, os.Stderr, arg...)
+}
+
+func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
+	stdout, stderr io.Writer, arg ...string) error {
 	cmd := exec.CommandContext(ctx, c.bin, arg...)
 
 	var compOpts []string
@@ -40,10 +45,9 @@ func (c *Compose) Run(ctx context.Context, arg ...string) error {
 
 	cmd.Env = append(os.Environ(),
 		fmt.Sprintf("COMPOSE_OPTIONS=%s", strings.Join(compOpts, " ")))
-
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdin = stdin
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
 
 	return cmd.Run()
 }
@@ -136,4 +140,13 @@ func Run(ctx context.Context, arg ...string) error {
 	}
 
 	return comp.Run(ctx, arg...)
+}
+
+func RunWithIO(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer, arg ...string) error {
+	comp, err := NewCompose()
+	if err != nil {
+		return err
+	}
+
+	return comp.RunWithIO(ctx, stdin, stdout, stderr, arg...)
 }
