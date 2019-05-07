@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"time"
 
 	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose"
 )
@@ -11,7 +12,18 @@ type startCmd struct {
 }
 
 func (c *startCmd) Execute(args []string) error {
-	return compose.Run(context.Background(), "start")
+	done := OpenUI(10 * time.Second)
+
+	if err := compose.Run(context.Background(), "start"); err != nil {
+		return err
+	}
+
+	if err := <-done; err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func init() {
