@@ -1,3 +1,8 @@
+# Package configuration
+PROJECT = sandbox-ce
+COMMANDS = cmd/sandbox-ce
+PKG_OS ?= darwin linux windows
+
 # superset upstream configuration
 SUPERSET_REPO = https://github.com/apache/incubator-superset.git
 SUPERSET_VERSION = release--0.32
@@ -9,17 +14,28 @@ PATCH_SOURCE_DIR = srcd
 # name of the image to build
 IMAGE_NAME = smacker/superset:demo-with-bblfsh
 
+# Including ci Makefile
+CI_REPOSITORY ?= https://github.com/src-d/ci.git
+CI_PATH ?= $(shell pwd)/.ci
+CI_VERSION ?= v1
+
+MAKEFILE := $(CI_PATH)/Makefile.main
+$(MAKEFILE):
+	git clone --quiet --branch $(CI_VERSION) --depth 1 $(CI_REPOSITORY) $(CI_PATH);
+
+-include $(MAKEFILE)
+
 all: superset-remote-add
 
 # Copy src-d files in the superset repository
-.PHONY: patch
-patch: clean
+.PHONY: superset-patch
+superset-patch: superset-clean
 	cp -r $(PATCH_SOURCE_DIR)/* $(SUPERSET_DIR)/
 
 # Copy src-d files in the superset repository using symlinks. it's useful for development.
 # Allows to run flask locally and work only inside superset directory.
-.PHONY: patch-dev
-patch-dev: clean
+.PHONY: superset-patch-dev
+superset-patch-dev: superset-clean
 	@diff=`diff -r $(PATCH_SOURCE_DIR) $(SUPERSET_DIR) | grep "$(PATCH_SOURCE_DIR)" | awk '{gsub(/: /,"/");print $$3}'`; \
 	for file in $${diff}; do \
 		to=`echo $${file} | cut -d'/' -f2-`; \
@@ -28,13 +44,13 @@ patch-dev: clean
 	ln -s "$(PWD)/$(PATCH_SOURCE_DIR)/superset/superset_config_dev.py" "$(SUPERSET_DIR)/superset_config.py"; \
 
 # Create docker image
-.PHONY: build
-build: patch
+.PHONY: superset-build
+superset-build: superset-patch
 	docker build -t $(IMAGE_NAME) -f docker/Dockerfile .
 
 # Clean superset directory from copied files
-.PHONY: clean
-clean:
+.PHONY: superset-clean
+superset-clean:
 	rm -f "$(SUPERSET_DIR)/superset_config.py"
 	rm -f "$(SUPERSET_DIR)/superset/superset_config.py"
 	git clean -fd $(SUPERSET_DIR)
@@ -49,7 +65,7 @@ superset-remote-add:
 # Prints list of changed files in local superset and upstream
 .PHONY: superset-diff-stat
 superset-diff-stat: superset-remote-add
-	git diff-tree --stat $(SUPERSET_REMOTE)/$(SUPERSET_VERSION) HEAD:$(SUPERSET_DIR)/ 
+	git diff-tree --stat $(SUPERSET_REMOTE)/$(SUPERSET_VERSION) HEAD:$(SUPERSET_DIR)/
 
 # Prints unified diff of local superset  and upstream
 .PHONY: superset-diff
@@ -60,3 +76,6 @@ superset-diff: superset-remote-add
 .PHONY: superset-merge
 superset-merge: superset-remote-add
 	git merge --squash -s subtree --no-commit remotes/$(SUPERSET_REMOTE)/$(SUPERSET_VERSION)
+
+build-all: build superset-build
+clean-all: clean superset-clean
