@@ -14,6 +14,22 @@ import (
 	"github.com/smacker/superset-compose/cmd/sandbox-ce/compose"
 )
 
+type webCmd struct {
+	Command `name:"web" short-description:"Web"`
+}
+
+func (c *webCmd) Execute(args []string) error {
+	if err := <-OpenUI(10 * time.Second); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func init() {
+	rootCmd.AddCommand(&webCmd{})
+}
+
 func openUI() error {
 	var stdout, stderr bytes.Buffer
 	for {
