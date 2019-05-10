@@ -1,0 +1,48 @@
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+dist: xenial
+sudo: required
+
+language: go
+go_import_path: github.com/src-d/superset-compose
+go:
+  - 1.12.x
+env:
+  - GO111MODULE=on
+
+matrix:
+  fast_finish: true
+
+services:
+  - docker
+
+stages:
+  - name: tests
+  - name: release
+    if: tag IS present
+
+jobs:
+  include:
+    - stage: tests
+      name: 'Go Unit Tests'
+      script:
+        - make packages
+        - make test-coverage
+
+    - stage: release
+      name: 'Release to GitHub and Docker Hub'
+      script:
+        - make packages
+      deploy:
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file_glob: true
+        file: build/*.tar.gz
+        skip_cleanup: true
+        on:
+          all_branches: true
+      after_deploy:
+        - make superset-docker-push-latest-release

@@ -73,7 +73,7 @@ Follow original superset instructions for [Flask server](https://github.com/apac
 ### Build docker image
 
 ```
-make superset-build
+VERSION=latest make superset-build
 ```
 
 Image name defined in Makefile and matches the one in docker-compose.
