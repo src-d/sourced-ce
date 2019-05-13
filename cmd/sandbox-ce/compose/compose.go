@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
@@ -108,6 +109,10 @@ func getOrInstallComposeContainer() (string, error) {
 }
 
 func downloadCompose(path string) error {
+	if runtime.GOOS == "windows" {
+		return fmt.Errorf("compose in container is not compatible with Windows")
+	}
+
 	out, err := os.Create(path)
 	if err != nil {
 		return err
