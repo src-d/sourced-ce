@@ -40,9 +40,9 @@ func (c *Compose) Run(ctx context.Context, arg ...string) error {
 		compOpts = append(compOpts, fmt.Sprintf("-e %s=%s", key, val))
 	}
 
-	cmd.Env = []string{
-		fmt.Sprintf("COMPOSE_OPTIONS=%s", strings.Join(compOpts, " ")),
-	}
+	cmd.Env = append(os.Environ(),
+		fmt.Sprintf("COMPOSE_OPTIONS=%s", strings.Join(compOpts, " ")))
+
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
