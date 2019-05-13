@@ -19,9 +19,7 @@ import (
 // that it's not already present in the system
 const composeContainerPath = "https://github.com/docker/compose/releases/download/1.24.0/run.sh"
 
-var envKeys = map[string]bool{
-	"GITBASE_REPOS_DIR": true,
-}
+var envKeys = []string{"GITBASE_REPOS_DIR"}
 
 type Compose struct {
 	bin string
@@ -31,7 +29,7 @@ func (c *Compose) Run(ctx context.Context, arg ...string) error {
 	cmd := exec.CommandContext(ctx, c.bin, arg...)
 
 	var compOpts []string
-	for key := range envKeys {
+	for _, key := range envKeys {
 		val, ok := os.LookupEnv(key)
 		if !ok {
 			continue
