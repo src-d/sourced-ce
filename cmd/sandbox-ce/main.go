@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/smacker/superset-compose/cmd/sandbox-ce/cmd"
+	"github.com/src-d/superset-compose/cmd/sandbox-ce/cmd"
 )
 
 func main() {

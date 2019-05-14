@@ -1,4 +1,4 @@
-module github.com/smacker/superset-compose
+module github.com/src-d/superset-compose
 
 go 1.12
 

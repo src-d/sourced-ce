@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/smacker/superset-compose/cmd/sandbox-ce/compose"
+	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose"
 )
 
 type startCmd struct {
