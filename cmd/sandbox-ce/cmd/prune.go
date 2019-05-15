@@ -7,7 +7,7 @@ import (
 )
 
 type pruneCmd struct {
-	Command `name:"prune" short-description:"Prune"`
+	Command `name:"prune" short-description:"Stop and remove containers and resources" long-description:"Stops containers and removes containers, networks, and volumes created by 'install'.\nImages are not deleted from the system."`
 }
 
 func (c *pruneCmd) Execute(args []string) error {

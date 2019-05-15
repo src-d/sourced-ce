@@ -7,7 +7,7 @@ import (
 )
 
 type installCmd struct {
-	Command `name:"install" short-description:"Install"`
+	Command `name:"install" short-description:"Install and initialize containers" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images."`
 }
 
 func (c *installCmd) Execute(args []string) error {
