@@ -19,7 +19,6 @@ func (c *installCmd) Execute(args []string) error {
 	}
 
 	err = compose.Run(context.Background(), "up")
-
 	if err != nil {
 		return err
 	}
