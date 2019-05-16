@@ -12,7 +12,7 @@ SUPERSET_DIR = superset
 # directory with custom code to copy into SUPERSET_DIR
 PATCH_SOURCE_DIR = srcd
 # name of the superset docker image to build
-SUPERSET_IMAGE_NAME = src-d/superset
+SUPERSET_IMAGE_NAME = srcd/superset
 
 # Including ci Makefile
 CI_REPOSITORY ?= https://github.com/src-d/ci.git
