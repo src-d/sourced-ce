@@ -56,6 +56,11 @@ services:
     image: srcd/superset:latest
     restart: unless-stopped
     environment:
+      ADMIN_LOGIN: admin
+      ADMIN_FIRST_NAME: admin
+      ADMIN_LAST_NAME: admin
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: admin
       POSTGRES_DB: superset
       POSTGRES_USER: superset
       POSTGRES_PASSWORD: superset

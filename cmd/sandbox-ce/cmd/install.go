@@ -12,11 +12,6 @@ type installCmd struct {
 }
 
 func (c *installCmd) Execute(args []string) error {
-	if err := compose.Run(context.Background(),
-		"run", "--rm", "superset", "./docker-init.sh"); err != nil {
-		return err
-	}
-
 	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
 		return err
 	}
