@@ -60,6 +60,14 @@ sandbox-ce prune
 
 This will remove all containers and related resources such as network and volumes.
 
+### Status
+
+```
+sandbox-ce status
+```
+
+Shows status of the components.
+
 ### Docker Compose
 
 As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/superset-compose/releases) to download the `docker-compose.yml` file included in the release assets.
