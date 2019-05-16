@@ -11,8 +11,8 @@ SUPERSET_REMOTE = superset
 SUPERSET_DIR = superset
 # directory with custom code to copy into SUPERSET_DIR
 PATCH_SOURCE_DIR = srcd
-# name of the image to build
-IMAGE_NAME = smacker/superset:demo-with-bblfsh
+# name of the superset docker image to build
+SUPERSET_IMAGE_NAME = src-d/superset
 
 # Including ci Makefile
 CI_REPOSITORY ?= https://github.com/src-d/ci.git
@@ -46,7 +46,23 @@ superset-patch-dev: superset-clean
 # Create docker image
 .PHONY: superset-build
 superset-build: superset-patch
-	docker build -t $(IMAGE_NAME) -f docker/Dockerfile .
+	docker build -t $(SUPERSET_IMAGE_NAME):$(VERSION) -f docker/Dockerfile .
+
+# Push the superset docker image, based on .ci/Makefile.main
+superset-docker-push: docker-login superset-build
+	@if [ "$(BRANCH)" == "master" && "$(DOCKER_PUSH_MASTER)" == "" ]; then \
+		echo "docker-push is disabled on master branch" \
+		exit 1; \
+	fi; \
+	docker push $(SUPERSET_IMAGE_NAME):$(VERSION); \
+	if [ -n "$(DOCKER_PUSH_LATEST)" ]; then \
+		docker tag $(SUPERSET_IMAGE_NAME):$(VERSION) \
+			$(SUPERSET_IMAGE_NAME):latest; \
+		docker push $(SUPERSET_IMAGE_NAME):latest; \
+	fi;
+
+superset-docker-push-latest-release:
+	@DOCKER_PUSH_LATEST=$(IS_RELEASE) make superset-docker-push
 
 # Clean superset directory from copied files
 .PHONY: superset-clean
