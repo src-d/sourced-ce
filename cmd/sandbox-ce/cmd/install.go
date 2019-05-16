@@ -18,7 +18,7 @@ func (c *installCmd) Execute(args []string) error {
 		return err
 	}
 
-	err = compose.Run(context.Background(), "up")
+	err = compose.Run(context.Background(), "up", "--detach")
 	if err != nil {
 		return err
 	}
