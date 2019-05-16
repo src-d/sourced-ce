@@ -19,7 +19,7 @@ type webCmd struct {
 }
 
 func (c *webCmd) Execute(args []string) error {
-	return OpenUI(10 * time.Second)
+	return OpenUI(2 * time.Second)
 }
 
 func init() {

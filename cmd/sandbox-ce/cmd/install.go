@@ -21,7 +21,7 @@ func (c *installCmd) Execute(args []string) error {
 		return err
 	}
 
-	return OpenUI(10 * time.Second)
+	return OpenUI(30 * time.Second)
 }
 
 func init() {
