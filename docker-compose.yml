@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 services:
   bblfsh:
     image: bblfsh/bblfshd:v2.13.0-drivers
@@ -15,7 +15,11 @@ services:
     depends_on:
       - bblfsh
     volumes:
-      - ${GITBASE_REPOS_DIR}:/opt/repos
+      - type: bind
+        source: ${GITBASE_REPOS_DIR}
+        target: /opt/repos
+        read_only: true
+        consistency: delegated
 
   bblfsh-web:
     image: bblfsh/web:v0.11.0
