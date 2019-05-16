@@ -17,17 +17,11 @@ func (c *installCmd) Execute(args []string) error {
 		return err
 	}
 
-	done := OpenUI(10 * time.Second)
-
 	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
 		return err
 	}
 
-	if err := <-done; err != nil {
-		return err
-	}
-
-	return nil
+	return OpenUI(10 * time.Second)
 }
 
 func init() {

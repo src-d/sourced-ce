@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"net"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/pkg/browser"
 	"github.com/pkg/errors"
-	"github.com/smacker/superset-compose/cmd/sandbox-ce/compose"
+	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose"
 )
 
 type webCmd struct {
@@ -19,11 +19,7 @@ type webCmd struct {
 }
 
 func (c *webCmd) Execute(args []string) error {
-	if err := <-OpenUI(10 * time.Second); err != nil {
-		return err
-	}
-
-	return nil
+	return OpenUI(10 * time.Second)
 }
 
 func init() {
@@ -31,10 +27,11 @@ func init() {
 }
 
 func openUI() error {
-	var stdout, stderr bytes.Buffer
+	var stdout bytes.Buffer
+	// wait for the container to start, it can take a while in some cases
 	for {
 		if err := compose.RunWithIO(context.Background(),
-			os.Stdin, &stdout, &stderr, "port", "superset", "8088"); err == nil {
+			os.Stdin, &stdout, nil, "port", "superset", "8088"); err == nil {
 			break
 		}
 
@@ -46,15 +43,20 @@ func openUI() error {
 		return fmt.Errorf("no address found")
 	}
 
+	// docker-compose returns 0.0.0.0 which is correct for the bind address
+	// but incorrect as connect address
+	url := fmt.Sprintf("http://%s", strings.Replace(address, "0.0.0.0", "127.0.0.1", 1))
+
 	for {
-		if _, err := net.Dial("tcp", address); err == nil {
+		client := http.Client{Timeout: time.Second}
+		if _, err := client.Get(url); err == nil {
 			break
 		}
 
 		time.Sleep(1 * time.Second)
 	}
 
-	if err := browser.OpenURL(fmt.Sprintf("http://%s", address)); err != nil {
+	if err := browser.OpenURL(url); err != nil {
 		errors.Wrap(err, "cannot open browser")
 	}
 
@@ -62,25 +64,16 @@ func openUI() error {
 }
 
 // OpenUI opens the browser with the UI.
-//
-// If opening the UI raises an error or took more time then `timeout`, then the
-// error sent to the returned channel.
-func OpenUI(timeout time.Duration) <-chan error {
-	done := make(chan error)
-
+func OpenUI(timeout time.Duration) error {
+	ch := make(chan error)
 	go func() {
-		ch := make(chan error)
-		go func() {
-			ch <- openUI()
-		}()
-
-		select {
-		case err := <-ch:
-			done <- errors.Wrap(err, "an error occured while opening ui")
-		case <-time.After(timeout):
-			done <- fmt.Errorf("opening the ui took more than %v", timeout)
-		}
+		ch <- openUI()
 	}()
 
-	return done
+	select {
+	case err := <-ch:
+		return errors.Wrap(err, "an error occurred while opening the UI")
+	case <-time.After(timeout):
+		return fmt.Errorf("opening the UI took more than %v", timeout)
+	}
 }
