@@ -18,11 +18,15 @@ import (
 // composeContainerPath is the url docker-compose is downloaded from in case
 // that it's not already present in the system
 const composeContainerPath = "https://github.com/docker/compose/releases/download/1.24.0/run.sh"
+const configURL = "https://raw.githubusercontent.com/src-d/superset-compose/master/docker-compose.yml"
 
 var envKeys = []string{"GITBASE_REPOS_DIR"}
+var defaultConfPath = "~/.srcd/docker-compose.yml"
 
 type Compose struct {
-	bin string
+	bin    string
+	name   string
+	config string
 }
 
 func (c *Compose) Run(ctx context.Context, arg ...string) error {
@@ -31,6 +35,7 @@ func (c *Compose) Run(ctx context.Context, arg ...string) error {
 
 func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 	stdout, stderr io.Writer, arg ...string) error {
+	arg = append([]string{"--file", c.config, "--project-name", c.name}, arg...)
 	cmd := exec.CommandContext(ctx, c.bin, arg...)
 
 	var compOpts []string
@@ -58,7 +63,22 @@ func NewCompose() (*Compose, error) {
 		return nil, err
 	}
 
-	return &Compose{bin: bin}, nil
+	configPath, err := expandHome(defaultConfPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := os.Stat(configPath); err != nil {
+		if os.IsNotExist(err) {
+			if err := downloadConfig(configPath); err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+
+	return &Compose{bin: bin, name: "srcd", config: configPath}, nil
 }
 
 func getOrInstallComposeBinary() (string, error) {
@@ -149,4 +169,38 @@ func RunWithIO(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer, a
 	}
 
 	return comp.RunWithIO(ctx, stdin, stdout, stderr, arg...)
+}
+
+func downloadConfig(dst string) error {
+	if err := os.MkdirAll(filepath.Dir(dst), os.ModePerm); err != nil {
+		return err
+	}
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	resp, err := http.Get(configURL)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	return err
+}
+
+func expandHome(path string) (string, error) {
+	if len(path) == 0 || path[0] != '~' {
+		return path, nil
+	}
+
+	hd, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return strings.Replace(path, "~", hd, 1), nil
 }
