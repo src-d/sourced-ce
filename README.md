@@ -15,6 +15,12 @@ This repository provides the `sandbox-ce` binary as a wrapper to manage the Dock
 
 You may also choose to manage the containers yourself with the `docker-compose.yml` file included in this repository.
 
+## Defaults
+
+Default login: `admin`
+
+Default password: `admin`
+
 ### Commands
 
 Go to the [releases page](https://github.com/src-d/superset-compose/releases) and download the `sandbox-ce` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
@@ -31,9 +37,11 @@ This will create admin user and initialize superset.
 
 Currently it would print some exceptions, just ignore them. It will be fixed after [the issue](https://github.com/src-d/gitbase/issues/808) is resolved.
 
-After the initialization, the components superset, gitbase, bblfsh and other dependencies will be started. Wait a little and open http://localhost:8088
+After the initialization, the components superset, gitbase, bblfsh and other dependencies will be started.
 
-It would have gitbase datasource already.
+It will automatically open WebUI. Use login: `admin` and password `admin` to access it.
+
+If the UI wasn't opened automatically, you can access it going to http://localhost:8088
 
 
 #### Start
@@ -72,16 +80,10 @@ Shows status of the components.
 
 As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/superset-compose/releases) to download the `docker-compose.yml` file included in the release assets.
 
-Before starting the containers, you will need to run the initialization script:
-
-```shell
-GITBASE_REPOS_DIR=/some/path  docker-compose run --rm superset ./docker-init.sh
-```
-
 Then you can start the containers like follows:
 
 ```shell
-GITBASE_REPOS_DIR=/some/path  docker-compose up
+GITBASE_REPOS_DIR=/some/path docker-compose up
 ```
 
 ## Development
