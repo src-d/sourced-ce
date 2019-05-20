@@ -15,7 +15,7 @@ import (
 )
 
 type webCmd struct {
-	Command `name:"web" short-description:"Web"`
+	Command `name:"web" short-description:"Open the web interface in your browser" long-description:"Open the web interface in your browser"`
 }
 
 func (c *webCmd) Execute(args []string) error {
