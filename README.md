@@ -2,12 +2,22 @@
 
 ## Contents
 
-- [Commands](#commands)
+- [Usage](#usage)
+  - [Commands](#commands)
+  - [Docker Compose](#docker-compose)
 - [Development](#development)
 
-## Commands
+## Usage
 
-### Install
+The source{d} Sandbox CE is deployed as Docker containers, using Docker Compose.
+
+This repository provides the `sandbox-ce` binary as a wrapper to manage the Docker Compose files and containers easily. Moreover, `sandbox-ce` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
+
+You may also choose to manage the containers yourself with the `docker-compose.yml` file included in this repository.
+
+### Commands
+
+#### Install
 
 ```
 GITBASE_REPOS_DIR=/some/path sandbox-ce install
@@ -22,7 +32,7 @@ After the initialization, the components superset, gitbase, bblfsh and other dep
 It would have gitbase datasource already.
 
 
-### Start
+#### Start
 
 ```
 GITBASE_REPOS_DIR=/some/path sandbox-ce start
@@ -30,7 +40,7 @@ GITBASE_REPOS_DIR=/some/path sandbox-ce start
 
 This will start all the components previously installed.
 
-### Stop
+#### Stop
 
 ```
 sandbox-ce stop
@@ -38,7 +48,7 @@ sandbox-ce stop
 
 This will stop all running components.
 
-### Prune
+#### Prune
 
 ```
 sandbox-ce prune
@@ -46,6 +56,21 @@ sandbox-ce prune
 
 This will remove all containers and related resources such as network and volumes.
 
+### Docker Compose
+
+As an alternative to `sandbox-ce` you can clone this repository and use the `docker-compose` command.
+
+Before starting the containers, you will need to run the initialization script:
+
+```shell
+GITBASE_REPOS_DIR=/some/path  docker-compose run --rm superset ./docker-init.sh
+```
+
+Then you can start the containers like follows:
+
+```shell
+GITBASE_REPOS_DIR=/some/path  docker-compose up
+```
 
 ## Development
 
