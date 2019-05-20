@@ -46,7 +46,7 @@ superset-patch-dev: superset-clean
 # Create docker image
 .PHONY: superset-build
 superset-build: superset-patch
-	docker build -t $(SUPERSET_IMAGE_NAME):$(VERSION) -f docker/Dockerfile .
+	docker build -t $(SUPERSET_IMAGE_NAME):$(VERSION) -f superset/contrib/docker/Dockerfile superset
 
 # Push the superset docker image, based on .ci/Makefile.main
 superset-docker-push: docker-login superset-build
@@ -68,7 +68,6 @@ superset-docker-push-latest-release:
 .PHONY: superset-clean
 superset-clean:
 	rm -f "$(SUPERSET_DIR)/superset_config.py"
-	rm -f "$(SUPERSET_DIR)/superset/superset_config.py"
 	git clean -fd $(SUPERSET_DIR)
 
 # Add superset upstream remote if doesn't exists
