@@ -74,6 +74,6 @@ func OpenUI(timeout time.Duration) error {
 	case err := <-ch:
 		return errors.Wrap(err, "an error occurred while opening the UI")
 	case <-time.After(timeout):
-		return fmt.Errorf("opening the UI took more than %v", timeout)
+		return fmt.Errorf("error opening the UI, the container is not running after %v", timeout)
 	}
 }
