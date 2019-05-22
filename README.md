@@ -17,6 +17,10 @@ You may also choose to manage the containers yourself with the `docker-compose.y
 
 ### Commands
 
+Go to the [releases page](https://github.com/src-d/superset-compose/releases) and download the `sandbox-ce` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
+
+Please make sure you run `sandbox-ce` commands in the same directory where you placed the `docker-compose.yml` file.
+
 #### Install
 
 ```
@@ -58,7 +62,7 @@ This will remove all containers and related resources such as network and volume
 
 ### Docker Compose
 
-As an alternative to `sandbox-ce` you can clone this repository and use the `docker-compose` command.
+As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/superset-compose/releases) to download the `docker-compose.yml` file included in the release assets.
 
 Before starting the containers, you will need to run the initialization script:
 
