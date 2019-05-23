@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"time"
 
 	"github.com/pkg/errors"
 	"gopkg.in/src-d/go-cli.v0"
@@ -25,11 +27,21 @@ type configDownloadCmd struct {
 	Command `name:"download" short-description:"Download"`
 
 	Revision string `short:"r" long:"revision" description:"revision to download" default:"master"`
+	URL      string `short:"u" long:"url" description:"url of the config to download"`
 }
 
 func (c *configDownloadCmd) Execute(args []string) error {
-	confURL := getComposerConfFileURL(c.Revision)
-	outPath, err := getConfigPath(c.Revision)
+	var err error
+	var confURL, outPath string
+
+	if c.URL != "" {
+		confURL = c.URL
+		outPath, err = getConfigPath(strconv.Itoa(int(time.Now().Unix())))
+	} else {
+		confURL = getComposerConfFileURL(c.Revision)
+		outPath, err = getConfigPath(c.Revision)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -151,13 +163,13 @@ func getConfigDirPath() (string, error) {
 	return filepath.Join(homedir, ".srcd", "composer-configs"), nil
 }
 
-func getConfigPath(revision string) (string, error) {
+func getConfigPath(subPath string) (string, error) {
 	confDirPath, err := getConfigDirPath()
 	if err != nil {
 		return "", err
 	}
 
-	dirPath := filepath.Join(confDirPath, revision)
+	dirPath := filepath.Join(confDirPath, subPath)
 	if err = os.MkdirAll(dirPath, os.ModePerm); err != nil {
 		return "", errors.Wrapf(err, "error while creating directory %s", dirPath)
 	}
