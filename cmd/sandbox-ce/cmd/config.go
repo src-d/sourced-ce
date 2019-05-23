@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	"gopkg.in/src-d/go-cli.v0"
 )
@@ -144,7 +143,7 @@ func (c *configSetDefaultCmd) Execute(args []string) error {
 }
 
 func getConfigDirPath() (string, error) {
-	homedir, err := homedir.Dir()
+	homedir, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.Wrap(err, "could not detect home directory")
 	}
