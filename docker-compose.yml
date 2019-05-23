@@ -65,6 +65,8 @@ services:
       GITBASE_PASSWORD:
       GITBASE_HOST: gitbase
       GITBASE_PORT: 3306
+      BBLFSH_WEB_HOST: bblfsh-web
+      BBLFSH_WEB_PORT: 8080
       SUPERSET_ENV: production
     ports:
       - 8088:8088
