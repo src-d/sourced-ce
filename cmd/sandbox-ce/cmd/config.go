@@ -51,7 +51,7 @@ func (c *configDownloadCmd) Execute(args []string) error {
 		return err
 	}
 
-	return nil
+	return setDefaultConfig(outPath)
 }
 
 func (c *configDownloadCmd) downloadConfig(url, path string) error {
@@ -140,6 +140,10 @@ func (c *configSetDefaultCmd) Execute(args []string) error {
 		return err
 	}
 
+	return setDefaultConfig(revisionConfPath)
+}
+
+func setDefaultConfig(confPath string) error {
 	defaultConfPath, err := getConfigPath(defaultConfigName)
 	if err != nil {
 		return err
@@ -151,7 +155,7 @@ func (c *configSetDefaultCmd) Execute(args []string) error {
 		}
 	}
 
-	return os.Symlink(revisionConfPath, defaultConfPath)
+	return os.Symlink(confPath, defaultConfPath)
 }
 
 func getConfigDirPath() (string, error) {
