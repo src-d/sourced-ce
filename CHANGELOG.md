@@ -20,6 +20,12 @@
 
 - The gitbase indexes are now persistent ([#65](https://github.com/src-d/superset-compose/issues/65)).
 
+### `srcd/superset` Docker Image
+
+#### New Features
+
+- Loading of default dashboards on bootstrap ([#71](https://github.com/src-d/superset-compose/issues/71)).
+
 </details>
 
 ## [v0.0.1](https://github.com/src-d/superset-compose/releases/tag/v0.0.1) - 2019-05-16
@@ -30,7 +36,7 @@ Initial release. It includes a `sandbox-ce` command with the sub commands `insta
 
 This binary is a wrapper for Docker Compose, and requires you to download the `docker-compose.yml` file from this repository.
 
-### `srcd/superset` docker image
+### `srcd/superset` Docker Image
 
 The `srcd/superset` docker image is based on Superset 0.32, and contains the following additions:
 - an extra tab, UAST, to explore bblfsh parsing results.
