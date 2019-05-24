@@ -11,10 +11,14 @@
 
 #### New Features
 
-- Make the gitbase volume read-only ([#52](https://github.com/src-d/superset-compose/issues/52)).
+- Make the gitbase volume for repositories read-only ([#52](https://github.com/src-d/superset-compose/issues/52)).
 - Add help messages to the `sandbox-ce` command ([#46](https://github.com/src-d/superset-compose/issues/46)).
 - `sandbox-ce install` now starts the containers on detached mode in the background ([#44](https://github.com/src-d/superset-compose/issues/44)).
 - New sub command `sandbox-ce web` to open the web UI in the browser ([#17](https://github.com/src-d/superset-compose/issues/17)).
+
+#### Bug Fixes
+
+- The gitbase indexes are now persistent ([#65](https://github.com/src-d/superset-compose/issues/65)).
 
 </details>
 

@@ -20,6 +20,7 @@ services:
         target: /opt/repos
         read_only: true
         consistency: delegated
+      - gitbase_indexes:/var/lib/gitbase/index
 
   bblfsh-web:
     image: bblfsh/web:v0.11.0
@@ -76,6 +77,8 @@ services:
       - gitbase
 
 volumes:
+  gitbase_indexes:
+    external: false
   postgres:
     external: false
   redis:
