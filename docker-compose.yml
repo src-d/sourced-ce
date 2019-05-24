@@ -5,6 +5,7 @@ services:
     privileged: true
     ports:
       - 9432:9432
+    restart: always
 
   gitbase:
     image: srcd/gitbase:v0.20.0-beta4
@@ -21,6 +22,7 @@ services:
         read_only: true
         consistency: delegated
       - gitbase_indexes:/var/lib/gitbase/index
+    restart: always
 
   bblfsh-web:
     image: bblfsh/web:v0.11.0

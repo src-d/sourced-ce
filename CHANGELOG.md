@@ -15,6 +15,7 @@
 - Add help messages to the `sandbox-ce` command ([#46](https://github.com/src-d/superset-compose/issues/46)).
 - `sandbox-ce install` now starts the containers on detached mode in the background ([#44](https://github.com/src-d/superset-compose/issues/44)).
 - New sub command `sandbox-ce web` to open the web UI in the browser ([#17](https://github.com/src-d/superset-compose/issues/17)).
+- Add `restart` policy to gitbase and bblfsh containers ([#63](https://github.com/src-d/superset-compose/issues/63)).
 
 #### Bug Fixes
 
