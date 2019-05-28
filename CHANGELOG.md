@@ -16,10 +16,14 @@
 - `sandbox-ce install` now starts the containers on detached mode in the background ([#44](https://github.com/src-d/superset-compose/issues/44)).
 - New sub command `sandbox-ce web` to open the web UI in the browser ([#17](https://github.com/src-d/superset-compose/issues/17)).
 - Add `restart` policy to gitbase and bblfsh containers ([#63](https://github.com/src-d/superset-compose/issues/63)).
+- Download `docker-compose.yml` if it doesn't exist ([#51](https://github.com/src-d/superset-compose/pull/51)).
+- New sub command `sandbox-ce status` to see components status ([#14](https://github.com/src-d/superset-compose/pull/14)).
+- Create default user with default password on install ([#11](https://github.com/src-d/superset-compose/pull/11)).
 
 #### Bug Fixes
 
 - The gitbase indexes are now persistent ([#65](https://github.com/src-d/superset-compose/issues/65)).
+- Add proxy for UAST tab ([#47](https://github.com/src-d/superset-compose/issues/47)).
 
 </details>
 
