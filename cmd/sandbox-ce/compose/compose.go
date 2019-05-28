@@ -4,24 +4,23 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 
-	"github.com/mitchellh/go-homedir"
+	composefile "github.com/src-d/superset-compose/cmd/sandbox-ce/compose/file"
+	"github.com/src-d/superset-compose/cmd/sandbox-ce/dir"
+
 	"github.com/pkg/errors"
 )
 
-// composeContainerPath is the url docker-compose is downloaded from in case
+// composeContainerURL is the url docker-compose is downloaded from in case
 // that it's not already present in the system
-const composeContainerPath = "https://github.com/docker/compose/releases/download/1.24.0/run.sh"
-const configURL = "https://raw.githubusercontent.com/src-d/superset-compose/master/docker-compose.yml"
+const composeContainerURL = "https://github.com/docker/compose/releases/download/1.24.0/run.sh"
 
 var envKeys = []string{"GITBASE_REPOS_DIR"}
-var defaultConfPath = "~/.srcd/docker-compose.yml"
 
 type Compose struct {
 	bin    string
@@ -63,22 +62,9 @@ func NewCompose() (*Compose, error) {
 		return nil, err
 	}
 
-	configPath, err := expandHome(defaultConfPath)
-	if err != nil {
-		return nil, err
-	}
+	defaultFilePath, err := composefile.InitDefault()
 
-	if _, err := os.Stat(configPath); err != nil {
-		if os.IsNotExist(err) {
-			if err := downloadConfig(configPath); err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, err
-		}
-	}
-
-	return &Compose{bin: bin, name: "srcd", config: configPath}, nil
+	return &Compose{bin: bin, name: "srcd", config: defaultFilePath}, nil
 }
 
 func getOrInstallComposeBinary() (string, error) {
@@ -99,12 +85,12 @@ func getOrInstallComposeBinary() (string, error) {
 }
 
 func getOrInstallComposeContainer() (string, error) {
-	homedir, err := homedir.Dir()
+	datadir, err := dir.Path()
 	if err != nil {
-		return "", errors.Wrapf(err, "unable to get home dir")
+		return "", err
 	}
 
-	dirPath := filepath.Join(homedir, ".srcd", "bin")
+	dirPath := filepath.Join(datadir, "bin")
 	path := filepath.Join(dirPath, "docker-compose")
 
 	if _, err := os.Stat(path); err == nil {
@@ -119,7 +105,7 @@ func getOrInstallComposeContainer() (string, error) {
 	}
 
 	if err := downloadCompose(path); err != nil {
-		return "", errors.Wrapf(err, "error downloading %s", composeContainerPath)
+		return "", errors.Wrapf(err, "error downloading %s", composeContainerURL)
 	}
 
 	cmd := exec.CommandContext(context.Background(), "chmod", "+x", path)
@@ -135,22 +121,7 @@ func downloadCompose(path string) error {
 		return fmt.Errorf("compose in container is not compatible with Windows")
 	}
 
-	out, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	defer out.Close()
-
-	resp, err := http.Get(composeContainerPath)
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	_, err = io.Copy(out, resp.Body)
-	return err
+	return dir.DownloadURL(composeContainerURL, path)
 }
 
 func Run(ctx context.Context, arg ...string) error {
@@ -169,38 +140,4 @@ func RunWithIO(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer, a
 	}
 
 	return comp.RunWithIO(ctx, stdin, stdout, stderr, arg...)
-}
-
-func downloadConfig(dst string) error {
-	if err := os.MkdirAll(filepath.Dir(dst), os.ModePerm); err != nil {
-		return err
-	}
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	resp, err := http.Get(configURL)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	_, err = io.Copy(out, resp.Body)
-	return err
-}
-
-func expandHome(path string) (string, error) {
-	if len(path) == 0 || path[0] != '~' {
-		return path, nil
-	}
-
-	hd, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	return strings.Replace(path, "~", hd, 1), nil
 }
