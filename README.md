@@ -76,6 +76,14 @@ sandbox-ce status
 
 Shows status of the components.
 
+### Web
+
+```
+sandbox-ce web
+```
+
+Opens the web interface in your browser.
+
 ### Docker Compose
 
 As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/superset-compose/releases) to download the `docker-compose.yml` file included in the release assets.
