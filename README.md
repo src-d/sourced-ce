@@ -66,7 +66,10 @@ This will stop all running components.
 sandbox-ce prune
 ```
 
-This will remove all containers and related resources such as network and volumes.
+Stops containers and removes containers, networks, and volumes created by `install`.
+Images are not deleted unless you specify the `--images` flag.
+
+If you want to completely uninstall `sandbox-ce` you may want to delete the `~/.srcd` directory.
 
 ### Status
 

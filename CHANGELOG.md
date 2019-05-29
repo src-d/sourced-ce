@@ -19,6 +19,7 @@
 - Download `docker-compose.yml` if it doesn't exist ([#51](https://github.com/src-d/superset-compose/pull/51)).
 - New sub command `sandbox-ce status` to see components status ([#14](https://github.com/src-d/superset-compose/pull/14)).
 - Create default user with default password on install ([#11](https://github.com/src-d/superset-compose/pull/11)).
+- New flag `sandbox-ce prune --images` to delete Docker images too ([#69](https://github.com/src-d/superset-compose/issues/69)).
 
 #### Bug Fixes
 
