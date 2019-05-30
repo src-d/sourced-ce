@@ -70,10 +70,62 @@ func OpenUI(timeout time.Duration) error {
 		ch <- openUI()
 	}()
 
+	if timeout > 5*time.Second {
+		stopSpinner := startSpinner("Initializing source{d}...")
+		defer stopSpinner()
+	}
+
 	select {
 	case err := <-ch:
 		return errors.Wrap(err, "an error occurred while opening the UI")
 	case <-time.After(timeout):
 		return fmt.Errorf("error opening the UI, the container is not running after %v", timeout)
+	}
+}
+
+type spinner struct {
+	msg      string
+	charset  []int
+	interval time.Duration
+
+	stop chan bool
+}
+
+func startSpinner(msg string) func() {
+	s := &spinner{
+		msg:      msg,
+		charset:  []int{'⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'},
+		interval: 200 * time.Millisecond,
+		stop:     make(chan bool),
+	}
+	s.Start()
+
+	return s.Stop
+}
+
+func (s *spinner) Start() {
+	go s.printLoop()
+}
+
+func (s *spinner) Stop() {
+	s.stop <- true
+}
+
+func (s *spinner) printLoop() {
+	i := 0
+	for {
+		select {
+		case <-s.stop:
+			return
+		default:
+			fmt.Printf("%s %s", s.msg, string(s.charset[i%len(s.charset)]))
+			time.Sleep(s.interval)
+			fmt.Println("\033[A")
+		}
+
+		i++
+		if len(s.charset) == i {
+			i = 0
+		}
 	}
 }
