@@ -1,14 +1,14 @@
 version: '3.2'
 services:
   bblfsh:
-    image: bblfsh/bblfshd:v2.13.0-drivers
+    image: bblfsh/bblfshd:v2.14.0-drivers
     privileged: true
     ports:
       - 9432:9432
     restart: always
 
   gitbase:
-    image: srcd/gitbase:v0.20.0-beta4
+    image: srcd/gitbase:v0.20.0
     ports:
       - 3306:3306
     environment:
