@@ -8,8 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose"
+	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose/workdir"
+
+	"github.com/pkg/errors"
 )
 
 type installCmd struct {
@@ -26,7 +28,7 @@ func (c *installCmd) Execute(args []string) error {
 		return err
 	}
 
-	workdir, err := compose.InitWorkdir(reposdir)
+	dir, err := workdir.Init(reposdir)
 	if err != nil {
 		return err
 	}
@@ -34,12 +36,12 @@ func (c *installCmd) Execute(args []string) error {
 	// Before setting a new workdir, stop the current containers
 	compose.Run(context.Background(), "stop")
 
-	err = compose.SetActiveWorkdir(workdir)
+	err = workdir.SetActive(reposdir)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("docker-compose working directory set to %s\n", workdir)
+	fmt.Printf("docker-compose working directory set to %s\n", dir)
 
 	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
 		return err

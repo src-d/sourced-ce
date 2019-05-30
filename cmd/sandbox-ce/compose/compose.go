@@ -2,20 +2,16 @@ package compose
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 
-	composefile "github.com/src-d/superset-compose/cmd/sandbox-ce/compose/file"
+	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose/workdir"
 	"github.com/src-d/superset-compose/cmd/sandbox-ce/dir"
-	datadir "github.com/src-d/superset-compose/cmd/sandbox-ce/dir"
 
 	"github.com/pkg/errors"
 )
@@ -25,8 +21,6 @@ import (
 const composeContainerURL = "https://github.com/docker/compose/releases/download/1.24.0/run.sh"
 
 var envKeys = []string{"GITBASE_REPOS_DIR"}
-
-const activeWorkdir = "__active__"
 
 type Compose struct {
 	bin string
@@ -40,7 +34,7 @@ func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 	stdout, stderr io.Writer, arg ...string) error {
 	cmd := exec.CommandContext(ctx, c.bin, arg...)
 
-	dir, err := workdirPath(activeWorkdir)
+	dir, err := workdir.Active()
 	if err != nil {
 		return err
 	}
@@ -148,113 +142,4 @@ func RunWithIO(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer, a
 	}
 
 	return comp.RunWithIO(ctx, stdin, stdout, stderr, arg...)
-}
-
-// InitWorkdir creates a working directory in ~/.srcd for the given repositories
-// directory. The working directory will contain a docker-compose.yml and a
-// .env file.
-// If the directory is already initialized the function returns with no error
-func InitWorkdir(reposdir string) (string, error) {
-	defaultFilePath, err := composefile.InitDefault()
-	if err != nil {
-		return "", err
-	}
-
-	workdir, err := workdirPath(reposdir)
-	if err != nil {
-		return "", err
-	}
-
-	err = os.MkdirAll(workdir, 0755)
-	if err != nil {
-		return "", errors.Wrap(err, "could not create working directory")
-	}
-
-	composePath := filepath.Join(workdir, "docker-compose.yml")
-	_, err = os.Stat(composePath)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return "", errors.Wrap(err, "could not read the existing docker-compose.yml file")
-		}
-
-		err = os.Symlink(defaultFilePath, composePath)
-		if err != nil {
-			return "", errors.Wrap(err, "could not create symlink to docker-compose.yml file")
-		}
-	}
-
-	envPath := filepath.Join(workdir, ".env")
-	emptyFile, err := isEmptyFile(envPath)
-	if err != nil {
-		return "", errors.Wrap(err, "could not read .env file contents")
-	}
-
-	if emptyFile {
-		hash := sha1.Sum([]byte(reposdir))
-		hashSt := hex.EncodeToString(hash[:])
-
-		contents := fmt.Sprintf(
-			`GITBASE_REPOS_DIR=%s
-COMPOSE_PROJECT_NAME=srcd-%s
-`,
-			reposdir, hashSt)
-
-		err = ioutil.WriteFile(envPath, []byte(contents), 0644)
-		if err != nil {
-			return "", errors.Wrap(err, "could not write .env file")
-		}
-	}
-
-	return workdir, nil
-}
-
-// isEmptyFile returns true if the file does not exist or if it exists but
-// contains empty text
-func isEmptyFile(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return false, err
-		}
-
-		return true, nil
-	}
-
-	contents, err := ioutil.ReadFile(path)
-	if err != nil {
-		return false, err
-	}
-
-	strContents := string(contents)
-	return strings.TrimSpace(strContents) == "", nil
-}
-
-// SetActiveWorkdir creates a symlink from the fixed active workdir path
-// to the given workdir. The workdir should be the path returned by InitWorkdir
-func SetActiveWorkdir(workdir string) error {
-	dir, err := workdirPath(activeWorkdir)
-	if err != nil {
-		return err
-	}
-
-	_, err = os.Stat(dir)
-	if !os.IsNotExist(err) {
-		err = os.Remove(dir)
-		if err != nil {
-			return errors.Wrap(err, "could not delete the previous active workdir directory symlink")
-		}
-	}
-
-	return os.Symlink(workdir, dir)
-}
-
-// workdirPath returns the absolute path to
-// $HOME/.srcd/workdirs/reposdir
-func workdirPath(reposdir string) (string, error) {
-	path, err := datadir.Path()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(path, "workdirs", reposdir), nil
 }
