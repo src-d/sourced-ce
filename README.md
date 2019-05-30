@@ -71,7 +71,7 @@ Images are not deleted unless you specify the `--images` flag.
 
 If you want to completely uninstall `sandbox-ce` you may want to delete the `~/.srcd` directory.
 
-### Status
+#### Status
 
 ```
 sandbox-ce status
@@ -79,13 +79,50 @@ sandbox-ce status
 
 Shows status of the components.
 
-### Web
+#### Web
 
 ```
 sandbox-ce web
 ```
 
 Opens the web interface in your browser.
+
+#### Compose
+
+```
+sandbox-ce compose
+```
+
+Manage docker compose files in the `~/.srcd` directory with the following sub commands:
+
+##### Download
+
+```
+sandbox-ce compose download
+sandbox-ce compose download v0.0.1
+sandbox-ce compose download master
+sandbox-ce compose download https://raw.githubusercontent.com/src-d/superset-compose/master/docker-compose.yml
+```
+
+Download docker compose files. By default the command downloads the file in `master`.
+
+Use the `version` argument to choose a specific revision from the https://github.com/src-d/superset-compose repository, or to set a URL to a docker-compose.yml file.
+
+##### List
+
+```
+sandbox-ce compose
+```
+
+List the downloaded docker compose files.
+
+##### Set
+
+```
+sandbox-ce compose set
+```
+
+Set the active docker compose file.
 
 ### Docker Compose
 
