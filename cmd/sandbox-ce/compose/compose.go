@@ -16,10 +16,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-// composeContainerURL is the url docker-compose is downloaded from in case
-// that it's not already present in the system
-const composeContainerURL = "https://github.com/docker/compose/releases/download/1.24.0/run.sh"
+// dockerComposeVersion is the version of docker-compose to download
+// if docker-compose isn't already present in the system
+const dockerComposeVersion = "1.24.0"
 
+var composeContainerURL = fmt.Sprintf("https://github.com/docker/compose/releases/download/%s/run.sh", dockerComposeVersion)
 var envKeys = []string{"GITBASE_REPOS_DIR"}
 
 type Compose struct {
@@ -93,7 +94,7 @@ func getOrInstallComposeContainer() (string, error) {
 	}
 
 	dirPath := filepath.Join(datadir, "bin")
-	path := filepath.Join(dirPath, "docker-compose")
+	path := filepath.Join(dirPath, fmt.Sprintf("docker-compose-%s.sh", dockerComposeVersion))
 
 	if _, err := os.Stat(path); err == nil {
 		return path, nil
