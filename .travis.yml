@@ -33,7 +33,7 @@ jobs:
         - make test-coverage
 
     - stage: release
-      name: 'Release to GitHub and Docker Hub'
+      name: 'Release to GitHub'
       script:
         - make packages
       deploy:
@@ -46,5 +46,3 @@ jobs:
         skip_cleanup: true
         on:
           all_branches: true
-      after_deploy:
-        - make superset-docker-push-latest-release
