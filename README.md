@@ -29,12 +29,10 @@ Please make sure you run `sandbox-ce` commands in the same directory where you p
 #### Install
 
 ```
-GITBASE_REPOS_DIR=/some/path sandbox-ce install
+sandbox-ce install /some/path
 ```
 
 This will create admin user and initialize superset.
-
-Currently it would print some exceptions, just ignore them. It will be fixed after [the issue](https://github.com/src-d/gitbase/issues/808) is resolved.
 
 After the initialization, the components superset, gitbase, bblfsh and other dependencies will be started.
 
@@ -46,7 +44,7 @@ If the UI wasn't opened automatically, you can access it going to http://localho
 #### Start
 
 ```
-GITBASE_REPOS_DIR=/some/path sandbox-ce start
+sandbox-ce start
 ```
 
 This will start all the components previously installed.
