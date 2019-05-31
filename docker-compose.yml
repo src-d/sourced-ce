@@ -52,8 +52,8 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
-  superset:
-    image: srcd/superset:latest
+  sourced-ui:
+    image: srcd/sourced-ui:latest
     restart: unless-stopped
     environment:
       ADMIN_LOGIN: admin
