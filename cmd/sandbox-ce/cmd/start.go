@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose"
+	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose"
 )
 
 type startCmd struct {

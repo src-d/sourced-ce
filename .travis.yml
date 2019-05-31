@@ -7,7 +7,7 @@ dist: xenial
 sudo: required
 
 language: go
-go_import_path: github.com/src-d/superset-compose
+go_import_path: github.com/src-d/sourced-ce
 go:
   - 1.12.x
 env:

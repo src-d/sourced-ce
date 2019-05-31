@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	datadir "github.com/src-d/superset-compose/cmd/sandbox-ce/dir"
+	datadir "github.com/src-d/sourced-ce/cmd/sandbox-ce/dir"
 
 	"github.com/pkg/errors"
 )
