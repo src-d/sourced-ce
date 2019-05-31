@@ -1,11 +1,10 @@
-# Sandbox CE
+# source{d} CE
 
 ## Contents
 
 - [Usage](#usage)
   - [Commands](#commands)
   - [Docker Compose](#docker-compose)
-- [Development](#development)
 
 ## Usage
 
@@ -23,7 +22,7 @@ Default password: `admin`
 
 ### Commands
 
-Go to the [releases page](https://github.com/src-d/superset-compose/releases) and download the `sandbox-ce` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
+Go to the [releases page](https://github.com/src-d/sourced-ce/releases) and download the `sandbox-ce` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
 
 Please make sure you run `sandbox-ce` commands in the same directory where you placed the `docker-compose.yml` file.
 
@@ -101,12 +100,12 @@ Manage docker compose files in the `~/.srcd` directory with the following sub co
 sandbox-ce compose download
 sandbox-ce compose download v0.0.1
 sandbox-ce compose download master
-sandbox-ce compose download https://raw.githubusercontent.com/src-d/superset-compose/master/docker-compose.yml
+sandbox-ce compose download https://raw.githubusercontent.com/src-d/sourced-ce/master/docker-compose.yml
 ```
 
 Download docker compose files. By default the command downloads the file in `master`.
 
-Use the `version` argument to choose a specific revision from the https://github.com/src-d/superset-compose repository, or to set a URL to a docker-compose.yml file.
+Use the `version` argument to choose a specific revision from the https://github.com/src-d/sourced-ce repository, or to set a URL to a docker-compose.yml file.
 
 ##### List
 
@@ -126,64 +125,10 @@ Set the active docker compose file.
 
 ### Docker Compose
 
-As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/superset-compose/releases) to download the `docker-compose.yml` file included in the release assets.
+As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/sourced-ce/releases) to download the `docker-compose.yml` file included in the release assets.
 
 Then you can start the containers like follows:
 
 ```shell
 GITBASE_REPOS_DIR=/some/path docker-compose up
-```
-
-## Development
-
-### Setup local environment
-
-Run dependencies using docker-compose:
-```
-docker-compose up gitbase bblfsh-web
-```
-
-Update superset directory:
-
-```
-make patch-dev
-```
-
-Enter into `superset` directory:
-```
-cd superset
-```
-
-Follow original superset instructions for [Flask server](https://github.com/apache/incubator-superset/blob/release--0.32/CONTRIBUTING.md#flask-server) and [Frontend assets](https://github.com/apache/incubator-superset/blob/release--0.32/CONTRIBUTING.md#frontend-assets)
-
-
-### Build docker image
-
-```
-VERSION=latest make superset-build
-```
-
-Image name defined in Makefile and matches the one in docker-compose.
-
-### Work with superset upstream
-
-Superset version which we are based on defined in Makefile.
-
-To see which files are patched compare to upstream, run:
-
-```
-make superset-diff-stat
-```
-
-To see diff with upstream, run:
-
-```
-make superset-diff
-```
-
-
-To merge updated upsteam into subdirectory:
-
-```
-make superset-merge
 ```
