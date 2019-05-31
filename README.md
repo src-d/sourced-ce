@@ -1,4 +1,4 @@
-# Sandbox CE
+# source{d} CE
 
 ## Contents
 
@@ -23,7 +23,7 @@ Default password: `admin`
 
 ### Commands
 
-Go to the [releases page](https://github.com/src-d/superset-compose/releases) and download the `sandbox-ce` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
+Go to the [releases page](https://github.com/src-d/sourced-ce/releases) and download the `sandbox-ce` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
 
 Please make sure you run `sandbox-ce` commands in the same directory where you placed the `docker-compose.yml` file.
 
@@ -101,12 +101,12 @@ Manage docker compose files in the `~/.srcd` directory with the following sub co
 sandbox-ce compose download
 sandbox-ce compose download v0.0.1
 sandbox-ce compose download master
-sandbox-ce compose download https://raw.githubusercontent.com/src-d/superset-compose/master/docker-compose.yml
+sandbox-ce compose download https://raw.githubusercontent.com/src-d/sourced-ce/master/docker-compose.yml
 ```
 
 Download docker compose files. By default the command downloads the file in `master`.
 
-Use the `version` argument to choose a specific revision from the https://github.com/src-d/superset-compose repository, or to set a URL to a docker-compose.yml file.
+Use the `version` argument to choose a specific revision from the https://github.com/src-d/sourced-ce repository, or to set a URL to a docker-compose.yml file.
 
 ##### List
 
@@ -126,7 +126,7 @@ Set the active docker compose file.
 
 ### Docker Compose
 
-As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/superset-compose/releases) to download the `docker-compose.yml` file included in the release assets.
+As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/sourced-ce/releases) to download the `docker-compose.yml` file included in the release assets.
 
 Then you can start the containers like follows:
 
