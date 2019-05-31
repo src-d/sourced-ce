@@ -11,7 +11,7 @@ import (
 
 	"github.com/pkg/browser"
 	"github.com/pkg/errors"
-	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose"
+	"github.com/src-d/sourced-ce/cmd/sourced/compose"
 )
 
 type webCmd struct {

@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	composefile "github.com/src-d/sourced-ce/cmd/sandbox-ce/compose/file"
-	datadir "github.com/src-d/sourced-ce/cmd/sandbox-ce/dir"
+	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
+	datadir "github.com/src-d/sourced-ce/cmd/sourced/dir"
 
 	"github.com/pkg/errors"
 )

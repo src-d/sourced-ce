@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose"
-	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose/workdir"
+	"github.com/src-d/sourced-ce/cmd/sourced/compose"
+	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
 
 	"github.com/pkg/errors"
 )

@@ -1,6 +1,6 @@
 # Package configuration
-PROJECT = sandbox-ce
-COMMANDS = cmd/sandbox-ce
+PROJECT = sourced-ce
+COMMANDS = cmd/sourced
 PKG_OS ?= darwin linux windows
 
 # Including ci Makefile
