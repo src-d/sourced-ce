@@ -17,7 +17,7 @@ import (
 
 const (
 	orgName         = "src-d"
-	repoName        = "superset-compose"
+	repoName        = "sourced-ce"
 	composeFileTmpl = "https://raw.githubusercontent.com/%s/%s/%s/docker-compose.yml"
 )
 
