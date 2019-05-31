@@ -11,7 +11,7 @@ import (
 
 	"github.com/pkg/browser"
 	"github.com/pkg/errors"
-	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose"
+	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose"
 )
 
 type webCmd struct {

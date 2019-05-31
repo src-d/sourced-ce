@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose/workdir"
-	"github.com/src-d/superset-compose/cmd/sandbox-ce/dir"
+	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose/workdir"
+	"github.com/src-d/sourced-ce/cmd/sandbox-ce/dir"
 
 	"github.com/pkg/errors"
 )

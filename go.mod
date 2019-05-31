@@ -1,4 +1,4 @@
-module github.com/src-d/superset-compose
+module github.com/src-d/sourced-ce
 
 go 1.12
 

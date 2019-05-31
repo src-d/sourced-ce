@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/src-d/superset-compose/cmd/sandbox-ce/compose"
+	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose"
 )
 
 type stopCmd struct {
