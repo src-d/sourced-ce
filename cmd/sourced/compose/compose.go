@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose/workdir"
-	"github.com/src-d/sourced-ce/cmd/sandbox-ce/dir"
+	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
+	"github.com/src-d/sourced-ce/cmd/sourced/dir"
 
 	"github.com/pkg/errors"
 )

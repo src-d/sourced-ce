@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/src-d/sourced-ce/cmd/sandbox-ce/compose"
+	"github.com/src-d/sourced-ce/cmd/sourced/compose"
 )
 
 type pruneCmd struct {

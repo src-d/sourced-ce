@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	composefile "github.com/src-d/sourced-ce/cmd/sandbox-ce/compose/file"
+	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
 
 	"gopkg.in/src-d/go-cli.v0"
 )

@@ -4,9 +4,9 @@ import (
 	"gopkg.in/src-d/go-cli.v0"
 )
 
-const name = "sandbox-ce"
+const name = "sourced"
 
-var rootCmd = cli.NewNoDefaults(name, "Sandbox CE by source{d}")
+var rootCmd = cli.NewNoDefaults(name, "source{d} Sandbox")
 
 // Command implements the default group flags. It is meant to be embedded into
 // other application commands to provide default behavior for logging, config
