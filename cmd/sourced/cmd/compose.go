@@ -13,7 +13,7 @@ type composeCmd struct {
 }
 
 type composeDownloadCmd struct {
-	Command `name:"download" short-description:"Download docker compose files" long-description:"Download docker compose files. By default the command downloads the file in master.\n\nUse the 'version' argument to choose a specific revision from\nthe https://github.com/src-d/sourced-ce repository, or to set a\nURL to a docker-compose.yml file.\n\nExamples:\n\nsandbox-ce compose download\nsandbox-ce compose download v0.0.1\nsandbox-ce compose download master\nsandbox-ce compose download https://raw.githubusercontent.com/src-d/sourced-ce/master/docker-compose.yml"`
+	Command `name:"download" short-description:"Download docker compose files" long-description:"Download docker compose files. By default the command downloads the file in master.\n\nUse the 'version' argument to choose a specific revision from\nthe https://github.com/src-d/sourced-ce repository, or to set a\nURL to a docker-compose.yml file.\n\nExamples:\n\nsourced compose download\nsourced compose download v0.0.1\nsourced compose download master\nsourced compose download https://raw.githubusercontent.com/src-d/sourced-ce/master/docker-compose.yml"`
 
 	Args struct {
 		Version string `positional-arg-name:"version" description:"Either a revision (tag, full sha1) or a URL to a docker-compose.yml file"`

@@ -12,7 +12,7 @@
 
 **source{d} Community Edition (CE)** is deployed as Docker containers, using Docker Compose.
 
-This repository provides the `sandbox-ce` binary as a wrapper to manage the Docker Compose files and containers easily. Moreover, `sandbox-ce` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
+This repository provides the `sourced` binary as a wrapper to manage the Docker Compose files and containers easily. Moreover, `sourced` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
 
 You may also choose to manage the containers yourself with the `docker-compose.yml` file included in this repository.
 
@@ -23,14 +23,14 @@ You may also choose to manage the containers yourself with the `docker-compose.y
 
 ### Commands
 
-Go to the [releases page](https://github.com/src-d/sourced-ce/releases) and download the `sandbox-ce` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
+Go to the [releases page](https://github.com/src-d/sourced-ce/releases) and download the `sourced` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
 
-Please make sure you run `sandbox-ce` commands in the same directory where you placed the `docker-compose.yml` file.
+Please make sure you run `sourced` commands in the same directory where you placed the `docker-compose.yml` file.
 
 #### Install
 
 ```
-sandbox-ce install /path/to/repositories
+sourced install /path/to/repositories
 ```
 
 This will initialize **source{d} CE** to analyze the given Git repositories.
@@ -39,12 +39,12 @@ The argument must point to a directory containing one or more Git repositories. 
 
 It will automatically open the web UI. Use login: `admin` and password `admin` to access it.
 
-If the UI wasn't opened automatically, use `sandbox-ce web` or visit http://localhost:8088.
+If the UI wasn't opened automatically, use `sourced web` or visit http://localhost:8088.
 
 #### Start
 
 ```
-sandbox-ce start
+sourced start
 ```
 
 This will start all the components previously installed.
@@ -52,7 +52,7 @@ This will start all the components previously installed.
 #### Stop
 
 ```
-sandbox-ce stop
+sourced stop
 ```
 
 This will stop all running components.
@@ -60,18 +60,18 @@ This will stop all running components.
 #### Prune
 
 ```
-sandbox-ce prune
+sourced prune
 ```
 
 Stops containers and removes containers, networks, and volumes created by `install`.
 Images are not deleted unless you specify the `--images` flag.
 
-If you want to completely uninstall `sandbox-ce` you may want to delete the `~/.srcd` directory.
+If you want to completely uninstall `sourced` you may want to delete the `~/.srcd` directory.
 
 #### Status
 
 ```
-sandbox-ce status
+sourced status
 ```
 
 Shows status of the components.
@@ -79,7 +79,7 @@ Shows status of the components.
 #### Web
 
 ```
-sandbox-ce web
+sourced web
 ```
 
 Opens the web interface in your browser.
@@ -87,7 +87,7 @@ Opens the web interface in your browser.
 #### Compose
 
 ```
-sandbox-ce compose
+sourced compose
 ```
 
 Manage docker compose files in the `~/.srcd` directory with the following sub commands:
@@ -95,10 +95,10 @@ Manage docker compose files in the `~/.srcd` directory with the following sub co
 ##### Download
 
 ```
-sandbox-ce compose download
-sandbox-ce compose download v0.0.1
-sandbox-ce compose download master
-sandbox-ce compose download https://raw.githubusercontent.com/src-d/sourced-ce/master/docker-compose.yml
+sourced compose download
+sourced compose download v0.0.1
+sourced compose download master
+sourced compose download https://raw.githubusercontent.com/src-d/sourced-ce/master/docker-compose.yml
 ```
 
 Download docker compose files. By default the command downloads the file in `master`.
@@ -108,7 +108,7 @@ Use the `version` argument to choose a specific revision from the https://github
 ##### List
 
 ```
-sandbox-ce compose
+sourced compose
 ```
 
 List the downloaded docker compose files.
@@ -116,7 +116,7 @@ List the downloaded docker compose files.
 ##### Set
 
 ```
-sandbox-ce compose set
+sourced compose set
 ```
 
 Set the active docker compose file.
@@ -127,12 +127,12 @@ You can deploy more than one **source{d} CE** instance with different sets of re
 
 For example you may have initially started **source{d} CE** with the repositories in `~/repos`, with the command:
 ```
-sandbox-ce install ~/repos
+sourced install ~/repos
 ```
 
 After a while you may want to analyze the data on another set of repositories. You can run `install` again with a different path:
 ```
-sandbox-ce install ~/go/src/github.com/src-d
+sourced install ~/go/src/github.com/src-d
 ```
 
 This command will stop any of the currently running containers, create an isolated environment for the new repositories path, and create a new, clean deployment.
@@ -141,16 +141,16 @@ Please note that each path will have an isolated deployment. This means that for
 
 Each isolated environment is persistent (unless you run `prune`). Which means that if you decide to re-deploy **source{d} CE** using the original set of repositories:
 ```
-sandbox-ce install ~/repos
+sourced install ~/repos
 ```
 
 You will get back to the previous state, and things like charts and dashboards will be restored.
 
-If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.srcd` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sandbox-ce install`.
+If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.srcd` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced install`.
 
 ## Docker Compose
 
-As an alternative to `sandbox-ce` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/sourced-ce/releases) to download the `docker-compose.yml` file included in the release assets.
+As an alternative to `sourced` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/sourced-ce/releases) to download the `docker-compose.yml` file included in the release assets.
 
 Then you can start the containers like follows:
 
