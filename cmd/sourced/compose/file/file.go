@@ -21,6 +21,8 @@ const (
 	composeFileTmpl = "https://raw.githubusercontent.com/%s/%s/%s/docker-compose.yml"
 )
 
+var version = "master"
+
 // activeDir is the name of the directory containing the symlink to the
 // active docker compose file
 const activeDir = "__active__"
@@ -35,8 +37,15 @@ func composeFileURL(revision string) string {
 	return fmt.Sprintf(composeFileTmpl, orgName, repoName, revision)
 }
 
-// InitDefault downloads the master docker-compose.yml only if it does not
-// exist. It returns the absolute path to the active docker-compose.yml file
+// SetVersion sets the version rewritten by the CI build
+func SetVersion(v string) {
+	version = v
+}
+
+// InitDefault checks if there is an active docker compose file, and if there
+// isn't the file for this release is downloaded.
+// The current build version must be set with SetVersion.
+// It returns the absolute path to the active docker-compose.yml file
 func InitDefault() (string, error) {
 	activeFilePath, err := path(activeDir)
 	if err != nil {
@@ -52,9 +61,9 @@ func InitDefault() (string, error) {
 		return "", err
 	}
 
-	err = Download("master")
+	err = Download(version)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	return activeFilePath, nil
