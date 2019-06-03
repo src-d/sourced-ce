@@ -14,6 +14,9 @@ import (
 	"github.com/src-d/sourced-ce/cmd/sourced/compose"
 )
 
+// The service name used in docker-compose.yml for the srcd/sourced-ui image
+const containerName = "sourced-ui"
+
 type webCmd struct {
 	Command `name:"web" short-description:"Open the web interface in your browser" long-description:"Open the web interface in your browser"`
 }
@@ -31,7 +34,7 @@ func openUI() error {
 	// wait for the container to start, it can take a while in some cases
 	for {
 		if err := compose.RunWithIO(context.Background(),
-			os.Stdin, &stdout, nil, "port", "superset", "8088"); err == nil {
+			os.Stdin, &stdout, nil, "port", containerName, "8088"); err == nil {
 			break
 		}
 
