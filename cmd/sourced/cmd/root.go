@@ -8,6 +8,13 @@ const name = "sourced"
 
 var rootCmd = cli.NewNoDefaults(name, "source{d} CE and EE installer")
 
+var version = "master"
+
+// SetVersion sets the version rewritten by the CI build
+func SetVersion(v string) {
+	version = v
+}
+
 // Command implements the default group flags. It is meant to be embedded into
 // other application commands to provide default behavior for logging, config
 type Command struct {
