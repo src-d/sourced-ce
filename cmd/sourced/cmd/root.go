@@ -6,7 +6,7 @@ import (
 
 const name = "sourced"
 
-var rootCmd = cli.NewNoDefaults(name, "source{d} Sandbox")
+var rootCmd = cli.NewNoDefaults(name, "source{d} CE and EE installer")
 
 // Command implements the default group flags. It is meant to be embedded into
 // other application commands to provide default behavior for logging, config

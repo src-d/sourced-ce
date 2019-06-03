@@ -12,7 +12,7 @@
 
 **source{d} Community Edition (CE)** is deployed as Docker containers, using Docker Compose.
 
-This repository provides the `sourced` binary as a wrapper to manage the Docker Compose files and containers easily. Moreover, `sourced` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
+Go to the [releases page](https://github.com/src-d/sourced-ce/releases) and download the `sourced` binary for your system. This tool is a wrapper for Docker Compose to manage the compose files and containers easily. Moreover, `sourced` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
 
 You may also choose to manage the containers yourself with the `docker-compose.yml` file included in this repository.
 
@@ -22,10 +22,6 @@ You may also choose to manage the containers yourself with the `docker-compose.y
 - Default password: `admin`
 
 ### Commands
-
-Go to the [releases page](https://github.com/src-d/sourced-ce/releases) and download the `sourced` binary for your system. You will also need to download the `docker-compose.yml` file included in the release assets.
-
-Please make sure you run `sourced` commands in the same directory where you placed the `docker-compose.yml` file.
 
 #### Install
 
@@ -47,7 +43,7 @@ If the UI wasn't opened automatically, use `sourced web` or visit http://localho
 sourced start
 ```
 
-This will start all the components previously installed.
+This will start all the components previously initialized with `install`.
 
 #### Stop
 
@@ -55,7 +51,7 @@ This will start all the components previously installed.
 sourced stop
 ```
 
-This will stop all running components.
+This will stop all running containers without removing them. They can be started again with 'start'.
 
 #### Prune
 
@@ -103,7 +99,7 @@ sourced compose download https://raw.githubusercontent.com/src-d/sourced-ce/mast
 
 Download docker compose files. By default the command downloads the file in `master`.
 
-Use the `version` argument to choose a specific revision from the https://github.com/src-d/sourced-ce repository, or to set a URL to a docker-compose.yml file.
+Use the `version` argument to choose a specific revision from the https://github.com/src-d/sourced-ce repository, or to set a URL to a `docker-compose.yml` file.
 
 ##### List
 
