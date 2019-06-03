@@ -23,10 +23,10 @@ You may also choose to manage the containers yourself with the `docker-compose.y
 
 ### Commands
 
-#### Install
+#### Init
 
 ```
-sourced install /path/to/repositories
+sourced init /path/to/repositories
 ```
 
 This will initialize **source{d} CE** to analyze the given Git repositories.
@@ -43,7 +43,7 @@ If the UI wasn't opened automatically, use `sourced web` or visit http://localho
 sourced start
 ```
 
-This will start all the components previously initialized with `install`.
+This will start all the components previously initialized with `init`.
 
 #### Stop
 
@@ -59,7 +59,7 @@ This will stop all running containers without removing them. They can be started
 sourced prune
 ```
 
-Stops containers and removes containers, networks, and volumes created by `install`.
+Stops containers and removes containers, networks, and volumes created by `init`.
 Images are not deleted unless you specify the `--images` flag.
 
 If you want to completely uninstall `sourced` you may want to delete the `~/.srcd` directory.
@@ -123,12 +123,12 @@ You can deploy more than one **source{d} CE** instance with different sets of re
 
 For example you may have initially started **source{d} CE** with the repositories in `~/repos`, with the command:
 ```
-sourced install ~/repos
+sourced init ~/repos
 ```
 
-After a while you may want to analyze the data on another set of repositories. You can run `install` again with a different path:
+After a while you may want to analyze the data on another set of repositories. You can run `init` again with a different path:
 ```
-sourced install ~/go/src/github.com/src-d
+sourced init ~/go/src/github.com/src-d
 ```
 
 This command will stop any of the currently running containers, create an isolated environment for the new repositories path, and create a new, clean deployment.
@@ -137,12 +137,12 @@ Please note that each path will have an isolated deployment. This means that for
 
 Each isolated environment is persistent (unless you run `prune`). Which means that if you decide to re-deploy **source{d} CE** using the original set of repositories:
 ```
-sourced install ~/repos
+sourced init ~/repos
 ```
 
 You will get back to the previous state, and things like charts and dashboards will be restored.
 
-If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.srcd` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced install`.
+If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.srcd` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
 
 ## Docker Compose
 

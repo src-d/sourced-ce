@@ -8,7 +8,7 @@ import (
 )
 
 type startCmd struct {
-	Command `name:"start" short-description:"Start stopped containers" long-description:"Start stopped containers.\nThe containers must be initialized before with 'install'."`
+	Command `name:"start" short-description:"Start stopped containers" long-description:"Start stopped containers.\nThe containers must be initialized before with 'init'."`
 }
 
 func (c *startCmd) Execute(args []string) error {

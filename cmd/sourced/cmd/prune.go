@@ -7,7 +7,7 @@ import (
 )
 
 type pruneCmd struct {
-	Command `name:"prune" short-description:"Stop and remove containers and resources" long-description:"Stops containers and removes containers, networks, and volumes created by 'install'.\nImages are not deleted unless you specify the --images flag."`
+	Command `name:"prune" short-description:"Stop and remove containers and resources" long-description:"Stops containers and removes containers, networks, and volumes created by 'init'.\nImages are not deleted unless you specify the --images flag."`
 
 	Images bool `long:"images" description:"Remove docker images"`
 }
