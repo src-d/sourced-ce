@@ -53,7 +53,7 @@ services:
       - postgres:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:latest
+    image: srcd/sourced-ui:v0.1.0
     restart: unless-stopped
     environment:
       ADMIN_LOGIN: admin
