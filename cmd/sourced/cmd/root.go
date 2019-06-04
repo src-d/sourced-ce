@@ -6,13 +6,23 @@ import (
 
 const name = "sourced"
 
-var rootCmd = cli.NewNoDefaults(name, "source{d} CE and EE installer")
-
 var version = "master"
 
-// SetVersion sets the version rewritten by the CI build
-func SetVersion(v string) {
+var rootCmd = cli.NewNoDefaults(name, "source{d} CE and EE installer")
+
+// Init sets the version rewritten by the CI build and adds default sub commands
+func Init(v, build string) {
 	version = v
+
+	rootCmd.AddCommand(&cli.VersionCommand{
+		Name:    name,
+		Version: version,
+		Build:   build,
+	})
+
+	rootCmd.AddCommand(&cli.CompletionCommand{
+			Name: name,
+	}, cli.InitCompletionCommand(name))
 }
 
 // Command implements the default group flags. It is meant to be embedded into
