@@ -14,15 +14,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-type installCmd struct {
-	Command `name:"install" short-description:"Install and initialize containers" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe repos directory argument must point to a directory containing git repositories.\nIf it's not provided, the current working directory will be used."`
+type initCmd struct {
+	Command `name:"init" short-description:"Install and initialize containers" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe repos directory argument must point to a directory containing git repositories.\nIf it's not provided, the current working directory will be used."`
 
 	Args struct {
 		Reposdir string `positional-arg-name:"workdir"`
 	} `positional-args:"yes"`
 }
 
-func (c *installCmd) Execute(args []string) error {
+func (c *initCmd) Execute(args []string) error {
 	reposdir, err := c.reposdirArg()
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func (c *installCmd) Execute(args []string) error {
 	return OpenUI(time.Minute)
 }
 
-func (c *installCmd) reposdirArg() (string, error) {
+func (c *initCmd) reposdirArg() (string, error) {
 	reposdir := c.Args.Reposdir
 	reposdir = strings.TrimSpace(reposdir)
 
@@ -74,5 +74,5 @@ func (c *installCmd) reposdirArg() (string, error) {
 }
 
 func init() {
-	rootCmd.AddCommand(&installCmd{})
+	rootCmd.AddCommand(&initCmd{})
 }
