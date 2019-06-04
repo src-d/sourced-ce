@@ -7,10 +7,10 @@ import (
 
 // this variable is rewritten during the CI build step
 var version = "master"
+var build = "dev"
 
 func main() {
 	composefile.SetVersion(version)
-	cmd.SetVersion(version)
-
+	cmd.Init(version, build)
 	cmd.Execute()
 }
