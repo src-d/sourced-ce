@@ -80,6 +80,14 @@ sourced web
 
 Opens the web interface in your browser.
 
+#### Workdirs
+
+```
+sourced workdirs
+```
+
+Lists previously initialized working directories.
+
 #### Compose
 
 ```
