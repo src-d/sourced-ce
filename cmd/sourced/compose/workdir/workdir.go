@@ -153,18 +153,20 @@ func List() ([]string, error) {
 		return nil, err
 	}
 
-	dirs := make(map[string]bool)
+	dirs := make(map[string]int)
 	err = filepath.Walk(wpath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.Mode().IsRegular() {
-			if err != nil {
-				return err
-			}
-			dirs[filepath.Dir(path)] = true
+		if info.IsDir() {
+			return nil
 		}
-
+		if info.Name() == ".env" || info.Name() == "docker-compose.yml" {
+			if _, ok := dirs[filepath.Dir(path)]; !ok {
+				dirs[filepath.Dir(path)] = 0
+			}
+			dirs[filepath.Dir(path)]++
+		}
 		return nil
 	})
 	if err != nil {
@@ -172,7 +174,10 @@ func List() ([]string, error) {
 	}
 
 	res := make([]string, 0)
-	for dir := range dirs {
+	for dir, files := range dirs {
+		if files != 2 {
+			continue
+		}
 		res = append(res, dir)
 	}
 
