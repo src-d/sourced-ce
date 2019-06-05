@@ -123,18 +123,115 @@ func SetActive(reposdir string) error {
 	return os.Symlink(workdir, dir)
 }
 
-// Active returns th absolute path to $HOME/.srcd/workdirs/__active__
+// Active returns the absolute path to $HOME/.srcd/workdirs/__active__
 func Active() (string, error) {
 	return path(activeDir)
+}
+
+// ActiveRepoDir return repositories directory for an active working directory
+func ActiveRepoDir() (string, error) {
+	wpath, err := workdirsPath()
+	if err != nil {
+		return "", err
+	}
+	active, err := Active()
+	if err != nil {
+		return "", err
+	}
+	active, err = filepath.EvalSymlinks(active)
+	if err != nil {
+		return "", err
+	}
+
+	return stripBase(wpath, active)
+}
+
+// List returns array of working directories
+func List() ([]string, error) {
+	wpath, err := workdirsPath()
+	if err != nil {
+		return nil, err
+	}
+
+	dirs := make(map[string]int)
+	err = filepath.Walk(wpath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if info.Name() == ".env" || info.Name() == "docker-compose.yml" {
+			if _, ok := dirs[filepath.Dir(path)]; !ok {
+				dirs[filepath.Dir(path)] = 0
+			}
+			dirs[filepath.Dir(path)]++
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]string, 0)
+	for dir, files := range dirs {
+		if files != 2 {
+			continue
+		}
+		res = append(res, dir)
+	}
+
+	return res, nil
+}
+
+// ListRepoDirs returns array of repositories directories
+func ListRepoDirs() ([]string, error) {
+	wpath, err := workdirsPath()
+	if err != nil {
+		return nil, err
+	}
+
+	workdirs, err := List()
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]string, len(workdirs))
+	for i, d := range workdirs {
+		res[i], err = stripBase(wpath, d)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return res, nil
 }
 
 // path returns the absolute path to
 // $HOME/.srcd/workdirs/reposdir
 func path(reposdir string) (string, error) {
+	path, err := workdirsPath()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(path, reposdir), nil
+}
+
+func workdirsPath() (string, error) {
 	path, err := datadir.Path()
 	if err != nil {
 		return "", err
 	}
 
-	return filepath.Join(path, "workdirs", reposdir), nil
+	return filepath.Join(path, "workdirs"), nil
+}
+
+func stripBase(base, target string) (string, error) {
+	p, err := filepath.Rel(base, target)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join("/", p), nil
 }
