@@ -3,7 +3,11 @@ module github.com/src-d/sourced-ce
 go 1.12
 
 require (
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/golang/protobuf v1.3.1 // indirect
+	github.com/google/btree v1.0.0 // indirect
+	github.com/google/go-github/v25 v25.1.1
+	github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc
 	github.com/jessevdk/go-flags v1.4.0 // indirect
 	github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect
@@ -11,6 +15,7 @@ require (
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
+	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.1 // indirect

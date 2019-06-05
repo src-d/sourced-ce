@@ -1,4 +1,5 @@
-// Package dir provides functions to manage the $HOME/.srcd directory
+// Package dir provides functions to manage the $HOME/.srcd and /tmp/srcd
+// directories
 package dir
 
 import (
@@ -46,4 +47,9 @@ func DownloadURL(url, dst string) error {
 
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+// TmpPath returns the absolute path for /tmp/srcd
+func TmpPath() string {
+	return filepath.Join(os.TempDir(), "srcd")
 }
