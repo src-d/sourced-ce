@@ -215,6 +215,9 @@ func path(reposdir string) (string, error) {
 		return "", err
 	}
 
+	// On windows replace C:\path with C\path
+	reposdir = strings.Replace(reposdir, ":", "", 1)
+
 	return filepath.Join(path, reposdir), nil
 }
 
