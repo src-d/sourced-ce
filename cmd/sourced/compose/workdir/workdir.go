@@ -16,12 +16,18 @@ import (
 	datadir "github.com/src-d/sourced-ce/cmd/sourced/dir"
 
 	"github.com/pkg/errors"
+	goerrors "gopkg.in/src-d/go-errors.v1"
 )
 
 const activeDir = "__active__"
 
-// RequiredFiles list of required files in a directory to treat it as a working directory
-var RequiredFiles = []string{".env", "docker-compose.yml"}
+var (
+	// RequiredFiles list of required files in a directory to treat it as a working directory
+	RequiredFiles = []string{".env", "docker-compose.yml"}
+
+	// ErrMalformed is the returned error when the workdir is wrong
+	ErrMalformed = goerrors.NewKind("workdir %s is not valid: %s")
+)
 
 // Init creates a working directory in ~/.sourced for the given repositories
 // directory. The working directory will contain a docker-compose.yml and a
@@ -181,22 +187,21 @@ func List() ([]string, error) {
 		return nil, err
 	}
 
-	dirs := make(map[string]int)
+	dirs := make(map[string]bool)
 	err = filepath.Walk(wpath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() {
+		if !info.IsDir() {
 			return nil
 		}
 		for _, f := range RequiredFiles {
-			if info.Name() == f {
-				if _, ok := dirs[filepath.Dir(path)]; !ok {
-					dirs[filepath.Dir(path)] = 0
-				}
-				dirs[filepath.Dir(path)]++
+			if !hasContent(path, f) {
+				return nil
 			}
 		}
+
+		dirs[path] = true
 		return nil
 	})
 	if err != nil {
@@ -204,10 +209,7 @@ func List() ([]string, error) {
 	}
 
 	res := make([]string, 0)
-	for dir, files := range dirs {
-		if files != len(RequiredFiles) {
-			continue
-		}
+	for dir := range dirs {
 		res = append(res, dir)
 	}
 
@@ -305,4 +307,30 @@ func Remove(path string) error {
 			return nil
 		}
 	}
+}
+
+// Validate validates that the passed dir is valid
+// Must be a directory (or a symlink) containing docker-compose.yml and .env files
+func Validate(dir string) error {
+	pointedDir, err := filepath.EvalSymlinks(dir)
+	if err != nil {
+		return ErrMalformed.New(dir, "is not a directory")
+	}
+
+	if info, err := os.Lstat(pointedDir); err != nil || !info.IsDir() {
+		return ErrMalformed.New(pointedDir, "is not a directory")
+	}
+
+	for _, f := range RequiredFiles {
+		if !hasContent(pointedDir, f) {
+			return ErrMalformed.New(pointedDir, fmt.Sprintf("%s not found", f))
+		}
+	}
+
+	return nil
+}
+
+func hasContent(path, file string) bool {
+	empty, err := isEmptyFile(filepath.Join(path, file))
+	return !empty && err == nil
 }

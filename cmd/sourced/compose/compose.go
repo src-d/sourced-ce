@@ -40,6 +40,10 @@ func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 		return err
 	}
 
+	if err := workdir.Validate(dir); err != nil {
+		return err
+	}
+
 	cmd.Dir = dir
 
 	var compOpts []string
