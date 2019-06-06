@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
@@ -234,6 +235,10 @@ func stripBase(base, target string) (string, error) {
 	p, err := filepath.Rel(base, target)
 	if err != nil {
 		return "", err
+	}
+
+	if runtime.GOOS == "windows" {
+		return string(p[0]) + ":" + p[1:len(p)], nil
 	}
 
 	return filepath.Join("/", p), nil
