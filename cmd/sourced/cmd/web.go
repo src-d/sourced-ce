@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -95,9 +96,14 @@ type spinner struct {
 }
 
 func startSpinner(msg string) func() {
+	charset := []int{'⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'}
+	if runtime.GOOS == "windows" {
+		charset = []int{'|', '/', '-', '\\'}
+	}
+
 	s := &spinner{
 		msg:      msg,
-		charset:  []int{'⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'},
+		charset:  charset,
 		interval: 200 * time.Millisecond,
 		stop:     make(chan bool),
 	}
@@ -119,11 +125,17 @@ func (s *spinner) printLoop() {
 	for {
 		select {
 		case <-s.stop:
+			fmt.Println(s.msg)
 			return
 		default:
-			fmt.Printf("%s %s", s.msg, string(s.charset[i%len(s.charset)]))
+			char := string(s.charset[i%len(s.charset)])
+			if runtime.GOOS == "windows" {
+				fmt.Printf("\r%s %s", s.msg, char)
+			} else {
+				fmt.Printf("%s %s\033[A", s.msg, char)
+			}
+
 			time.Sleep(s.interval)
-			fmt.Println("\033[A")
 		}
 
 		i++
