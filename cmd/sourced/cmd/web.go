@@ -132,7 +132,7 @@ func (s *spinner) printLoop() {
 			if runtime.GOOS == "windows" {
 				fmt.Printf("\r%s %s", s.msg, char)
 			} else {
-				fmt.Printf("%s %s\033[A", s.msg, char)
+				fmt.Printf("%s %s\n\033[A", s.msg, char)
 			}
 
 			time.Sleep(s.interval)
