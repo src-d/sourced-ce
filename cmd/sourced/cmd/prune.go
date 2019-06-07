@@ -8,7 +8,7 @@ import (
 )
 
 type pruneCmd struct {
-	Command `name:"prune" short-description:"Stop and remove containers and resources" long-description:"Stops containers and removes containers, networks, and volumes created by 'init' for the current working directory.\nTo delete resources for all working directories pass --all flag.\nImages are not deleted unless you specify the --images flag."`
+	Command `name:"prune" short-description:"Stop and remove containers and resources" long-description:"Stops containers and removes containers, networks, volumes and configuration created by 'init' for the current working directory.\nTo delete resources for all working directories pass --all flag.\nImages are not deleted unless you specify the --images flag."`
 
 	All    bool `short:"a" long:"all" description:"Remove containers and resources for all working directories"`
 	Images bool `long:"images" description:"Remove docker images"`
@@ -43,7 +43,20 @@ func (c *pruneCmd) pruneActive() error {
 		a = append(a, "--rmi", "all")
 	}
 
-	return compose.Run(context.Background(), a...)
+	if err := compose.Run(context.Background(), a...); err != nil {
+		return err
+	}
+
+	dir, err := workdir.Active()
+	if err != nil {
+		return err
+	}
+
+	if err := workdir.Remove(dir); err != nil {
+		return err
+	}
+
+	return workdir.UnsetActive()
 }
 
 func init() {

@@ -16,11 +16,8 @@ func (c *workdirsCmd) Execute(args []string) error {
 		return err
 	}
 
-	active, err := workdir.ActiveRepoDir()
-	if err != nil {
-		return err
-	}
-
+	// ignore errors if active dir doesn't exist or unavailable
+	active, _ := workdir.ActiveRepoDir()
 	for _, dir := range dirs {
 		if dir == active {
 			fmt.Printf("* %s\n", dir)

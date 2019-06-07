@@ -20,6 +20,9 @@ import (
 
 const activeDir = "__active__"
 
+// RequiredFiles list of required files in a directory to treat it as a working directory
+var RequiredFiles = []string{".env", "docker-compose.yml"}
+
 // Init creates a working directory in ~/.srcd for the given repositories
 // directory. The working directory will contain a docker-compose.yml and a
 // .env file.
@@ -124,9 +127,37 @@ func SetActive(reposdir string) error {
 	return os.Symlink(workdir, dir)
 }
 
+// UnsetActive removes symlink for active workdir
+func UnsetActive() error {
+	dir, err := Active()
+	if err != nil {
+		return err
+	}
+
+	_, err = os.Stat(dir)
+	if !os.IsNotExist(err) {
+		err = os.Remove(dir)
+		if err != nil {
+			return errors.Wrap(err, "could not delete active workdir directory symlink")
+		}
+	}
+
+	return nil
+}
+
 // Active returns the absolute path to $HOME/.srcd/workdirs/__active__
 func Active() (string, error) {
 	return path(activeDir)
+}
+
+// EvalActive returns resolved path to $HOME/.srcd/workdirs/__active__
+func EvalActive() (string, error) {
+	active, err := Active()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.EvalSymlinks(active)
 }
 
 // ActiveRepoDir return repositories directory for an active working directory
@@ -135,11 +166,7 @@ func ActiveRepoDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	active, err := Active()
-	if err != nil {
-		return "", err
-	}
-	active, err = filepath.EvalSymlinks(active)
+	active, err := EvalActive()
 	if err != nil {
 		return "", err
 	}
@@ -162,11 +189,13 @@ func List() ([]string, error) {
 		if info.IsDir() {
 			return nil
 		}
-		if info.Name() == ".env" || info.Name() == "docker-compose.yml" {
-			if _, ok := dirs[filepath.Dir(path)]; !ok {
-				dirs[filepath.Dir(path)] = 0
+		for _, f := range RequiredFiles {
+			if info.Name() == f {
+				if _, ok := dirs[filepath.Dir(path)]; !ok {
+					dirs[filepath.Dir(path)] = 0
+				}
+				dirs[filepath.Dir(path)]++
 			}
-			dirs[filepath.Dir(path)]++
 		}
 		return nil
 	})
@@ -176,7 +205,7 @@ func List() ([]string, error) {
 
 	res := make([]string, 0)
 	for dir, files := range dirs {
-		if files != 2 {
+		if files != len(RequiredFiles) {
 			continue
 		}
 		res = append(res, dir)
@@ -242,4 +271,38 @@ func stripBase(base, target string) (string, error) {
 	}
 
 	return filepath.Join("/", p), nil
+}
+
+// Remove removes working directory by removing required files
+// and recursively removes directories up to the workdirs root as long as they are empty
+func Remove(path string) error {
+	workdirsRoot, err := workdirsPath()
+	if err != nil {
+		return err
+	}
+
+	for _, f := range RequiredFiles {
+		if err := os.Remove(filepath.Join(path, f)); err != nil {
+			return errors.Wrap(err, "could not remove from workdir directory")
+		}
+	}
+
+	for {
+		files, err := ioutil.ReadDir(path)
+		if err != nil {
+			return errors.Wrap(err, "could not read workdir directory")
+		}
+		if len(files) > 0 {
+			return nil
+		}
+
+		if err := os.Remove(path); err != nil {
+			return errors.Wrap(err, "could not delete workdir directory")
+		}
+
+		path = filepath.Dir(path)
+		if path == workdirsRoot {
+			return nil
+		}
+	}
 }
