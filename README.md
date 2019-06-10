@@ -2,17 +2,64 @@
 
 ## Contents
 
+- [Installation](#installation)
+  - [Install Docker](#install-docker)
+  - [Install source{d} Community Edition](#install-source-d-community-edition)
 - [Usage](#usage)
   - [Defaults](#defaults)
   - [Commands](#commands)
   - [Working With Multiple Data Sets](#working-with-multiple-data-sets)
 - [Docker Compose](#docker-compose)
 
+## Installation
+
+### Install Docker
+
+_Please note that Docker Toolbox is not supported neither for Windows nor for macOS. In case that you're running Docker Toolbox, please consider updating to newer Docker Desktop for Mac or Docker Desktop for Windows._
+
+Follow the instructions based on your OS:
+
+- [Docker for Ubuntu Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce-1)
+- [Docker for Arch Linux](https://wiki.archlinux.org/index.php/Docker#Installation)
+- [Docker for macOS](https://store.docker.com/editions/community/docker-ce-desktop-mac)
+- [Docker Desktop for Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows). Make sure to read the [system requirements for Docker on Windows](https://docs.docker.com/docker-for-windows/install/).
+
+
+### Install source{d} Community Edition
+
+Download the **[latest release](https://github.com/src-d/sourced-ce/releases/latest)** for your Linux, macOS (Darwin) or Windows.
+
+#### on Linux or macOS
+
+Extract `sourced` binary from the release you downloaded, and move it into your bin folder to make it executable from any directory:
+
+```bash
+$ tar -xvf path/to/sourced-ce_REPLACE-VERSION_REPLACE-OS_amd64.tar.gz
+$ sudo mv path/to/sourced-ce_REPLACE-OS_amd64/sourced /usr/local/bin/
+```
+
+#### on Windows
+
+*Please note that from now on we assume that the commands are executed in `powershell` and not in `cmd`.*
+
+Create a directory for `sourced.exe` and add it to your `$PATH`, running these commands in a powershell as administrator:
+```powershell
+mkdir 'C:\Program Files\sourced'
+# Add the directory to the `%path%` to make it available from anywhere
+setx /M PATH "$($env:path);C:\Program Files\sourced"
+# Now open a new powershell to apply the changes
+```
+
+Extract the `sourced.exe` executable from the release you downloaded, and copy it into the directory you created in the previous step:
+```powershell
+mv \path\to\sourced-ce_windows_amd64\sourced.exe 'C:\Program Files\sourced'
+```
+
 ## Usage
 
 **source{d} Community Edition (CE)** is deployed as Docker containers, using Docker Compose.
 
-Go to the [releases page](https://github.com/src-d/sourced-ce/releases) and download the `sourced` binary for your system. This tool is a wrapper for Docker Compose to manage the compose files and containers easily. Moreover, `sourced` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
+This tool is a wrapper for Docker Compose to manage the compose files and containers easily. Moreover, `sourced` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
 
 You may also choose to manage the containers yourself with the `docker-compose.yml` file included in this repository.
 
