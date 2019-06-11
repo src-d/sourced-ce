@@ -31,7 +31,7 @@ func (c *composeDownloadCmd) Execute(args []string) error {
 		return err
 	}
 
-	fmt.Println("Docker compose file successfully downloaded to your ~/.srcd/compose-files directory. It is now the active compose file.")
+	fmt.Println("Docker compose file successfully downloaded to your ~/.sourced/compose-files directory. It is now the active compose file.")
 	return nil
 }
 

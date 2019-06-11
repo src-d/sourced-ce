@@ -1,5 +1,5 @@
 // Package file provides functions to manage docker compose files inside the
-// $HOME/.srcd/compose-files directory
+// $HOME/.sourced/compose-files directory
 package file
 
 import (
@@ -93,7 +93,7 @@ func Download(revOrURL RevOrURL) error {
 }
 
 // SetActive makes a symlink from
-// $HOME/.srcd/compose-files/__active__/docker-compose.yml to the compose file
+// $HOME/.sourced/compose-files/__active__/docker-compose.yml to the compose file
 // for the given revision or URL.
 func SetActive(revOrURL RevOrURL) error {
 	filePath, err := path(revOrURL)
@@ -200,7 +200,7 @@ func isURL(revOrURL RevOrURL) bool {
 	return err == nil
 }
 
-// dir returns the absolute path for $HOME/.srcd/compose-files
+// dir returns the absolute path for $HOME/.sourced/compose-files
 func dir() (string, error) {
 	path, err := datadir.Path()
 	if err != nil {
@@ -211,7 +211,7 @@ func dir() (string, error) {
 }
 
 // path returns the absolute path to
-// $HOME/.srcd/compose-files/revOrURL/docker-compose.yml
+// $HOME/.sourced/compose-files/revOrURL/docker-compose.yml
 func path(revOrURL RevOrURL) (string, error) {
 	composeDirPath, err := dir()
 	if err != nil {

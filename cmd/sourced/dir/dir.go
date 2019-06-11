@@ -1,4 +1,4 @@
-// Package dir provides functions to manage the $HOME/.srcd and /tmp/srcd
+// Package dir provides functions to manage the $HOME/.sourced and /tmp/srcd
 // directories
 package dir
 
@@ -12,14 +12,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Path returns the absolute path for $HOME/.srcd
+// Path returns the absolute path for $HOME/.sourced
 func Path() (string, error) {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.Wrap(err, "could not detect home directory")
 	}
 
-	return filepath.Join(homedir, ".srcd"), nil
+	return filepath.Join(homedir, ".sourced"), nil
 }
 
 // DownloadURL downloads the given url to a file to the
