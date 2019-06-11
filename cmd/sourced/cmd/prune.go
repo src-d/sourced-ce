@@ -47,7 +47,7 @@ func (c *pruneCmd) pruneActive() error {
 		return err
 	}
 
-	dir, err := workdir.Active()
+	dir, err := workdir.EvalActive()
 	if err != nil {
 		return err
 	}
