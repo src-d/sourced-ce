@@ -1,6 +1,12 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
+	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
+	"github.com/src-d/sourced-ce/cmd/sourced/format"
+
 	"gopkg.in/src-d/go-cli.v0"
 )
 
@@ -21,7 +27,7 @@ func Init(v, build string) {
 	})
 
 	rootCmd.AddCommand(&cli.CompletionCommand{
-			Name: name,
+		Name: name,
 	}, cli.InitCompletionCommand(name))
 }
 
@@ -35,5 +41,14 @@ type Command struct {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	rootCmd.RunMain()
+	if err := rootCmd.Run(os.Args); err != nil {
+		if workdir.ErrMalformed.Is(err) {
+			fmt.Println(format.Colorize(
+				format.Red,
+				`Cannot perform this action, source{d} needs to be initialized first with the 'init' sub command`,
+			))
+		}
+
+		os.Exit(1)
+	}
 }

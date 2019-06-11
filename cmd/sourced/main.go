@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 
 	"github.com/src-d/sourced-ce/cmd/sourced/cmd"
 	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
+	"github.com/src-d/sourced-ce/cmd/sourced/format"
 	"github.com/src-d/sourced-ce/cmd/sourced/release"
 )
 
@@ -38,14 +38,6 @@ func checkUpdates() {
 Please go to https://github.com/src-d/sourced-ce/releases/latest to upgrade.
 `, version, latest)
 
-		fmt.Println(yellow(s))
+		fmt.Println(format.Colorize(format.Yellow, s))
 	}
-}
-
-func yellow(s string) string {
-	if runtime.GOOS == "windows" {
-		return s
-	}
-
-	return fmt.Sprintf("\x1b[33m%s\x1b[0m", s)
 }
