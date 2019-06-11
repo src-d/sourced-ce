@@ -134,7 +134,7 @@ func UnsetActive() error {
 		return err
 	}
 
-	_, err = os.Stat(dir)
+	_, err = os.Lstat(dir)
 	if !os.IsNotExist(err) {
 		err = os.Remove(dir)
 		if err != nil {
