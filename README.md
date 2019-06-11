@@ -109,7 +109,7 @@ sourced prune
 Stops containers and removes containers, networks, and volumes created by `init`.
 Images are not deleted unless you specify the `--images` flag.
 
-If you want to completely uninstall `sourced` you may want to delete the `~/.srcd` directory.
+If you want to completely uninstall `sourced` you may want to delete the `~/.sourced` directory.
 
 #### Status
 
@@ -141,7 +141,7 @@ Lists previously initialized working directories.
 sourced compose
 ```
 
-Manage docker compose files in the `~/.srcd` directory with the following sub commands:
+Manage docker compose files in the `~/.sourced` directory with the following sub commands:
 
 ##### Download
 
@@ -197,7 +197,7 @@ sourced init ~/repos
 
 You will get back to the previous state, and things like charts and dashboards will be restored.
 
-If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.srcd` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
+If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.sourced` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
 
 ## Docker Compose
 

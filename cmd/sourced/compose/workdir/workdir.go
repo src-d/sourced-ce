@@ -1,5 +1,5 @@
 // Package workdir provides functions to manage docker compose working
-// directories inside the $HOME/.srcd/workdirs directory
+// directories inside the $HOME/.sourced/workdirs directory
 package workdir
 
 import (
@@ -23,11 +23,11 @@ const activeDir = "__active__"
 // RequiredFiles list of required files in a directory to treat it as a working directory
 var RequiredFiles = []string{".env", "docker-compose.yml"}
 
-// Init creates a working directory in ~/.srcd for the given repositories
+// Init creates a working directory in ~/.sourced for the given repositories
 // directory. The working directory will contain a docker-compose.yml and a
 // .env file.
 // If the directory is already initialized the function returns with no error.
-// The returned value is the absolute path to $HOME/.srcd/workdirs/reposdir
+// The returned value is the absolute path to $HOME/.sourced/workdirs/reposdir
 func Init(reposdir string) (string, error) {
 	defaultFilePath, err := composefile.InitDefault()
 	if err != nil {
@@ -145,12 +145,12 @@ func UnsetActive() error {
 	return nil
 }
 
-// Active returns the absolute path to $HOME/.srcd/workdirs/__active__
+// Active returns the absolute path to $HOME/.sourced/workdirs/__active__
 func Active() (string, error) {
 	return path(activeDir)
 }
 
-// EvalActive returns resolved path to $HOME/.srcd/workdirs/__active__
+// EvalActive returns resolved path to $HOME/.sourced/workdirs/__active__
 func EvalActive() (string, error) {
 	active, err := Active()
 	if err != nil {
@@ -238,7 +238,7 @@ func ListRepoDirs() ([]string, error) {
 }
 
 // path returns the absolute path to
-// $HOME/.srcd/workdirs/reposdir
+// $HOME/.sourced/workdirs/reposdir
 func path(reposdir string) (string, error) {
 	path, err := workdirsPath()
 	if err != nil {
