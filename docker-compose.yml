@@ -25,7 +25,7 @@ services:
     restart: always
 
   bblfsh-web:
-    image: bblfsh/web:v0.11.0
+    image: bblfsh/web:v0.11.1
     command: -bblfsh-addr bblfsh:9432
     ports:
       - 9999:8080
