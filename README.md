@@ -127,6 +127,14 @@ sourced web
 
 Opens the web interface in your browser.
 
+#### SQL
+
+```
+sourced sql
+```
+
+Open a MySQL client connected to gitbase.
+
 #### Workdirs
 
 ```

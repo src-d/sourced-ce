@@ -16,6 +16,7 @@ The `sourced` binary is a wrapper for Docker Compose that downloads the `docker-
 - `stop`: Stop running containers
 - `start`: Start stopped containers
 - `web`: Open the web interface in your browser
+- `sql`: Open a MySQL client connected to gitbase
 - `prune`: Stop and remove containers and resources
 - `workdirs` List working directories
 - `compose`: Manage docker compose files
