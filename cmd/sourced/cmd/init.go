@@ -47,7 +47,7 @@ func (c *initCmd) Execute(args []string) error {
 		return err
 	}
 
-	return OpenUI(time.Minute)
+	return OpenUI(60 * time.Minute)
 }
 
 func (c *initCmd) reposdirArg() (string, error) {
