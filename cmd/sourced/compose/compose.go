@@ -35,12 +35,12 @@ func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 	stdout, stderr io.Writer, arg ...string) error {
 	cmd := exec.CommandContext(ctx, c.bin, arg...)
 
-	dir, err := workdir.Active()
+	dir, err := workdir.ActivePath()
 	if err != nil {
 		return err
 	}
 
-	if err := workdir.Validate(dir); err != nil {
+	if err := workdir.ValidatePath(dir); err != nil {
 		return err
 	}
 
