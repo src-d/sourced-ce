@@ -149,8 +149,8 @@ func Active() (RevOrURL, error) {
 		return "", err
 	}
 
-	_, rev := filepath.Split(filepath.Dir(dest))
-	return rev, nil
+	_, name := filepath.Split(filepath.Dir(dest))
+	return composeName(name), nil
 }
 
 // List returns a list of installed docker compose files. Each name is the
@@ -182,17 +182,18 @@ func List() ([]RevOrURL, error) {
 			continue
 		}
 
-		name := entry
-
-		decoded, err := base64.StdEncoding.DecodeString(entry)
-		if err == nil {
-			name = string(decoded)
-		}
-
-		list = append(list, name)
+		list = append(list, composeName(entry))
 	}
 
 	return list, nil
+}
+
+func composeName(rev string) string {
+	if decoded, err := base64.StdEncoding.DecodeString(rev); err == nil {
+		return string(decoded)
+	}
+
+	return rev
 }
 
 func isURL(revOrURL RevOrURL) bool {
