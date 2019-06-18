@@ -8,11 +8,17 @@ services:
     restart: always
 
   gitcollector:
-    image: srcd/gitcollector:v0.0.1-beta.2
+    image: srcd/gitcollector:v0.0.1-beta.3
+    # wait for db
+    command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
       GITHUB_ORGANIZATION: ${GITHUB_ORGANIZATION:-}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      # use main db
+      GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
       LOG_LEVEL: debug
+    depends_on:
+      - postgres
     volumes:
       - type: ${GITBASE_VOLUME_TYPE}
         source: ${GITBASE_VOLUME_SOURCE}
@@ -66,13 +72,24 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
+  metadatadb:
+    image: postgres:10
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: metadata
+      POSTGRES_PASSWORD: metadata
+      POSTGRES_USER: metadata
+    ports:
+      - 5433:5432
+    volumes:
+      - metadata:/var/lib/postgresql/data
+
   sourced-ui:
     #image: srcd/sourced-ui:v0.3.0-beta.1
     image: srcd/sourced-ui:latest
     restart: unless-stopped
     environment:
       SYNC_MODE: 'true'
-      METADATA_DB: metadata
       ADMIN_LOGIN: admin
       ADMIN_FIRST_NAME: admin
       ADMIN_LAST_NAME: admin
@@ -90,6 +107,11 @@ services:
       GITBASE_PASSWORD:
       GITBASE_HOST: gitbase
       GITBASE_PORT: 3306
+      METADATA_DB: metadata
+      METADATA_USER: metadata
+      METADATA_PASSWORD: metadata
+      METADATA_HOST: metadatadb
+      METADATA_PORT: 5432
       BBLFSH_WEB_HOST: bblfsh-web
       BBLFSH_WEB_PORT: 8080
       SUPERSET_ENV: production
@@ -97,6 +119,7 @@ services:
       - 8088:8088
     depends_on:
       - postgres
+      - metadatadb
       - redis
       - gitbase
 
@@ -104,6 +127,8 @@ volumes:
   gitbase_repositories:
     external: false
   gitbase_indexes:
+    external: false
+  metadata:
     external: false
   postgres:
     external: false
