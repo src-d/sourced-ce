@@ -18,7 +18,7 @@ func InitWithOrgs(orgs []string, token string) (string, error) {
 		GithubOrganizations: orgs,
 		GithubToken:         token,
 	}
-	if err := initWorkdir(workdirPath, envf.String); err != nil {
+	if err := initWorkdir(workdirPath, envf); err != nil {
 		return "", err
 	}
 

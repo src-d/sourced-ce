@@ -97,12 +97,7 @@ func UnsetActive() error {
 
 // Active returns active working directory name
 func Active() (string, error) {
-	path, err := absolutePath(activeDir)
-	if err != nil {
-		return "", err
-	}
-
-	realPath, err := filepath.EvalSymlinks(path)
+	path, err := ActivePath()
 	if err != nil {
 		return "", err
 	}
@@ -112,7 +107,7 @@ func Active() (string, error) {
 		return "nil", err
 	}
 
-	return decodeName(wpath, realPath)
+	return decodeName(wpath, path)
 }
 
 // ActivePath returns absolute path to active working directory
@@ -280,7 +275,7 @@ func isEmptyFile(path string) (bool, error) {
 }
 
 // common initialization for both local and remote data
-func initWorkdir(workdirPath string, makeEnvContent func() string) error {
+func initWorkdir(workdirPath string, envFile envFile) error {
 	defaultFilePath, err := composefile.InitDefault()
 	if err != nil {
 		return err
@@ -311,7 +306,7 @@ func initWorkdir(workdirPath string, makeEnvContent func() string) error {
 	}
 
 	if emptyFile {
-		contents := makeEnvContent()
+		contents := envFile.String()
 		err = ioutil.WriteFile(envPath, []byte(contents), 0644)
 		if err != nil {
 			return errors.Wrap(err, "could not write .env file")

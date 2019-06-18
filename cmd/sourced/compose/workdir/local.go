@@ -25,7 +25,7 @@ func InitWithPath(reposdir string) (string, error) {
 		ReposDir: reposdir,
 	}
 
-	if err := initWorkdir(workdir, envf.String); err != nil {
+	if err := initWorkdir(workdir, envf); err != nil {
 		return "", err
 	}
 
