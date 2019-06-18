@@ -85,8 +85,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    #image: srcd/sourced-ui:v0.3.0-beta.1
-    image: srcd/sourced-ui:latest
+    image: srcd/sourced-ui:v0.3.0-beta.2
     restart: unless-stopped
     environment:
       SYNC_MODE: 'true'
