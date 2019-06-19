@@ -25,6 +25,24 @@ services:
         target: /library
         consistency: delegated
 
+  ghsync:
+    image: srcd/ghsync:v0.1.0
+    entrypoint: ['/bin/sh']
+    # wait for db to be created
+    # we need to use something like https://github.com/vishnubob/wait-for-it
+    # or implement wait in ghsync itself
+    command: ['-c', 'sleep 10s && ghsync migrate && ghsync shallow']
+    depends_on:
+      - metadatadb
+    environment:
+      GHSYNC_ORG: ${GITHUB_ORGANIZATION:-}
+      GHSYNC_TOKEN: ${GITHUB_TOKEN:-}
+      GHSYNC_POSTGRES_DB: metadata
+      GHSYNC_POSTGRES_USER: metadata
+      GHSYNC_POSTGRES_PASSWORD: metadata
+      GHSYNC_POSTGRES_HOST: metadatadb
+      GHSYNC_POSTGRES_PORT: 5432
+
   gitbase:
     #image: srcd/gitbase:v0.21.0-beta1
     image: jfontan/gitbase:siva-2
@@ -85,7 +103,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.3.0-beta.2
+    image: srcd/sourced-ui:v0.3.0-beta.3
     restart: unless-stopped
     environment:
       SYNC_MODE: ${GITBASE_SIVA}
@@ -121,6 +139,7 @@ services:
       - metadatadb
       - redis
       - gitbase
+      - ghsync
 
 volumes:
   gitbase_repositories:
