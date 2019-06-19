@@ -19,13 +19,13 @@ func (c *pruneCmd) Execute(args []string) error {
 		return c.pruneActive()
 	}
 
-	dirs, err := workdir.ListRepoDirs()
+	dirs, err := workdir.ListPaths()
 	if err != nil {
 		return err
 	}
 
 	for _, dir := range dirs {
-		if err := workdir.SetActive(dir); err != nil {
+		if err := workdir.SetActivePath(dir); err != nil {
 			return err
 		}
 
@@ -47,12 +47,12 @@ func (c *pruneCmd) pruneActive() error {
 		return err
 	}
 
-	dir, err := workdir.EvalActive()
+	dir, err := workdir.ActivePath()
 	if err != nil {
 		return err
 	}
 
-	if err := workdir.Remove(dir); err != nil {
+	if err := workdir.RemovePath(dir); err != nil {
 		return err
 	}
 

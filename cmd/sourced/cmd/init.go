@@ -28,7 +28,7 @@ func (c *initCmd) Execute(args []string) error {
 		return err
 	}
 
-	dir, err := workdir.Init(reposdir)
+	dir, err := workdir.InitWithPath(reposdir)
 	if err != nil {
 		return err
 	}

@@ -11,13 +11,13 @@ type workdirsCmd struct {
 }
 
 func (c *workdirsCmd) Execute(args []string) error {
-	dirs, err := workdir.ListRepoDirs()
+	dirs, err := workdir.List()
 	if err != nil {
 		return err
 	}
 
 	// ignore errors if active dir doesn't exist or unavailable
-	active, _ := workdir.ActiveRepoDir()
+	active, _ := workdir.Active()
 	for _, dir := range dirs {
 		if dir == active {
 			fmt.Printf("* %s\n", dir)
