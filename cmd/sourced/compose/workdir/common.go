@@ -74,7 +74,12 @@ func SetActive(workdir string) error {
 		}
 	}
 
-	return os.Symlink(workdirPath, activePath)
+	err = os.Symlink(workdirPath, activePath)
+	if os.IsExist(err) {
+		return nil
+	}
+
+	return err
 }
 
 // UnsetActive removes symlink for active workdir
@@ -127,7 +132,7 @@ func List() ([]string, error) {
 		return nil, err
 	}
 
-	workdirs, err := listPaths()
+	workdirs, err := ListPaths()
 	if err != nil {
 		return nil, err
 	}
@@ -143,8 +148,8 @@ func List() ([]string, error) {
 	return res, nil
 }
 
-// listPaths returns array of absolute paths to working directories
-func listPaths() ([]string, error) {
+// ListPaths returns array of absolute paths to working directories
+func ListPaths() ([]string, error) {
 	wpath, err := workdirsPath()
 	if err != nil {
 		return nil, err
@@ -211,6 +216,22 @@ func RemovePath(path string) error {
 			return nil
 		}
 	}
+}
+
+// SetActivePath similar to SetActive
+// but accepts absolute path to a directory instead of a relative one
+func SetActivePath(path string) error {
+	wpath, err := workdirsPath()
+	if err != nil {
+		return err
+	}
+
+	wd, err := filepath.Rel(wpath, path)
+	if err != nil {
+		return err
+	}
+
+	return SetActive(wd)
 }
 
 // ValidatePath validates that the passed dir is valid
