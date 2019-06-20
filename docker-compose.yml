@@ -8,11 +8,11 @@ services:
     restart: always
 
   gitcollector:
-    image: srcd/gitcollector:v0.0.1-beta.3
+    image: srcd/gitcollector:v0.0.1-beta.5
     # wait for db
     command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
-      GITHUB_ORGANIZATION: ${GITHUB_ORGANIZATION:-}
+      GITHUB_ORGANIZATIONS: ${GITHUB_ORGANIZATIONS:-}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       # use main db
       GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
@@ -26,7 +26,8 @@ services:
         consistency: delegated
 
   ghsync:
-    image: srcd/ghsync:v0.1.0
+    # FIXME use real release when it is published
+    image: srcd/ghsync:v0.1.0-multi
     entrypoint: ['/bin/sh']
     # wait for db to be created
     # we need to use something like https://github.com/vishnubob/wait-for-it
@@ -35,7 +36,7 @@ services:
     depends_on:
       - metadatadb
     environment:
-      GHSYNC_ORG: ${GITHUB_ORGANIZATION:-}
+      GHSYNC_ORGS: ${GITHUB_ORGANIZATIONS:-}
       GHSYNC_TOKEN: ${GITHUB_TOKEN:-}
       GHSYNC_POSTGRES_DB: metadata
       GHSYNC_POSTGRES_USER: metadata
@@ -45,7 +46,7 @@ services:
 
   gitbase:
     #image: srcd/gitbase:v0.21.0-beta1
-    image: jfontan/gitbase:siva-2
+    image: jfontan/gitbase:siva-4
     ports:
       - 3306:3306
     environment:

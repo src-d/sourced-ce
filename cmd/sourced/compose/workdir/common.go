@@ -47,7 +47,7 @@ func (f *envFile) String() string {
 	GITBASE_VOLUME_TYPE=%s
 	GITBASE_VOLUME_SOURCE=%s
 	GITBASE_SIVA=%s
-	GITHUB_ORGANIZATION=%s
+	GITHUB_ORGANIZATIONS=%s
 	GITHUB_TOKEN=%s
 	`, f.Workdir, volumeType, volumeSource, gitbaseSiva,
 		strings.Join(f.GithubOrganizations, ","), f.GithubToken)
