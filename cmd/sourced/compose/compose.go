@@ -21,7 +21,6 @@ import (
 const dockerComposeVersion = "1.24.0"
 
 var composeContainerURL = fmt.Sprintf("https://github.com/docker/compose/releases/download/%s/run.sh", dockerComposeVersion)
-var envKeys = []string{"GITBASE_REPOS_DIR"}
 
 type Compose struct {
 	bin string
@@ -45,19 +44,6 @@ func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 	}
 
 	cmd.Dir = dir
-
-	var compOpts []string
-	for _, key := range envKeys {
-		val, ok := os.LookupEnv(key)
-		if !ok {
-			continue
-		}
-
-		compOpts = append(compOpts, fmt.Sprintf("-e %s=%s", key, val))
-	}
-
-	cmd.Env = append(os.Environ(),
-		fmt.Sprintf("COMPOSE_OPTIONS=%s", strings.Join(compOpts, " ")))
 	cmd.Stdin = stdin
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
