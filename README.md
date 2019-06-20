@@ -9,7 +9,6 @@
   - [Defaults](#defaults)
   - [Commands](#commands)
   - [Working With Multiple Data Sets](#working-with-multiple-data-sets)
-- [Docker Compose](#docker-compose)
 
 ## Installation
 
@@ -206,13 +205,3 @@ sourced init ~/repos
 You will get back to the previous state, and things like charts and dashboards will be restored.
 
 If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.sourced` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
-
-## Docker Compose
-
-As an alternative to `sourced` you can download the compose file and use the `docker-compose` command. Go to the [releases page](https://github.com/src-d/sourced-ce/releases) to download the `docker-compose.yml` file included in the release assets.
-
-Then you can start the containers like follows:
-
-```shell
-GITBASE_REPOS_DIR=/some/path docker-compose up
-```
