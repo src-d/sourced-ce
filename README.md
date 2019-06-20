@@ -9,6 +9,9 @@
   - [Defaults](#defaults)
   - [Commands](#commands)
   - [Working With Multiple Data Sets](#working-with-multiple-data-sets)
+- [Contribute](#contribute)
+- [Code of Conduct](#code-of-conduct)
+- [License](#license)
 
 ## Installation
 
@@ -205,3 +208,20 @@ sourced init ~/repos
 You will get back to the previous state, and things like charts and dashboards will be restored.
 
 If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.sourced` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
+
+
+## Contribute
+
+[Contributions](https://github.com/src-d/sourced-ce/issues) are more than welcome, if you are interested please take a look to
+our [source{d} Contributing Guidelines](https://github.com/src-d/guide/blob/master/engineering/documents/CONTRIBUTING.md).
+
+
+## Code of Conduct
+
+All activities under source{d} projects are governed by the
+[source{d} code of conduct](https://github.com/src-d/guide/blob/master/.github/CODE_OF_CONDUCT.md).
+
+
+## License
+
+GPL v3.0, see [LICENSE](LICENSE.md).
