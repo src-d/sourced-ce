@@ -13,13 +13,13 @@ import (
 )
 
 type orgsCmd struct {
-	cli.PlainCommand `name:"orgs" short-description:"Manages services to analyze code from GitHub organizations"`
+	cli.PlainCommand `name:"orgs" short-description:"Manage services to analyze code from GitHub organizations" long-description:"Manage services to analyze code from GitHub organizations"`
 }
 
 type orgsInitCmd struct {
-	Command `name:"init" short-description:"Install and initialize containers to analyze github organizations" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe orgs argument must a list of the organizations to be analyzed."`
+	Command `name:"init" short-description:"Install and initialize containers to analyze GitHub organizations" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe orgs argument must a comma-separated list of GitHub organization names to be analyzed."`
 
-	Token string `short:"t" long:"token" description:"Github token for the passed organizations. It should be granted with 'repo' and 'read:org' scopes." required:"true"`
+	Token string `short:"t" long:"token" env:"SOURCED_GITHUB_TOKEN" description:"Github token for the passed organizations. It should be granted with 'repo' and 'read:org' scopes." required:"true"`
 	Args  struct {
 		Orgs []string `required:"yes"`
 	} `positional-args:"yes" required:"1"`

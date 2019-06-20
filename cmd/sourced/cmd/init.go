@@ -15,7 +15,7 @@ import (
 )
 
 type initCmd struct {
-	Command `name:"init" short-description:"Install and initialize containers" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe repos directory argument must point to a directory containing git repositories.\nIf it's not provided, the current working directory will be used."`
+	Command `name:"init" short-description:"Install and initialize containers to analyze local repositories" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe repos directory argument must point to a directory containing git repositories.\nIf it's not provided, the current working directory will be used."`
 
 	Args struct {
 		Reposdir string `positional-arg-name:"workdir"`
