@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -27,6 +28,10 @@ type orgsInitCmd struct {
 
 func (c *orgsInitCmd) Execute(args []string) error {
 	orgs := c.orgsList()
+	if err := c.validate(orgs); err != nil {
+		return err
+	}
+
 	dir, err := workdir.InitWithOrgs(orgs, c.Token)
 	if err != nil {
 		return err
@@ -62,6 +67,38 @@ func (c *orgsInitCmd) orgsList() []string {
 	}
 
 	return orgs
+}
+
+func (c *orgsInitCmd) validate(orgs []string) error {
+	client := &http.Client{Transport: &authTransport{token: c.Token}}
+	r, err := client.Get("https://api.github.com/user")
+	if err != nil {
+		return err
+	}
+	if r.StatusCode == http.StatusUnauthorized {
+		return fmt.Errorf("github token is not valid")
+	}
+
+	for _, org := range orgs {
+		r, err := client.Get("https://api.github.com/orgs/" + org)
+		if err != nil {
+			return err
+		}
+		if r.StatusCode == http.StatusNotFound {
+			return fmt.Errorf("organization '%s' is not found", org)
+		}
+	}
+
+	return nil
+}
+
+type authTransport struct {
+	token string
+}
+
+func (t *authTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	r.Header.Set("Authorization", "token "+t.token)
+	return http.DefaultTransport.RoundTrip(r)
 }
 
 func init() {
