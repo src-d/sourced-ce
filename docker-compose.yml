@@ -27,7 +27,7 @@ services:
 
   ghsync:
     # FIXME use real release when it is published
-    image: srcd/ghsync:v0.1.0-multi
+    image: srcd/ghsync:v0.1.0-validate
     entrypoint: ['/bin/sh']
     # wait for db to be created
     # we need to use something like https://github.com/vishnubob/wait-for-it
