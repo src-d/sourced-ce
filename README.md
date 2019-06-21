@@ -90,7 +90,7 @@ When using GitHub organizations to populate the **source{d} CE** database you on
 Use this command to initialize:
 
 ```shell
-sourced orgs init --token <token> src-d,bblfsh
+sourced init orgs --token <token> src-d,bblfsh
 ```
 
 It will automatically open the web UI. Use login: `admin` and password `admin` to access it.
@@ -100,7 +100,7 @@ If the UI wasn't opened automatically, use `sourced web` or visit http://localho
 #### From Local Repositories
 
 ```
-sourced init /path/to/repositories
+sourced init local /path/to/repositories
 ```
 
 This will initialize **source{d} CE** to analyze the given Git repositories.
@@ -215,12 +215,12 @@ You can deploy more than one **source{d} CE** instance with different sets of or
 
 For example you may have initially started **source{d} CE** with the repositories in the `src-d` organization, with the command:
 ```
-sourced orgs init --token <token> src-d
+sourced init orgs --token <token> src-d
 ```
 
 After a while you may want to analyze the data on another set of repositories. You can run `init` again with a different organization:
 ```
-sourced orgs init --token <token> bblfsh
+sourced init orgs --token <token> bblfsh
 ```
 
 This command will stop any of the currently running containers, create an isolated environment for the new data, and create a new, clean deployment.
@@ -229,7 +229,7 @@ Please note that each path will have an isolated deployment. This means that for
 
 Each isolated environment is persistent (unless you run `prune`). Which means that if you decide to re-deploy **source{d} CE** using the original organization:
 ```
-sourced orgs init --token <token> src-d
+sourced init orgs --token <token> src-d
 ```
 
 You will get back to the previous state, and things like charts and dashboards will be restored.
@@ -237,7 +237,7 @@ You will get back to the previous state, and things like charts and dashboards w
 These isolated environments also allow you to deploy **source{d} CE** using a local set of Git repositories. For example, if we wanted a third deployment to analyze repositories already existing in the `~/repos` directory, we just need to run `init` again:
 
 ```
-sourced init ~/repos
+sourced init local ~/repos
 ```
 
 If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.sourced` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.

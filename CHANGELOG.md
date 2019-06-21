@@ -11,9 +11,9 @@ Initial release. It includes a `docker-compose.yml` file to deploy source{d} CE 
 
 The `sourced` binary is a wrapper for Docker Compose that downloads the `docker-compose.yml` file from this repository, and includes the following sub commands:
 
-- `init`: Install and initialize containers to analyze local repositories
-- `orgs`: Manage services to analyze code from GitHub organizations
-  - `init`: Install and initialize containers to analyze GitHub organizations
+- `init`: Install and initialize containers
+  - `local`: Install and initialize containers to analyze local repositories
+  - `orgs`: Install and initialize containers to analyze GitHub organizations
 - `status`: Shows status of the components
 - `stop`: Stop running containers
 - `start`: Start stopped containers
