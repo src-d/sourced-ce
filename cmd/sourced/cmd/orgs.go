@@ -26,7 +26,8 @@ type orgsInitCmd struct {
 }
 
 func (c *orgsInitCmd) Execute(args []string) error {
-	dir, err := workdir.InitWithOrgs(c.Args.Orgs, c.Token)
+	orgs := c.orgsList()
+	dir, err := workdir.InitWithOrgs(orgs, c.Token)
 	if err != nil {
 		return err
 	}
@@ -39,13 +40,28 @@ func (c *orgsInitCmd) Execute(args []string) error {
 		return err
 	}
 
-	fmt.Printf("docker-compose working directory set to %s\n", strings.Join(c.Args.Orgs, ","))
+	fmt.Printf("docker-compose working directory set to %s\n", strings.Join(orgs, ","))
 
 	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
 		return err
 	}
 
 	return OpenUI(60 * time.Minute)
+}
+
+// allows to pass organizations separated not only by a space
+// but by comma as well
+func (c *orgsInitCmd) orgsList() []string {
+	orgs := c.Args.Orgs
+	if len(c.Args.Orgs) == 1 {
+		orgs = strings.Split(c.Args.Orgs[0], ",")
+	}
+
+	for i, org := range orgs {
+		orgs[i] = strings.Trim(org, " ,")
+	}
+
+	return orgs
 }
 
 func init() {
