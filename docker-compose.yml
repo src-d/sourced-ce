@@ -26,7 +26,7 @@ services:
         consistency: delegated
 
   ghsync:
-    image: srcd/ghsync:v0.2.0-beta.1
+    image: srcd/ghsync:v0.2.0-beta.2
     entrypoint: ['/bin/sh']
     # wait for db to be created
     # we need to use something like https://github.com/vishnubob/wait-for-it
