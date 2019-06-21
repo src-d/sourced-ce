@@ -1,6 +1,23 @@
-# source{d} Community Edition (CE)
+<a href="https://www.sourced.tech">
+  <img src="docs/assets/sourced-community-edition.png" alt="source{d} Community Edition (CE)" height="120px" />
+</a>
 
-## Contents
+**source{d} Community Edition (CE) is the data platform for your software development life cycle.**
+
+[![GitHub version](https://badge.fury.io/gh/src-d%2Fsourced-ce.svg)](https://github.com/src-d/sourced-ce/releases)
+[![Build Status](https://travis-ci.com/src-d/sourced-ce.svg?branch=master)](https://travis-ci.com/src-d/sourced-ce)
+![Beta](https://svg-badge.appspot.com/badge/stability/beta?color=D6604A)
+[![Go Report Card](https://goreportcard.com/badge/github.com/src-d/sourced-ce)](https://goreportcard.com/report/github.com/src-d/sourced-ce)
+[![GoDoc](https://godoc.org/github.com/src-d/sourced-ce?status.svg)](https://godoc.org/github.com/src-d/sourced-ce)
+
+[Website](https://www.sourced.tech) •
+[Documentation](https://docs.sourced.tech/community-edition) •
+[Blog](https://blog.sourced.tech) •
+[Slack](http://bit.ly/src-d-community) •
+[Twitter](https://twitter.com/sourcedtech)
+
+
+### Contents
 
 - [Installation](#installation)
   - [Install Docker](#install-docker)
@@ -10,9 +27,11 @@
   - [Initialization](#initialization)
   - [Commands](#commands)
   - [Working With Multiple Data Sets](#working-with-multiple-data-sets)
-- [Contribute](#contribute)
+- [Contributing](#contributing)
+- [Community](#community)
 - [Code of Conduct](#code-of-conduct)
 - [License](#license)
+
 
 ## Installation
 
@@ -243,10 +262,20 @@ sourced init ~/repos
 If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.sourced` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
 
 
-## Contribute
+## Contributing
 
-[Contributions](https://github.com/src-d/sourced-ce/issues) are more than welcome, if you are interested please take a look to
-our [source{d} Contributing Guidelines](https://github.com/src-d/guide/blob/master/engineering/documents/CONTRIBUTING.md).
+[Contributions](https://github.com/src-d/sourced-ce/issues) are **welcome and very much appreciated** 🙌
+Please refer to [our Contribution Guide](docs/CONTRIBUTING.md) for more details.
+
+
+## Community
+
+source{d} has an amazing community of developers and contributors who are interested in Code As Data and/or Machine Learning on Code. Please join us! 👋
+
+- [Community](https://sourced.tech/community/)
+- [Slack](http://bit.ly/src-d-community)
+- [Twitter](https://twitter.com/sourcedtech)
+- [Email](mailto:hello@sourced.tech)
 
 
 ## Code of Conduct
