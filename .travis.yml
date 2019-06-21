@@ -42,7 +42,6 @@ jobs:
         file_glob: true
         file:
           - build/*.tar.gz
-          - docker-compose.yml
         skip_cleanup: true
         on:
           all_branches: true
