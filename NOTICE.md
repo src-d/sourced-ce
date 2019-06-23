@@ -1,4 +1,5 @@
 sourced-ce is the data platform for your software development life cycle
+
 Copyright (C) 2019 source{d}
 
 This program is free software: you can redistribute it and/or modify
