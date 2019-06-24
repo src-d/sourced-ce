@@ -5,6 +5,7 @@
     - [Explore your data](./quickstart/4-explore-sourced.md)
 * [First steps](./usage/README.md)
     - [Multiple datasets](./usage/multiple-datasets.md)
+    - [SQL examples](./usage/examples.md)
     - [sourced sub-commands](./usage/commands.md)
 
 ## Learn More

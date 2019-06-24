@@ -20,6 +20,8 @@ _If you prefer to work within the terminal via command line, you can open a SQL 
 
 Using the `SQL Lab` tab, from the web interface, you can analyze your dataset using SQL queries, and create charts from those queries with the `Explore` button.
 
+You can find some sample queries in the [examples](../usage/examples.md).
+
 If you want to know what the database schema looks like you can use either regular `SHOW` or `DESCRIBE` queries, or you can refer to the [diagram about gitbase entities and relations](https://docs.sourced.tech/gitbase/using-gitbase/schema#database-diagram).
 
 ```bash
