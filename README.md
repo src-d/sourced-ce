@@ -17,6 +17,8 @@
 [Twitter](https://twitter.com/sourcedtech)
 
 
+![source{d} CE dashboard](docs/assets/dashboard.png)
+
 ## Introduction
 
 **source{d} Community Edition (CE)** helps you to manage all your code and engineering data in one place powerful:
