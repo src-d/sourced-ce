@@ -1,52 +1,43 @@
 # Initialize source{d} Community Edition
 
-**source{d} Community Edition (CE)** is deployed as Docker containers, using Docker Compose.
+_For the full list of the sub-commands offered by `sourced`, please take a look
+into [the `sourced` sub-commands inventory](../usage/commands.md)._
 
-This tool is a wrapper for Docker Compose to manage the compose files and containers easily. Moreover, `sourced` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
+**source{d} CE** can be initialized from 2 different data sources: GitHub organizations, or local Git repositories.
 
-You may also choose to manage the containers yourself with the `docker-compose.yml` file included in this repository.
+Please note that you have to choose one data source to initialize **source{d} CE**, but you can have more than one isolated environment, and they can have different sources. 
 
-### Defaults
+**source{d} CE** will download and install Docker images on demand. Therefore, the first time you run some of these commands, they might take a bit of time to start up. Subsequent runs will be faster.
 
-- Default login: `admin`
-- Default password: `admin`
-
-
-### Initialization
-
-**source{d} CE** can be initialized from 2 different data sources: local Git repositories, or GitHub organizations.
-
-Please note that you have to choose one data source to initialize **source{d} CE**, but you can have more than one isolated environment, and they can have different sources. See the [Working With Multiple Data Sets](#working-with-multiple-data-sets) section below for more details.
 
 #### From GitHub Organizations
 
-When using GitHub organizations to populate the **source{d} CE** database you only need to provide a list of organization names, and a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/). The token should have the following scopes enabled:
+When using GitHub organizations to populate the **source{d} CE** database you only need to provide a list of organization names and a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/). If no scope is granted to the user token, only public
+data will be fetched. To let **source{d} CE** to access to also private repos and hidden users, the token should
+have the following scopes enabled:
 
-- [x] `repo`  Full control of private repositories
-- [ ] `admin:org`  Full control of orgs and teams, read and write org projects
-  - [ ] `write:org`  Read and write org and team membership, read and write org projects
-  - [x] `read:org`  Read org and team membership, read org projects
+- `repo` Full control of private repositories
+- `read:org` Read org and team membership, read org projects
 
-Use this command to initialize:
+
+Use this command to initialize, e.g.
 
 ```shell
-sourced init orgs --token <token> src-d,bblfsh
+$ sourced orgs init --token <token> src-d,bblfsh
 ```
 
-It will automatically open the web UI. Use login: `admin` and password `admin` to access it.
+It will also download, on background, the repositories of the passed GitHub organizations, and its metadata: pull requests, issues, users...
 
-If the UI wasn't opened automatically, use `sourced web` or visit http://localhost:8088.
 
 #### From Local Repositories
 
+```shell
+$ sourced init </path/to/repositories>
 ```
-sourced init local /path/to/repositories
-```
 
-This will initialize **source{d} CE** to analyze the given Git repositories.
+It will initialize **source{d} CE** to analyze the git repositories under the passed path, or under the current directory if no one is passed. The repositories will be found recursively.
 
-The argument must point to a directory containing one or more Git repositories. The repositories will be found recursively. If no argument is given, the current directory will be used.
+**Note for macOS:**
+Docker for Mac [requires enabling file sharing](https://docs.docker.com/docker-for-mac/troubleshoot/#volume-mounting-requires-file-sharing-for-any-project-directories-outside-of-users) for any path outside of `/Users`.
 
-It will automatically open the web UI. Use login: `admin` and password `admin` to access it.
-
-If the UI wasn't opened automatically, use `sourced web` or visit http://localhost:8088.
+**Note for Windows:** Docker for Windows [requires shared drives](https://docs.docker.com/docker-for-windows/#shared-drives). Other than that, it's important to use a working directory that doesn't include any sub-directory whose access is not readable by the user running `sourced`. For example, using `C:\Users` as workdir, will most probably not work. For more details see [this issue](https://github.com/src-d/engine/issues/250).

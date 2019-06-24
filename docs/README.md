@@ -1,3 +1,9 @@
+* [Quickstart](./quickstart/README.md)
+    - [Dependencies](./quickstart/1-install-requirements.md)
+    - [Install **source{d} CE**](./quickstart/2-install-sourced.md)
+    - [Run **source{d} CE**](./quickstart/3-init-sourced.md)
+    - [Explore your data](./quickstart/4-explore-sourced.md)
+
 ## Learn More
 
 * [Contribute](CONTRIBUTING.md)
