@@ -65,6 +65,8 @@ $ sourced sql "DESCRIBE TABLE commits;"
 
 ## UAST. Parsing code
 
+_Please, refer to the [quick explanation about what Babelfish is](../advanced/bblfsh.md) to know more about it._
+
 You can get UASTs from the `UAST` tab (parsing files by direct input), or using the `UAST` gitbase function over blob contents on `SQL Lab` tab.
 
 

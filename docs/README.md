@@ -7,6 +7,9 @@
     - [Multiple datasets](./usage/multiple-datasets.md)
     - [SQL examples](./usage/examples.md)
     - [sourced sub-commands](./usage/commands.md)
+* [Advanced usage](./advanced/README.md)
+    - [Architecture](./advanced/architecture.md)
+    - [Babelfish UAST](./advanced/bblfsh.md)
 
 ## Learn More
 

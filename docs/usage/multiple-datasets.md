@@ -32,3 +32,6 @@ $ sourced init ~/repos
 You can list all the installed instances, and know which one is active at any moment by running `sourced workdirs`.
 
 If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.sourced` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
+
+_You can read more about how the environments are isolated in the **source{d} CE**
+[architecture docs](../advanced/architecture.md)_

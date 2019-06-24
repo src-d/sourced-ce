@@ -47,6 +47,30 @@ Currently, **source{d} CE** is in development process.
 
 You will find in the [Quick Start Guide](docs/quickstart/README.md) all the steps to get started with **source{d} CE**, from the installation of its dependencies to running SQL queries to inspect git repositories.
 
+Once you are able to run the UI, you may find useful the following sections:
+
+* [First steps](docs/usage/README.md)
+* [Advanced usage](docs/advanced/README.md)
+
+
+## Architecture
+
+_For more details on the architecture of this project, read [docs/architecture.md](docs/advanced/architecture.md)._
+
+**source{d} CE** is deployed as Docker containers, using Docker Compose.
+
+This tool is a wrapper for Docker Compose to manage the compose files and its containers easily. Moreover, `sourced` does not require a local installation of Docker Compose, if it is not found it will be deployed inside a container.
+
+The main entry point of **source{d} CE** is [sourced-ui](https://github.com/src-d/sourced-ui), the web interface from where you can access your data, create dashboards, run queries...
+
+The data exposed by the web interface is prepared and processed by the following services:
+
+- [babelfish](https://doc.bblf.sh): universal code parser,
+  - [babelfish-web](https://github.com/bblfsh/web): web client for Babelfish server,
+- [gitcollector](https://github.com/src-d/gitcollector): fetches the git repositories owned by your organization,
+- [ghsync](https://github.com/src-d/ghsync): fetches metadata from GitHub (users, pull requests, issues...)
+- [gitbase](https://github.com/src-d/gitbase): SQL database interface to Git repositories
+
 
 ## Contributing
 
