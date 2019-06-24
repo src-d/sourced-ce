@@ -10,7 +10,7 @@
 
 ## Learn More
 
-* [Contribute](CONTRIBUTING.md)
+* [Contribute](./CONTRIBUTING.md)
 * [License](../LICENSE.md)
 
 ### Resources

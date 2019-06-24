@@ -17,13 +17,29 @@
 [Twitter](https://twitter.com/sourcedtech)
 
 
+## Introduction
+
+**source{d} Community Edition (CE)** helps you to manage all your code and engineering data in one place powerful:
+
+- **Code Retrieval**: Retrieve and store the git history of the code of your organization as a dataset.
+- **Analysis in/for any Language**: Automatically identify languages, parse source code, and extract the pieces that matter in a distributed and language-agnostic way.
+- **History Analysis**: Extract information from the evolution, commits, and metadata of your codebase and from Github, generating detailed reports and insights.
+- **Familiar APIs**: Analyze your code through powerful SQL queries. Use tools you're familiar with to create reports and dashboards.
+
+This repository contains the code of **source{d} Community Edition (CE)** and its project documentation, which you can also see properly rendered at [docs.sourced.tech/community-edition](https://docs.sourced.tech/community-edition).
+
+Currently, **source{d} CE** is in development process.
+
+
 ### Contents
 
+- [Introduction](#introduction)
 - [Quick Start](#quick-start)
 - [Contributing](#contributing)
 - [Community](#community)
 - [Code of Conduct](#code-of-conduct)
 - [License](#license)
+
 
 ## Quick Start
 
