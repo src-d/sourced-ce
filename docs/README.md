@@ -3,7 +3,9 @@
     - [Install **source{d} CE**](./quickstart/2-install-sourced.md)
     - [Run **source{d} CE**](./quickstart/3-init-sourced.md)
     - [Explore your data](./quickstart/4-explore-sourced.md)
-* [Commands](./usage/commands.md)
+* [First steps](./usage/README.md)
+    - [Multiple datasets](./usage/multiple-datasets.md)
+    - [sourced sub-commands](./usage/commands.md)
 
 ## Learn More
 

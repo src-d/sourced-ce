@@ -5,7 +5,7 @@ into [the `sourced` sub-commands inventory](../usage/commands.md)._
 
 **source{d} CE** can be initialized from 2 different data sources: GitHub organizations, or local Git repositories.
 
-Please note that you have to choose one data source to initialize **source{d} CE**, but you can have more than one isolated environment, and they can have different sources. 
+Please note that you have to choose one data source to initialize **source{d} CE**, but you can have more than one isolated environment, and they can have different sources. See the guide about [Working With Multiple Data Sets](../usage/multiple-datasets.md) for more details.
 
 **source{d} CE** will download and install Docker images on demand. Therefore, the first time you run some of these commands, they might take a bit of time to start up. Subsequent runs will be faster.
 
