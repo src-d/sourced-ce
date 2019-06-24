@@ -2,17 +2,17 @@
     - [Dependencies](./quickstart/1-install-requirements.md)
     - [Install **source{d} CE**](./quickstart/2-install-sourced.md)
     - [Run **source{d} CE**](./quickstart/3-init-sourced.md)
-    - [Explore your data](./quickstart/4-explore-sourced.md)
-* [First steps](./usage/README.md)
-    - [Multiple datasets](./usage/multiple-datasets.md)
-    - [SQL examples](./usage/examples.md)
-    - [sourced sub-commands](./usage/commands.md)
-* [Advanced usage](./advanced/README.md)
-    - [Architecture](./advanced/architecture.md)
-    - [Babelfish UAST](./advanced/bblfsh.md)
+    - [Explore Your Data](./quickstart/4-explore-sourced.md)
+
+## Advanced Usage
+* [sourced Command Reference](./usage/commands.md)
+* [Multiple Datasets](./usage/multiple-datasets.md)
+* [SQL Examples](./usage/examples.md)
+* [Babelfish UAST](./usage/bblfsh.md)
 
 ## Learn More
 
+* [Architecture](./architecture.md)
 * [Contribute](./CONTRIBUTING.md)
 * [License](../LICENSE.md)
 

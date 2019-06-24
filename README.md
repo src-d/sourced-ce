@@ -21,16 +21,14 @@
 
 ## Introduction
 
-**source{d} Community Edition (CE)** helps you to manage all your code and engineering data in one place powerful:
+**source{d} Community Edition (CE)** helps you to manage all your code and engineering data in one place:
 
 - **Code Retrieval**: Retrieve and store the git history of the code of your organization as a dataset.
-- **Analysis in/for any Language**: Automatically identify languages, parse source code, and extract the pieces that matter in a distributed and language-agnostic way.
-- **History Analysis**: Extract information from the evolution, commits, and metadata of your codebase and from Github, generating detailed reports and insights.
+- **Analysis in/for any Language**: Automatically identify languages, parse source code, and extract the pieces that matter in a language-agnostic way.
+- **History Analysis**: Extract information from the evolution, commits, and metadata of your codebase and from GitHub, generating detailed reports and insights.
 - **Familiar APIs**: Analyze your code through powerful SQL queries. Use tools you're familiar with to create reports and dashboards.
 
 This repository contains the code of **source{d} Community Edition (CE)** and its project documentation, which you can also see properly rendered at [docs.sourced.tech/community-edition](https://docs.sourced.tech/community-edition).
-
-Currently, **source{d} CE** is in development process.
 
 
 ### Contents
@@ -47,17 +45,22 @@ Currently, **source{d} CE** is in development process.
 
 **source{d} CE** supports Linux, macOS, and Windows.
 
-You will find in the [Quick Start Guide](docs/quickstart/README.md) all the steps to get started with **source{d} CE**, from the installation of its dependencies to running SQL queries to inspect git repositories.
+To run it you only need:
 
-Once you are able to run the UI, you may find useful the following sections:
+1. To have Docker installed in your PC
+1. Download `sourced` binary (for your OS) from [our releases](https://github.com/src-d/sourced-ce/releases)
+1. Run it:
+   ```bash
+   $ sourced orgs init --token=<github_token> <github_org_name>
+   ```
+   And log in into http://localhost:8088 with login: `admin`, and password: `admin`.
 
-* [First steps](docs/usage/README.md)
-* [Advanced usage](docs/advanced/README.md)
+If you want more details of each step, you will find in the [**Quick Start Guide**](docs/quickstart/README.md) all the steps to get started with **source{d} CE**, from the installation of its dependencies to running SQL queries to inspect git repositories.
 
 
 ## Architecture
 
-_For more details on the architecture of this project, read [docs/architecture.md](docs/advanced/architecture.md)._
+_For more details on the architecture of this project, read [docs/architecture.md](docs/architecture.md)._
 
 **source{d} CE** is deployed as Docker containers, using Docker Compose.
 
@@ -67,11 +70,10 @@ The main entry point of **source{d} CE** is [sourced-ui](https://github.com/src-
 
 The data exposed by the web interface is prepared and processed by the following services:
 
-- [babelfish](https://doc.bblf.sh): universal code parser,
-  - [babelfish-web](https://github.com/bblfsh/web): web client for Babelfish server,
-- [gitcollector](https://github.com/src-d/gitcollector): fetches the git repositories owned by your organization,
-- [ghsync](https://github.com/src-d/ghsync): fetches metadata from GitHub (users, pull requests, issues...)
-- [gitbase](https://github.com/src-d/gitbase): SQL database interface to Git repositories
+- [babelfish](https://doc.bblf.sh): universal code parser.
+- [gitcollector](https://github.com/src-d/gitcollector): fetches the git repositories owned by your organization.
+- [ghsync](https://github.com/src-d/ghsync): fetches metadata from GitHub (users, pull requests, issues...).
+- [gitbase](https://github.com/src-d/gitbase): SQL database interface to Git repositories.
 
 
 ## Contributing

@@ -2,7 +2,7 @@
 
 Download the **[latest release](https://github.com/src-d/sourced-ce/releases/latest)** for your Linux, macOS (Darwin) or Windows.
 
-## on Linux or macOS
+## On Linux or macOS
 
 Extract `sourced` binary from the release you downloaded, and move it into your bin folder to make it executable from any directory:
 
@@ -11,7 +11,7 @@ $ tar -xvf path/to/sourced-ce_REPLACE-VERSION_REPLACE-OS_amd64.tar.gz
 $ sudo mv path/to/sourced-ce_REPLACE-OS_amd64/sourced /usr/local/bin/
 ```
 
-## on Windows
+## On Windows
 
 *Please note that from now on we assume that the commands are executed in `powershell` and not in `cmd`.*
 

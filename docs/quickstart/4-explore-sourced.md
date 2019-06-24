@@ -1,14 +1,14 @@
 # Explore source{d} CE Web Interface
 
-Once **source{d} CE** has been [installed with `sourced init`](./3-init-sourced.md), it will automatically open the web UI. If the UI wasn't opened automatically, you can use `sourced web` command, or visit http://localhost:8088.
+Once **source{d} CE** has been [initialized with `sourced init`](./3-init-sourced.md), it will automatically open the web UI. If the UI is not automatically opened, you can use `sourced web` command, or visit http://localhost:8088.
 
 Use login: `admin` and password: `admin`, to access the web interface.
 
 The most relevant features that **source{d} CE** Web Interface offers are:
-- **[SQL Lab](#sql-lab-querying-code-and-metadata)**, to query your repositories and its GitHub metadata,
-- **[Babelfish web](#uast-parsing-code)**, web interface to parse files into UAST,
-- **[Dashboards](#dashboards)**, to aggregate charts for exploring and visualizing your data,
-- **Charts**, to see your data with a rich set of data visualizations,
+- **[SQL Lab](#sql-lab-querying-code-and-metadata)**, to query your repositories and its GitHub metadata.
+- **[Babelfish web](#uast-parsing-code)**, web interface to parse files into UAST.
+- **[Dashboards](#dashboards)**, to aggregate charts for exploring and visualizing your data.
+- **Charts**, to see your data with a rich set of data visualizations.
 - A flexible UI to manage users, data sources, export data...
 
 The user interface is based in the open-sourced [Apache Superset](http://superset.incubator.apache.org), so you can also refer to their documentation for advanced usage of the web interface.
@@ -65,7 +65,7 @@ $ sourced sql "DESCRIBE TABLE commits;"
 
 ## UAST. Parsing code
 
-_Please, refer to the [quick explanation about what Babelfish is](../advanced/bblfsh.md) to know more about it._
+_Please, refer to the [quick explanation about what Babelfish is](../usage/bblfsh.md) to know more about it._
 
 You can get UASTs from the `UAST` tab (parsing files by direct input), or using the `UAST` gitbase function over blob contents on `SQL Lab` tab.
 

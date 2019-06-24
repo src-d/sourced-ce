@@ -1,8 +1,8 @@
-# Install source{d} Community Edition dependencies
+# Install source{d} Community Edition Dependencies
 
 ## Install Docker
 
-_Please note that Docker Toolbox is supported neither for Windows nor for macOS. In case that you're running Docker Toolbox, please consider updating to newer Docker Desktop for Mac or Docker Desktop for Windows._
+_Please note that Docker Toolbox is not supported. In case that you're running Docker Toolbox, please consider updating to newer Docker Desktop for Mac or Docker Desktop for Windows._
 
 Follow the instructions based on your OS:
 
@@ -11,8 +11,8 @@ Follow the instructions based on your OS:
 - [Docker for macOS](https://store.docker.com/editions/community/docker-ce-desktop-mac)
 - [Docker Desktop for Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) (Make sure to read the [system requirements for Docker on Windows](https://docs.docker.com/docker-for-windows/install/).)
 
-## Docker compose
+## Docker Compose
 
-**source{d} CE** is deployed as Docker containers, using [Docker Compose](https://docs.docker.com/compose), but it is not required a local installation of Docker Compose; if it is not found it will be deployed inside a container.
+**source{d} CE** is deployed as Docker containers, using [Docker Compose](https://docs.docker.com/compose), but it is not required to have a local installation of Docker Compose; if it is not found it will be deployed inside a container.
 
-If you prefer a local installation of Docker Compose, you can follow [Docker Compose install guide](https://docs.docker.com/compose/install)
+If you prefer a local installation of Docker Compose, you can follow the [Docker Compose install guide](https://docs.docker.com/compose/install)

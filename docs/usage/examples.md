@@ -89,7 +89,7 @@ WHERE
 
 ## Queries With UASTs
 
-_**Note**: UAST values are returned as binary blobs; they're best visualized in the `web sql` interface rather than the CLI where are seen as binary data._
+_**Note**: UAST values are returned as binary blobs; they're best visualized in the web UI interface rather than the CLI where are seen as binary data._
 
 **Retrieve the UAST for all files at [HEAD](https://git-scm.com/book/en/v2/Git-Internals-Git-References#ref_the_ref):**
 

@@ -11,7 +11,7 @@ is the user's main interaction mechanism with **source{d} CE**.
 It is also the only piece (other than Docker) that the user will need to explicitly
 download on their machine to get started.
 
-The `sourced` binary manages the different installed environments and its
+The `sourced` binary manages the different installed environments and their
 configurations, acting as a wrapper of Docker Compose.
 
 The whole architecture is based on Docker containers, orchestrated by Docker Compose
@@ -20,9 +20,9 @@ and managed by `sourced`.
 
 ## Docker Set Up
 
-In order to make this work in the easiest way, there was made some design decisions:
+In order to make this work in the easiest way, some design decisions were made:
 
-### Isolated environments.
+### Isolated Environments.
 
 _Read more in [Working With Multiple Data Sets](../usage/multiple-datasets.md)_
 
@@ -54,12 +54,12 @@ for this purpose:
 
 ## Persistence
 
-To prevent losing data when restarting services, or upgrading containers, its data
+To prevent losing data when restarting services, or upgrading containers, the data
 is stored in volumes. These volumes also share the same prefix with the containers
 in the same environment, e.g. `srcd-c3jjlwq_gitbase_repositories`.
 
 These are the most relevant volumes:
-- `gitbase_repositories`, stores the repositories to be analyzed,
-- `gitbase_indexes`, stores the gitbases indexes,
+- `gitbase_repositories`, stores the repositories to be analyzed
+- `gitbase_indexes`, stores the gitbases indexes
 - `metadata`, stores the metadata from GitHub pull requests, issues, users...
-- `postgres`, stores the dashboards and charts used by the web interface.
+- `postgres`, stores the dashboards and charts used by the web interface

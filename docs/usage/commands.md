@@ -1,6 +1,6 @@
 # List of `sourced` Sub-Commands
 
-`sourced` binary offers you different kind of sub-commands:
+`sourced` binary offers you different kinds of sub-commands:
 - [to manage their containers](#manage-containers)
 - [to manage **source{d} CE** configuration](#manage-configuration)
 - [to open interfaces to access its data](#open-interfaces)
@@ -10,7 +10,7 @@ Here is the list of all these commands and its description; you can get more inf
 adding `--help` when you run it.
 
 
-## Manage containers
+## Manage Containers
 
 ### sourced init
 
@@ -28,12 +28,12 @@ It can work over a local repository or a list of GitHub organizations.
 $ sourced init orgs --token=_USER_TOKEN_ org1,org2...
 ```
 
-Installs and initializes **source{d} CE** for a list of GitHub organizations, downloading its repositories and
+Installs and initializes **source{d} CE** for a list of GitHub organizations, downloading their repositories and
 metadata: Users, PullRequests, Issues...
 
-The `orgs` argument must be a comma-separated list of GitHub organization.
+The `orgs` argument must be a comma-separated list of GitHub organizations.
 
-The `--token` must contain a valid GitHub user token for the past organizations. It should be granted with
+The `--token` must contain a valid GitHub user token for the given organizations. It should be granted with
 'repo' and'read:org' scopes.
 
 #### sourced init local
@@ -54,7 +54,7 @@ Stops all running containers without removing them. They can be started again wi
 
 ### sourced prune
 
-Stops containers and removes its containers, networks, volumes, and configurations created by `init` for the current working directory.
+Stops containers and removes containers, networks, volumes, and configurations created by `init` for the current working directory.
 
 To delete resources for all the installed working directories, add the `--all` flag.
 
@@ -63,7 +63,7 @@ Container images are not deleted unless you specify the `--images` flag.
 If you want to completely uninstall `sourced` you must also delete the `~/.sourced` directory.
 
 
-## Manage configuration
+## Manage Configuration
 
 ### sourced status
 
