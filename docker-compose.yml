@@ -8,7 +8,7 @@ services:
     restart: always
 
   gitcollector:
-    image: srcd/gitcollector:v0.0.1-beta.6
+    image: srcd/gitcollector:v0.0.1
     # wait for db
     command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
@@ -16,7 +16,7 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       # use main db
       GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
-      GITCOLLECTOR_HALF_CPU: "true"
+      GITCOLLECTOR_HALF_CPU: 'true'
       LOG_LEVEL: debug
     depends_on:
       - postgres
