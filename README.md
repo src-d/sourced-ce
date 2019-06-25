@@ -51,7 +51,7 @@ To run it you only need:
 1. Download `sourced` binary (for your OS) from [our releases](https://github.com/src-d/sourced-ce/releases)
 1. Run it:
    ```bash
-   $ sourced orgs init --token=<github_token> <github_org_name>
+   $ sourced init orgs --token=<github_token> <github_org_name>
    ```
    And log in into http://localhost:8088 with login: `admin`, and password: `admin`.
 
