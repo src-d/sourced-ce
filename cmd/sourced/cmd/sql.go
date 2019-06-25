@@ -7,7 +7,7 @@ import (
 )
 
 type sqlCmd struct {
-	Command `name:"sql" short-description:"Open a MySQL client connected to gitbase" long-description:"Open a MySQL client connected to gitbase"`
+	Command `name:"sql" short-description:"Open a MySQL client connected to a SQL interface for Git" long-description:"Open a MySQL client connected to a SQL interface for Git"`
 }
 
 func (c *sqlCmd) Execute(args []string) error {

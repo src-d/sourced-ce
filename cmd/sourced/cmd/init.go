@@ -17,11 +17,11 @@ import (
 )
 
 type initCmd struct {
-	cli.PlainCommand `name:"init" short-description:"Install and initialize containers" long-description:"Install and initialize containers"`
+	cli.PlainCommand `name:"init" short-description:"Initialize source{d} to work on local or Github orgs datasets" long-description:"Initialize source{d} to work on local or Github orgs datasets"`
 }
 
 type initLocalCmd struct {
-	Command `name:"local" short-description:"Install and initialize containers to analyze local repositories" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe repos directory argument must point to a directory containing git repositories.\nIf it's not provided, the current working directory will be used."`
+	Command `name:"local" short-description:"Initialize source{d} to analyze local repositories" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe repos directory argument must point to a directory containing git repositories.\nIf it's not provided, the current working directory will be used."`
 
 	Args struct {
 		Reposdir string `positional-arg-name:"workdir"`
@@ -80,7 +80,7 @@ func (c *initLocalCmd) reposdirArg() (string, error) {
 }
 
 type initOrgsCmd struct {
-	Command `name:"orgs" short-description:"Install and initialize containers to analyze GitHub organizations" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe orgs argument must a comma-separated list of GitHub organization names to be analyzed."`
+	Command `name:"orgs" short-description:"Initialize source{d} to analyze GitHub organizations" long-description:"Install, initialize, and start all the required docker containers, networks, volumes, and images.\n\nThe orgs argument must a comma-separated list of GitHub organization names to be analyzed."`
 
 	Token string `short:"t" long:"token" env:"SOURCED_GITHUB_TOKEN" description:"Github token for the passed organizations. It should be granted with 'repo' and 'read:org' scopes." required:"true"`
 	Args  struct {

@@ -7,7 +7,7 @@ import (
 )
 
 type statusCmd struct {
-	Command `name:"status" short-description:"Shows status of the components" long-description:"Shows status of the components"`
+	Command `name:"status" short-description:"Show the status of all components" long-description:"Show the status of all components"`
 }
 
 func (c *statusCmd) Execute(args []string) error {
