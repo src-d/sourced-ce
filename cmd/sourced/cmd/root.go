@@ -14,7 +14,7 @@ const name = "sourced"
 
 var version = "master"
 
-var rootCmd = cli.NewNoDefaults(name, "source{d} CE and EE installer")
+var rootCmd = cli.NewNoDefaults(name, "source{d} Community Edition & Enterprise Edition CLI client")
 
 // Init sets the version rewritten by the CI build and adds default sub commands
 func Init(v, build string) {

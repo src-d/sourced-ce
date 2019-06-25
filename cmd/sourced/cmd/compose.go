@@ -9,7 +9,7 @@ import (
 )
 
 type composeCmd struct {
-	cli.PlainCommand `name:"compose" short-description:"Manage docker compose files" long-description:"Manage docker compose files"`
+	cli.PlainCommand `name:"compose" short-description:"Manage source{d} docker compose files" long-description:"Manage source{d} docker compose files"`
 }
 
 type composeDownloadCmd struct {

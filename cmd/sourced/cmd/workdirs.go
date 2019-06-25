@@ -7,7 +7,7 @@ import (
 )
 
 type workdirsCmd struct {
-	Command `name:"workdirs" short-description:"List working directories" long-description:"List previously initialized working directories."`
+	Command `name:"workdirs" short-description:"List all working directories" long-description:"List all the previously initialized working directories."`
 }
 
 func (c *workdirsCmd) Execute(args []string) error {
