@@ -6,8 +6,7 @@ As all source{d} projects, this project follows the
 
 # Additional Contribution Guidelines
 
-In addition to the [source{d} Contributing Guidelines](https://github.com/src-d/guide/blob/master/engineering/documents/CONTRIBUTING.md),
-this project follows the following guidelines.
+In addition to the [source{d} Contributing Guidelines](https://github.com/src-d/guide/blob/master/engineering/documents/CONTRIBUTING.md), this project follows the following guidelines.
 
 
 ## Changelog
