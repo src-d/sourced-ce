@@ -23,7 +23,7 @@ have the following scopes enabled:
 Use this command to initialize, e.g.
 
 ```shell
-$ sourced orgs init --token <token> src-d,bblfsh
+$ sourced init orgs --token <token> src-d,bblfsh
 ```
 
 It will also download, in the background, the repositories of the passed GitHub organizations, and their metadata: pull requests, issues, users...
