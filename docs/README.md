@@ -4,7 +4,7 @@
     - [Run **source{d} CE**](./quickstart/3-init-sourced.md)
     - [Explore Your Data](./quickstart/4-explore-sourced.md)
 
-## Advanced Usage
+## Usage
 * [sourced Command Reference](./usage/commands.md)
 * [Multiple Datasets](./usage/multiple-datasets.md)
 * [SQL Examples](./usage/examples.md)
