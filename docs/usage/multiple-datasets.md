@@ -26,7 +26,7 @@ You will get back to the previous state, and things like charts and dashboards w
 These isolated environments also allow you to deploy **source{d} CE** using a local set of Git repositories. For example, if we want a third deployment to analyze repositories already existing in the `~/repos` directory, we just need to run `init` again:
 
 ```shell
-$ sourced init ~/repos
+$ sourced init local ~/repos
 ```
 
 You can list all the installed instances, and know which one is active at any moment by running `sourced workdirs`.

@@ -32,7 +32,7 @@ It will also download, in the background, the repositories of the passed GitHub 
 ## From Local Repositories
 
 ```shell
-$ sourced init </path/to/repositories>
+$ sourced init local </path/to/repositories>
 ```
 
 It will initialize **source{d} CE** to analyze the git repositories under the passed path, or under the current directory if no one is passed. The repositories will be found recursively.
