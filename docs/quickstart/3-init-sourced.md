@@ -46,6 +46,6 @@ Docker for Mac [requires enabling file sharing](https://docs.docker.com/docker-f
 ## What's Next?
 
 Once **source{d} CE** has been initialized, it will automatically open the web UI.
-If the UI is not opened automatically, you can use `sourced web` command, or visit http://localhost:8088.
+If the UI is not opened automatically, you can use `sourced web` command, or visit http://127.0.0.1:8088.
 
 Use login: `admin` and password: `admin`, to access the web interface.

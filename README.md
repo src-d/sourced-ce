@@ -53,7 +53,7 @@ To run it you only need:
    ```bash
    $ sourced init orgs --token=<github_token> <github_org_name>
    ```
-   And log in into http://localhost:8088 with login: `admin`, and password: `admin`.
+   And log in into http://127.0.0.1:8088 with login: `admin`, and password: `admin`.
 
 If you want more details of each step, you will find in the [**Quick Start Guide**](docs/quickstart/README.md) all the steps to get started with **source{d} CE**, from the installation of its dependencies to running SQL queries to inspect git repositories.
 

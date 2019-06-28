@@ -1,6 +1,6 @@
 # Explore source{d} CE Web Interface
 
-Once **source{d} CE** has been [initialized with `sourced init`](./3-init-sourced.md), it will automatically open the web UI. If the UI is not automatically opened, you can use `sourced web` command, or visit http://localhost:8088.
+Once **source{d} CE** has been [initialized with `sourced init`](./3-init-sourced.md), it will automatically open the web UI. If the UI is not automatically opened, you can use `sourced web` command, or visit http://127.0.0.1:8088.
 
 Use login: `admin` and password: `admin`, to access the web interface.
 
