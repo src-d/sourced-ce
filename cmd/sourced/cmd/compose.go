@@ -32,6 +32,7 @@ func (c *composeDownloadCmd) Execute(args []string) error {
 	}
 
 	fmt.Println("Docker compose file successfully downloaded to your ~/.sourced/compose-files directory. It is now the active compose file.")
+	fmt.Println("To update your current installation use `sourced restart`")
 	return nil
 }
 
@@ -76,6 +77,7 @@ func (c *composeSetDefaultCmd) Execute(args []string) error {
 	}
 
 	fmt.Println("Active docker compose file was changed successfully.")
+	fmt.Println("To update your current installation use `sourced restart`")
 	return nil
 }
 
