@@ -122,7 +122,12 @@ func ActivePath() (string, error) {
 		return "", err
 	}
 
-	return filepath.EvalSymlinks(path)
+	resolvedPath, err := filepath.EvalSymlinks(path)
+	if os.IsNotExist(err) {
+		return "", ErrMalformed.New("active", "not found")
+	}
+
+	return resolvedPath, err
 }
 
 // List returns array of working directories names
