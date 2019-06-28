@@ -25,5 +25,6 @@ The `sourced` binary is a wrapper for Docker Compose that downloads the `docker-
   - `download`: Download docker compose files
   - `list`: List the downloaded docker compose files
   - `set`: Set the active docker compose file
+- `restart`: Update current installation according to the active docker compose file
 
 </details>

@@ -98,6 +98,10 @@ You can activate any other with `compose set`.
 
 Sets the active `docker-compose.yml` file.
 
+#### sourced restart
+
+Updates current installation according to the active docker compose file.
+
 
 ## Open Interfaces
 
