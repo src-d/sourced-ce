@@ -17,6 +17,7 @@ services:
       # use main db
       GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
       GITCOLLECTOR_HALF_CPU: 'true'
+      GITCOLLECTOR_NO_UPDATES: 'true'
       LOG_LEVEL: debug
     depends_on:
       - postgres
