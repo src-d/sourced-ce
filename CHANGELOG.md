@@ -17,6 +17,7 @@ The `sourced` binary is a wrapper for Docker Compose that downloads the `docker-
 - `status`: Show the status of all components
 - `stop`: Stop any running components
 - `start`: Start any stopped components
+- `logs`: Show logs from components
 - `web`: Open the web interface in your browser
 - `sql`: Open a MySQL client connected to a SQL interface for Git
 - `prune`: Stop and remove components and resources
