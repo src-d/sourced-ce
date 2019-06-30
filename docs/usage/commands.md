@@ -102,6 +102,8 @@ Sets the active `docker-compose.yml` file.
 
 Updates current installation according to the active docker compose file.
 
+It only recreates the component containers, keeping all your data, as charts, dashboards, repositories and GitHub metadata.
+
 
 ## Open Interfaces
 
