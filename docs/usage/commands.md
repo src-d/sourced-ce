@@ -111,6 +111,17 @@ It only recreates the component containers, keeping all your data, as charts, da
 
 Opens a MySQL client connected to gitbase.
 
+You can also pass a SQL query to be run by gitbase instead of opening the REPL, e.g.
+```shell
+$ sourced sql "show databases"
+
++----------+
+| Database |
++----------+
+| gitbase  |
++----------+
+```
+
 **source{d} CE** SQL supports a [UAST](#babelfish-uast) function that returns a Universal AST for the selected source text. UAST values are returned as binary blobs and are best visualized in the [SQL Lab, from the web interface](.../quickstart/4-explore-sourced.md#sql-lab-querying-code) rather than the CLI where are seen as binary data.
 
 ### sourced web
