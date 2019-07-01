@@ -18,6 +18,31 @@ The whole architecture is based on Docker containers, orchestrated by Docker Com
 and managed by `sourced`.
 
 
+## Components of source{d}
+
+**source{d} CE** relies on different components to handle different use cases
+and to cover different functionalities. Each component is implemented as a running
+Docker container.
+
+- `bblfsh`: parses source code into UASTs using [Babelfish](https://docs.sourced.tech/babelfish/);
+you can learn more about it in our [Babelfish UAST guide](usage/bblfsh.md)
+- `gitbase`: runs [gitbase](https://docs.sourced.tech/gitbase), a SQL database
+interface to Git repositories.
+- `gitcollector`: is responsible for fetching repositories from the organizations
+used to initialize **source{d} CE**. It uses [gitcollector](https://github.com/src-d/gitcollector).
+- `ghsync`: is responsible for fetching repository metadata from the organizations
+used to initialize **source{d} CE**. It uses [ghsync](https://github.com/src-d/ghsync)
+- `metadatadb`: runs the PostgreSQL database that stores the repositories
+metadata (users, pull requests, issues...) extracted by `ghsync`.
+- `postgres`: runs the PostgreSQL database that stores the state of the UI
+(charts, dashboards, users, saved queries and such).
+- `sourced-ui`: runs the **source{d} CE** Web Interface. This component queries
+data from `bblfsh`, `gitbase`, `metadatadb` and `postgres`.
+
+Some of these components can be accessed from the outside as described by
+[Docker Networking section](#docker-networking).
+
+
 ## Docker Set Up
 
 In order to make this work in the easiest way, some design decisions were made:
