@@ -47,10 +47,19 @@ the same prefix than the containers inside the same environment, e.g.
 
 Some environment services can be accessed from the outside, using their exposed
 port and connection values:
-- `bblfsh`: `9432`
-- `gitbase`: `3306`
-- `metadatadb`: `5433`
-- `sourced-ui`: `8088`
+- `bblfsh`:
+    - port: `9432`
+- `gitbase`:
+    - port: `3306`
+    - database: `gitbase`
+    - user: `root`
+- `metadatadb`:
+    - port: `5433`
+    - database: `metadata`
+    - user: `metadata`
+    - password: `metadata`
+- `sourced-ui`:
+    - port: `8088`
 
 ### Persistence
 

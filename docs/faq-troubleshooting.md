@@ -6,6 +6,7 @@
 - [How Can I Update My Version Of source{d} CE?](#how-can-i-update-my-version-of-source-d-ce)
 - [How To Restore Dashboards and Charts to Defaults](#how-to-restore-dashboards-and-charts-to-defaults)
 - [How Can I See Logs of Running Components?](#how-can-i-see-logs-of-running-components)
+- [Can I Query Gitbase or Babelfish with External Tools?](#can-i-query-gitbase-or-babelfish-with-external-tools)
 - [Where Can I Read More About the Web Interface?](#where-can-i-read-more-about-the-web-interface)
 - [When I Try to Create a Chart from a Query, Nothing Happens.](#when-i-try-to-create-a-chart-from-a-query-nothing-happens)
 - [When I Try to Export a Dashboard, Nothing Happens.](#when-i-try-to-export-a-dashboard-nothing-happens)
@@ -93,6 +94,19 @@ instead of exiting after the last logged one.
 Where you can pass a space separated list of component names to see only their
 logs (i.e. `sourced-ui`, `gitbase`, `bblfsh`, `gitcollector`, `ghsync`, `metadatadb`, `postgres`, `redis`).
 If you do not pass any component name, there will appear the logs of all of them.
+
+
+## Can I Query Gitbase or Babelfish with External Tools?
+
+Yes, as explained in our docs about [**source{d} CE** Architecture](./architecture.md#docker-networking),
+these and other components are exposed to the host machine, to be used by third
+party tools like [Jupyter Notebook](https://jupyter.org/),
+[gitbase clients](https://docs.sourced.tech/gitbase/using-gitbase/supported-clients)
+and [Babelfish clients](https://docs.sourced.tech/babelfish/using-babelfish/clients).
+
+The connection values that you should use to connect to these components, are
+defined in the [`docker-compose.yml`](../docker-compose.yml), and sumarized in
+the [Architecture documentation](./architecture.md#docker-networking)
 
 
 ## Where Can I Read More About the Web Interface?
