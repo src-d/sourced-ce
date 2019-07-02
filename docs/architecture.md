@@ -45,14 +45,23 @@ them are attached to the same single bridge network. The network name also has
 the same prefix than the containers inside the same environment, e.g.
 `srcd-c3jjlwq_default`.
 
-Some environment services can be accessed from the outside, using the port exposed
-for this purpose:
-- `bblfsh`: `9432`
-- `gitbase`: `3306`
-- `metadatadb`: `5433`
-- `sourced-ui`: `8088`
+Some environment services can be accessed from the outside, using their exposed
+port and connection values:
+- `bblfsh`:
+    - port: `9432`
+- `gitbase`:
+    - port: `3306`
+    - database: `gitbase`
+    - user: `root`
+- `metadatadb`:
+    - port: `5433`
+    - database: `metadata`
+    - user: `metadata`
+    - password: `metadata`
+- `sourced-ui`:
+    - port: `8088`
 
-## Persistence
+### Persistence
 
 To prevent losing data when restarting services, or upgrading containers, the data
 is stored in volumes. These volumes also share the same prefix with the containers

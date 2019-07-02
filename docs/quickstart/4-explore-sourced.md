@@ -1,8 +1,19 @@
 # Explore source{d} CE Web Interface
 
+_If you have any problem running **source{d} CE** you can take a look to our [FAQ & Troubleshooting](docs/faq-troubleshooting.md) section, and to our [source{d} Forum](https://forum.sourced.tech), where you can also ask for help when using **source{d} CE**. If you spotted a bug, or have a feature request, please [open an issue](https://github.com/src-d/sourced-ce/issues) to let us know abut it._
+
+_In some circumstances, loading the data for the dashboards can take some time, and the UI can be frozen in the meanwhile. It can happen &mdash;on big datasets&mdash;, the first time you access the dashboards, or when they are refreshed. Please, take a look to our
+[FAQ & Troubleshooting](docs/faq-troubleshooting.md#the-dashboard-takes-a-long-to-load-and-the-ui-freezes)
+to get more info about this exact issue._
+
 Once **source{d} CE** has been [initialized with `sourced init`](./3-init-sourced.md), it will automatically open the web UI. If the UI is not automatically opened, you can use `sourced web` command, or visit http://127.0.0.1:8088.
 
 Use login: `admin` and password: `admin`, to access the web interface.
+
+If you [initialized **source{d} CE** from GitHub Organizations](./3-init-sourced.md#from-github-oganizations), its repositories and metadata will be downloaded on background, and it will be available graduatelly. You will find more info in the welcome dashboard once you log in.
+
+
+## Sections
 
 The most relevant features that **source{d} CE** Web Interface offers are:
 - **[SQL Lab](#sql-lab-querying-code-and-metadata)**, to query your repositories and its GitHub metadata.
