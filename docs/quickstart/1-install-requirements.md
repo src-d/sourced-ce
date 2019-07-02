@@ -13,6 +13,8 @@ Follow the instructions based on your OS:
 
 ## Docker Compose
 
-**source{d} CE** is deployed as Docker containers, using [Docker Compose](https://docs.docker.com/compose), but it is not required to have a local installation of Docker Compose; if it is not found it will be deployed inside a container.
+**source{d} CE** is deployed as Docker containers, using [Docker Compose](https://docs.docker.com/compose).
 
-If you prefer a local installation of Docker Compose, you can follow the [Docker Compose install guide](https://docs.docker.com/compose/install)
+In Linux and macOS, it is not required to have a local installation of Docker Compose, because if it is not found it will be deployed inside a container.
+
+In Windows, or if you prefer a local installation of Docker Compose, you can follow the [Docker Compose install guide](https://docs.docker.com/compose/install)

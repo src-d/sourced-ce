@@ -47,7 +47,7 @@ This repository contains the code of **source{d} Community Edition (CE)** and it
 
 To run it you only need:
 
-1. To have Docker installed in your PC
+1. To have Docker installed in your PC (and Docker Compose in Windows)
 1. Download `sourced` binary (for your OS) from [our releases](https://github.com/src-d/sourced-ce/releases)
 1. Run it:
    ```bash
