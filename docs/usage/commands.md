@@ -22,6 +22,11 @@ It can work over a local repository or a list of GitHub organizations.
 
 **source{d} CE** will download and install Docker images on demand. Therefore, the first time you run some of these commands, they might take a bit of time to start up. Subsequent runs will be faster.
 
+Once **source{d} CE** has been initialized, it will automatically open the web UI.
+If the UI is not opened automatically, you can use [`sourced web`](#sourced-web) command, or visit http://127.0.0.1:8088.
+
+Use login: `admin` and password: `admin`, to access the web interface.
+
 #### sourced init orgs
 
 ```shell
@@ -141,6 +146,8 @@ $ sourced sql "show databases"
 ### sourced web
 
 Opens the web interface in your browser.
+
+Use login: `admin` and password: `admin`, to access the web interface.
 
 
 ## Others

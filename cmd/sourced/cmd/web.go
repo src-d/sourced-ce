@@ -19,7 +19,7 @@ import (
 const containerName = "sourced-ui"
 
 type webCmd struct {
-	Command `name:"web" short-description:"Open the web interface in your browser" long-description:"Open the web interface in your browser"`
+	Command `name:"web" short-description:"Open the web interface in your browser." long-description:"Open the web interface in your browser, by default at: http://127.0.0.1:8088 user:admin pass:admin"`
 }
 
 func (c *webCmd) Execute(args []string) error {
@@ -73,6 +73,13 @@ func OpenUI(timeout time.Duration) error {
 	go func() {
 		ch <- openUI()
 	}()
+
+	fmt.Println(`
+Once source{d} is fully initialized, the UI will be available, by default at:
+  http://127.0.0.1:8088
+  user:admin
+  pass:admin
+	`)
 
 	if timeout > 5*time.Second {
 		stopSpinner := startSpinner("Initializing source{d}...")
