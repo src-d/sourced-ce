@@ -62,6 +62,20 @@ Container images are not deleted unless you specify the `--images` flag.
 
 If you want to completely uninstall `sourced` you must also delete the `~/.sourced` directory.
 
+### sourced logs
+
+Show logs from source{d} components.
+
+If `--follow` is used the logs are shown as they are logged until you exit with `Ctrl+C`.
+
+You can optionally pass component names to see only their logs.
+
+```shell
+$ sourced logs
+$ sourced logs --follow
+$ sourced logs --follow gitbase bblfsh
+```
+
 
 ## Manage Configuration
 
