@@ -64,11 +64,11 @@ If you want to completely uninstall `sourced` you must also delete the `~/.sourc
 
 ### sourced logs
 
-Show logs from components.
+Show logs from source{d} components.
 
-If it's passed `--follow`, the logs are shown as they are logged till you exit with `Ctrl+C`.
+If `--follow` is used the logs are shown as they are logged until you exit with `Ctrl+C`.
 
-It can be passed only some component names, to see only its logs.
+You can optionally pass component names to see only their logs.
 
 ```shell
 $ sourced logs

@@ -7,7 +7,7 @@ import (
 )
 
 type logsCmd struct {
-	Command `name:"logs" short-description:"Fetch the logs of source{d}" long-description:"Fetch the logs of source{d}"`
+	Command `name:"logs" short-description:"Fetch the logs of source{d} components" long-description:"Fetch the logs of source{d} components"`
 
 	Follow bool `short:"f" long:"follow" description:"Follow log output"`
 	Args   struct {
