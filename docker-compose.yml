@@ -72,7 +72,7 @@ services:
       - bblfsh
 
   redis:
-    image: redis:3.2
+    image: redis:5-alpine
     restart: unless-stopped
     ports:
       - 6379:6379
@@ -80,7 +80,7 @@ services:
       - redis:/data
 
   postgres:
-    image: postgres:10
+    image: postgres:10-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: superset
@@ -92,7 +92,7 @@ services:
       - postgres:/var/lib/postgresql/data
 
   metadatadb:
-    image: postgres:10
+    image: postgres:10-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: metadata
