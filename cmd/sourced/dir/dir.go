@@ -12,8 +12,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Path returns the absolute path for $HOME/.sourced
+// Path returns the absolute path for $SOURCED_DIR, or $HOME/.sourced if unset
 func Path() (string, error) {
+	if d := os.Getenv("SOURCED_DIR"); d != "" {
+		return filepath.Abs(d)
+	}
+
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.Wrap(err, "could not detect home directory")
