@@ -46,7 +46,7 @@ services:
       GHSYNC_POSTGRES_PORT: 5432
 
   gitbase:
-    image: srcd/gitbase:v0.22.0-rc2
+    image: srcd/gitbase:v0.23.1
     ports:
       - 3306:3306
     environment:
