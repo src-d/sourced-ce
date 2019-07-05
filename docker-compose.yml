@@ -8,7 +8,7 @@ services:
     restart: always
 
   gitcollector:
-    image: srcd/gitcollector:v0.0.1
+    image: srcd/gitcollector:v0.0.2
     # wait for db
     command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
