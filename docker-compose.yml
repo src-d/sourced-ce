@@ -8,7 +8,7 @@ services:
     restart: always
 
   gitcollector:
-    image: srcd/gitcollector:v0.0.1
+    image: srcd/gitcollector:v0.0.2
     # wait for db
     command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
@@ -46,7 +46,7 @@ services:
       GHSYNC_POSTGRES_PORT: 5432
 
   gitbase:
-    image: srcd/gitbase:v0.22.0-rc2
+    image: srcd/gitbase:v0.23.1
     ports:
       - 3306:3306
     environment:
@@ -104,7 +104,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.3.0-rc.1
+    image: srcd/sourced-ui:v0.3.0
     restart: unless-stopped
     environment:
       SYNC_MODE: ${GITBASE_SIVA}
