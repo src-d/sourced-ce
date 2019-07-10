@@ -22,7 +22,7 @@ require (
 	github.com/src-d/envconfig v1.0.0 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
-	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734 // indirect
+	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734
 	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c // indirect
 	gopkg.in/src-d/go-cli.v0 v0.0.0-20190422143124-3a646154da79
 	gopkg.in/src-d/go-errors.v1 v1.0.0
