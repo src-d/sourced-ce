@@ -140,7 +140,7 @@ services:
       - metadatadb
       - redis
       - gitbase
-      - ghsync
+      - bblfsh-web
 
 volumes:
   gitbase_repositories:
