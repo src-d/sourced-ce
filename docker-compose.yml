@@ -2,10 +2,10 @@ version: '3.2'
 services:
   bblfsh:
     image: bblfsh/bblfshd:v2.14.0-drivers
+    restart: unless-stopped
     privileged: true
     ports:
       - 9432:9432
-    restart: always
 
   gitcollector:
     image: srcd/gitcollector:v0.0.2
@@ -47,6 +47,7 @@ services:
 
   gitbase:
     image: srcd/gitbase:v0.23.1
+    restart: unless-stopped
     ports:
       - 3306:3306
     environment:
@@ -61,10 +62,10 @@ services:
         read_only: true
         consistency: delegated
       - gitbase_indexes:/var/lib/gitbase/index
-    restart: always
 
   bblfsh-web:
     image: bblfsh/web:v0.11.1
+    restart: unless-stopped
     command: -bblfsh-addr bblfsh:9432
     ports:
       - 9999:8080
