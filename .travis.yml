@@ -32,6 +32,14 @@ jobs:
         - make packages
         - make test-coverage
 
+    - stage: tests
+      name: 'Integration Tests Linux'
+      script:
+        # cannot use 'make test-integration' because 'make clean' fails with
+        # GO111MODULE, see https://github.com/golang/go/issues/31002
+        - make build
+        - make test-integration-no-build
+
     - stage: release
       name: 'Release to GitHub'
       script:
