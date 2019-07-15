@@ -87,6 +87,11 @@ repo_a
 		`repository_id
 repo_b
 `)
+
+	// Test SQL queries. This should be a different test, but since starting
+	// the environment takes a long time, it is bundled together here to speed up
+	// the tests
+	s.testSQL()
 }
 
 func (s *InitLocalTestSuite) initGitRepo(path string) {
