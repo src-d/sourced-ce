@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"context"
+	"os"
 
 	"github.com/src-d/sourced-ce/cmd/sourced/compose"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 type sqlCmd struct {
@@ -15,7 +18,11 @@ type sqlCmd struct {
 }
 
 func (c *sqlCmd) Execute(args []string) error {
-	command := []string{"exec", "gitbase", "mysql"}
+	command := []string{"exec"}
+	if !terminal.IsTerminal(int(os.Stdout.Fd())) || !terminal.IsTerminal(int(os.Stdin.Fd())) {
+		command = append(command, "-T")
+	}
+	command = append(command, "gitbase", "mysql")
 	if c.Args.Query != "" {
 		command = append(command, "--execute", c.Args.Query)
 	}
