@@ -90,7 +90,11 @@ func checkGitcollector(require *require.Assertions, repos int) {
 func (s *InitOrgsTestSuite) TestOneOrg() {
 	require := s.Require()
 
-	r := s.RunCommand("init", "orgs", "golang-migrate")
+	// TODO will need to change with https://github.com/src-d/sourced-ce/issues/144
+	r := s.RunCommand("workdirs")
+	require.Error(r.Error)
+
+	r = s.RunCommand("init", "orgs", "golang-migrate")
 	require.NoError(r.Error, r.Combined())
 
 	r = s.RunCommand("workdirs")
@@ -109,4 +113,9 @@ func (s *InitOrgsTestSuite) TestOneOrg() {
 		`repository_id
 github.com/golang-migrate/migrate
 `)
+
+	// Test SQL queries. This should be a different test, but since starting
+	// the environment takes a long time, it is bundled together here to speed up
+	// the tests
+	s.testSQL()
 }
