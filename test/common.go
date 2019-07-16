@@ -8,7 +8,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -60,4 +62,42 @@ func (s *IntegrationSuite) TearDownTest() {
 	s.RunCommand("prune", "--all")
 
 	os.RemoveAll(s.TestDir)
+}
+
+func (s *IntegrationSuite) testSQL() {
+	testCases := []string{
+		"show tables",
+		"show tables;",
+		" show tables ; ",
+		"/* comment */ show tables;",
+		`/* multi line
+			comment */
+			show tables;`,
+	}
+
+	showTablesOutput :=
+		`Table
+blobs
+commit_blobs
+commit_files
+commit_trees
+commits
+files
+ref_commits
+refs
+remotes
+repositories
+tree_entries
+`
+
+	for _, query := range testCases {
+		s.T().Run(query, func(t *testing.T) {
+			assert := assert.New(t)
+
+			r := s.RunCommand("sql", query)
+			assert.NoError(r.Error, r.Combined())
+
+			assert.Contains(r.Stdout(), showTablesOutput)
+		})
+	}
 }
