@@ -11,7 +11,9 @@ go_import_path: github.com/src-d/sourced-ce
 go:
   - 1.12.x
 env:
-  - GO111MODULE=on
+  global:
+    - GO111MODULE=on
+    - SOURCED_GITHUB_TOKEN=$GITHUB_TOKEN
 
 matrix:
   fast_finish: true
