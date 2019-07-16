@@ -2,6 +2,10 @@ module github.com/src-d/sourced-ce
 
 go 1.12
 
+// See https://github.com/gotestyourself/gotest.tools/issues/156
+// replace gotest.tools => gotest.tools v2.3.0
+replace gotest.tools => gotest.tools v0.0.0-20181223230014-1083505acf35
+
 require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/golang/protobuf v1.3.1 // indirect
@@ -20,7 +24,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.1 // indirect
 	github.com/src-d/envconfig v1.0.0 // indirect
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/stretchr/testify v1.3.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
 	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734
 	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c // indirect
@@ -28,4 +32,5 @@ require (
 	gopkg.in/src-d/go-errors.v1 v1.0.0
 	gopkg.in/src-d/go-log.v1 v1.0.2 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
+	gotest.tools v0.0.0-00010101000000-000000000000
 )

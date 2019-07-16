@@ -14,3 +14,22 @@ $(MAKEFILE):
 
 -include $(MAKEFILE)
 
+GOTEST_BASE = go test -v -timeout 20m -parallel 1 -count 1 -ldflags "$(LD_FLAGS)"
+GOTEST_INTEGRATION = $(GOTEST_BASE) -tags="forceposix integration"
+
+OS := $(shell uname)
+
+ifeq ($(OS),Darwin)
+test-integration-clean:
+	$(eval TMPDIR_INTEGRATION_TEST := $(PWD)/integration-test-tmp)
+	$(eval GOTEST_INTEGRATION := TMPDIR=$(TMPDIR_INTEGRATION_TEST) $(GOTEST_INTEGRATION))
+	rm -rf $(TMPDIR_INTEGRATION_TEST)
+	mkdir $(TMPDIR_INTEGRATION_TEST)
+else
+test-integration-clean:
+endif
+
+test-integration-no-build: test-integration-clean
+	$(GOTEST_INTEGRATION) github.com/src-d/sourced-ce/test/
+
+test-integration: clean build test-integration-no-build
