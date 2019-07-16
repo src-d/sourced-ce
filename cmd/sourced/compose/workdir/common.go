@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -150,6 +151,7 @@ func List() ([]string, error) {
 		}
 	}
 
+	sort.Strings(res)
 	return res, nil
 }
 
