@@ -88,28 +88,28 @@ func checkGitcollector(require *require.Assertions, repos int) {
 }
 
 func (s *InitOrgsTestSuite) TestOneOrg() {
-	require := s.Require()
+	req := s.Require()
 
 	// TODO will need to change with https://github.com/src-d/sourced-ce/issues/144
 	r := s.RunCommand("workdirs")
-	require.Error(r.Error)
+	req.Error(r.Error)
 
 	r = s.RunCommand("init", "orgs", "golang-migrate")
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
 	r = s.RunCommand("workdirs")
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
-	require.Equal("* golang-migrate\n", r.Stdout())
+	req.Equal("* golang-migrate\n", r.Stdout())
 
-	checkGhsync(require, 1)
-	checkGitcollector(require, 1)
+	checkGhsync(req, 1)
+	checkGitcollector(req, 1)
 
 	// Check gitbase can also see the repositories
 	r = s.RunCommand("sql", "select * from repositories where repository_id='github.com/golang-migrate/migrate'")
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
-	require.Contains(r.Stdout(),
+	req.Contains(r.Stdout(),
 		`repository_id
 github.com/golang-migrate/migrate
 `)
@@ -118,4 +118,44 @@ github.com/golang-migrate/migrate
 	// the environment takes a long time, it is bundled together here to speed up
 	// the tests
 	s.testSQL()
+
+	client, err := newSupersetClient()
+	req.NoError(err)
+
+	// Test the list of dashboards created in superset
+	s.T().Run("dashboard-list", func(t *testing.T) {
+		req := require.New(t)
+
+		links, err := client.dashboards()
+		req.NoError(err)
+
+		s.Equal([]string{
+			`<a href="/superset/dashboard/1/">Overview</a>`,
+			`<a href="/superset/dashboard/2/">Welcome</a>`,
+			`<a href="/superset/dashboard/3/">Collaboration</a>`,
+		}, links)
+	})
+
+	// Test gitbase queries through superset
+	s.T().Run("superset-gitbase", func(t *testing.T) {
+		req := require.New(t)
+
+		rows, err := client.gitbase("select * from repositories")
+		req.NoError(err)
+
+		s.Equal([]map[string]interface{}{
+			{"repository_id": "github.com/golang-migrate/migrate"},
+		}, rows)
+	})
+
+	// Test metadata queries through superset
+	s.T().Run("superset-metadata", func(t *testing.T) {
+		req := require.New(t)
+
+		rows, err := client.metadata("select * from organizations")
+		req.NoError(err)
+		req.Len(rows, 1)
+
+		s.Equal("golang-migrate", rows[0]["login"])
+	})
 }
