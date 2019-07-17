@@ -19,6 +19,11 @@ GOTEST_INTEGRATION = $(GOTEST_BASE) -tags="forceposix integration"
 
 OS := $(shell uname)
 
+# override clean target from CI to avoid executing `go clean`
+# see https://github.com/src-d/sourced-ce/pull/154
+clean:
+	rm -rf $(BUILD_PATH) $(BIN_PATH) $(VENDOR_PATH)
+
 ifeq ($(OS),Darwin)
 test-integration-clean:
 	$(eval TMPDIR_INTEGRATION_TEST := $(PWD)/integration-test-tmp)
