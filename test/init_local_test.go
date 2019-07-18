@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -39,11 +40,11 @@ func (s *InitLocalTestSuite) TestWithInvalidWorkdir() {
 }
 
 func (s *InitLocalTestSuite) TestChangeWorkdir() {
-	require := s.Require()
+	req := s.Require()
 
 	// TODO will need to change with https://github.com/src-d/sourced-ce/issues/144
 	r := s.RunCommand("workdirs")
-	require.Error(r.Error)
+	req.Error(r.Error)
 
 	// Create 2 workdirs, each with a repo
 	workdirA := filepath.Join(s.TestDir, "workdir_a")
@@ -56,34 +57,34 @@ func (s *InitLocalTestSuite) TestChangeWorkdir() {
 
 	// init with workdir A
 	r = s.RunCommand("init", "local", workdirA)
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
 	r = s.RunCommand("workdirs")
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
-	require.Equal(fmt.Sprintf("* %v\n", workdirA), r.Stdout())
+	req.Equal(fmt.Sprintf("* %v\n", workdirA), r.Stdout())
 
 	r = s.RunCommand("sql", "select * from repositories")
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
-	require.Contains(r.Stdout(),
+	req.Contains(r.Stdout(),
 		`repository_id
 repo_a
 `)
 
 	// init with workdir B
 	r = s.RunCommand("init", "local", workdirB)
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
 	r = s.RunCommand("workdirs")
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
-	require.Equal(fmt.Sprintf("  %v\n* %v\n", workdirA, workdirB), r.Stdout())
+	req.Equal(fmt.Sprintf("  %v\n* %v\n", workdirA, workdirB), r.Stdout())
 
 	r = s.RunCommand("sql", "select * from repositories")
-	require.NoError(r.Error, r.Combined())
+	req.NoError(r.Error, r.Combined())
 
-	require.Contains(r.Stdout(),
+	req.Contains(r.Stdout(),
 		`repository_id
 repo_b
 `)
@@ -92,6 +93,34 @@ repo_b
 	// the environment takes a long time, it is bundled together here to speed up
 	// the tests
 	s.testSQL()
+
+	client, err := newSupersetClient()
+	req.NoError(err)
+
+	// Test the list of dashboards created in superset
+	s.T().Run("dashboard-list", func(t *testing.T) {
+		req := require.New(t)
+
+		links, err := client.dashboards()
+		req.NoError(err)
+
+		s.Equal([]string{
+			`<a href="/superset/dashboard/1/">Overview</a>`,
+			`<a href="/superset/dashboard/welcome-local/">Welcome</a>`,
+		}, links)
+	})
+
+	// Test gitbase queries through superset
+	s.T().Run("superset-gitbase", func(t *testing.T) {
+		req := require.New(t)
+
+		rows, err := client.gitbase("select * from repositories")
+		req.NoError(err)
+
+		s.Equal([]map[string]interface{}{
+			{"repository_id": "repo_b"},
+		}, rows)
+	})
 }
 
 func (s *InitLocalTestSuite) initGitRepo(path string) {
