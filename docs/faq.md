@@ -1,4 +1,4 @@
-# FAQ and 
+# FAQ
 
 _For tips and advices to deal with unexpected errors, please refer to [Troubleshooting guide](./troubleshooting.md)_
 

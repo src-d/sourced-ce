@@ -3,9 +3,8 @@
 
 _For commonly asked questions and their answers, you can refer to the [FAQ](./faq.md)_
 
-**source{d} CE** is still in beta stage, so some features are still missing or
-incomplete. Some things to improve are error handling and how errors are logged
-and notified to the user. In the current stage, following these steps is the
+Currently, **source{d} CE** does not expose nor log all errors directly into the
+UI. In the current stage of **source{d} CE**, following these steps is the
 better way to know if something is failing, why, and to know how to recover the
 app from some problems. The first two steps use to be always mandatory:
 
