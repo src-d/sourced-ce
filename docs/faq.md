@@ -1,21 +1,23 @@
-# FAQ and Troubleshooting
+# FAQ and 
+
+_For tips and advices to deal with unexpected errors, please refer to [Troubleshooting guide](./troubleshooting.md)_
 
 ## Index
 
 - [Where Can I Find More Assistance to Run source{d} or Notify You About Any Issue or Suggestion?](#where-can-i-find-more-assistance-to-run-source-d-or-notify-you-about-any-issue-or-suggestion)
-- [How Can I Update My Version Of source{d} CE?](#how-can-i-update-my-version-of-source-d-ce)
+- [How Can I Update My Version Of **source{d} CE**?](#how-can-i-update-my-version-of-source-d-ce)
 - [How To Restore Dashboards and Charts to Defaults](#how-to-restore-dashboards-and-charts-to-defaults)
-- [How Can I See Logs of Running Components?](#how-can-i-see-logs-of-running-components)
+- [How to Update the Data from the Organizations That I'm Analyzing](#how-to-update-the-data-from-the-organizations-being-analyzed)
 - [Can I Query Gitbase or Babelfish with External Tools?](#can-i-query-gitbase-or-babelfish-with-external-tools)
 - [Where Can I Read More About the Web Interface?](#where-can-i-read-more-about-the-web-interface)
-- [When I Try to Create a Chart from a Query, Nothing Happens.](#when-i-try-to-create-a-chart-from-a-query-nothing-happens)
-- [When I Try to Export a Dashboard, Nothing Happens.](#when-i-try-to-export-a-dashboard-nothing-happens)
-- [The Dashboard Takes a Long to Load, and the UI Freezes.](#the-dashboard-takes-a-long-to-load-and-the-ui-freezes)
 
 
 ## Where Can I Find More Assistance to Run source{d} or Notify You About Any Issue or Suggestion?
 
-If this documentation was not enough, you could also try:
+_If you're dealing with an error or something that you think that can be caused
+by an unexpected error, please refer to our [Troubleshooting guide](./troubleshooting.md).
+With the info that you can obtain following those steps, you could fix the problem
+or you will be able to explain it better in the following channels:_
 
 * [open an issue](https://github.com/src-d/sourced-ce/issues), if you want to
 suggest a new feature, if you need assistance with a contribution, or if you
@@ -81,19 +83,40 @@ $ sourced restart
 ```
 
 
-## How Can I See Logs of Running Components?
+## How to Update the Data from the Organizations Being Analyzed
 
-```shell
-$ cd ~/.sourced/workdirs/__active__
-$ docker-compose logs -f [components...]
-```
+There is no way to update imported data, and
+[when a scraper is restarted](./troubleshooting.md#how-can-i-restart-one-scraper),
+it procedes as it follows:
 
-Where `-f` will keep the connection opened, and the logs will appear as they come
-instead of exiting after the last logged one.
+### gitcollector
 
-Where you can pass a space separated list of component names to see only their
-logs (i.e. `sourced-ui`, `gitbase`, `bblfsh`, `gitcollector`, `ghsync`, `metadatadb`, `postgres`, `redis`).
-If you do not pass any component name, there will appear the logs of all of them.
+Organizations and repositories are downloaded independently, so if they fail,
+the process is not stopped until all the organizations and repositories have been
+iterated.
+
+If `gitcollector` is restarted, it will download more repositories, but it won’t
+update any of the already existent ones. You can see the progress of the new process
+in the welcome dashboard; since already existent repositories won't be updated,
+those will appear as `failed` in progress status.
+
+### ghsync
+
+The way how metadata is imported by `ghsync` is a bit different, and it is done
+sequentially per each organization, so if any step fails, the whole importation
+will fail.
+
+Pull requests, issues, and users of the same organization, are imported in that
+order in separate transaction each one, and if one transaction fails, the process
+will be stopped so the next ones won't be processed.
+
+Once the three different entities have been imported, the organization will be
+considered as "done", and restarting `ghsync` won't cause to update its data.
+
+If `ghsync` is restarted, it will only import data from organizations that could
+not be finished considering the rules explained above. The process of `ghsync`
+will be updated in the welcome dashboard and if an organization was already
+imported, it will appear as "nothing imported" in the status chart.
 
 
 ## Can I Query Gitbase or Babelfish with External Tools?
@@ -114,44 +137,3 @@ the [Architecture documentation](./architecture.md#docker-networking)
 The user interface is based in the open-sourced [Apache Superset](http://superset.apache.org),
 so you can also refer to [Superset tutorials](http://superset.apache.org/tutorial.html)
 for advanced usage of the web interface.
-
-
-## When I Try to Create a Chart from a Query, Nothing Happens.
-
-The charts can be created from the SQL Lab, using the `Explore` button once you
-run a query. If nothing happens, the browser may be blocking the new window that
-should be opened to edit the new chart. You should configure your browser to let
-source{d} UI to open pop-ups (e.g. in Chrome it is done allowing `127.0.0.1:8088`
-to handle `pop-ups and redirects` from the `Site Settings` menu).
-
-
-## When I Try to Export a Dashboard, Nothing Happens.
-
-If nothing happens when pressing `Export` button from the dashboard list, then
-you should configure your browser to let source{d} UI to open pop-ups (e.g. in
-Chrome it is done allowing `127.0.0.1:8088` to handle `pop-ups and redirects`
-from the `Site Settings` menu)
-
-
-## The Dashboard Takes a Long to Load and the UI Freezes.
-
-_This is a known issue that we're trying to address, but here is more info about it._
-
-In some circumstances, loading the data for the dashboards can take some time,
-and the UI can be frozen in the meanwhile. It can happen &mdash;on big datasets&mdash;,
-the first time you access the dashboards, or when they are refreshed.
-
-There are some limitations with how Apache Superset handles long-running SQL
-queries, which may affect the dashboard charts. Since most of the charts of the
-Overview dashboard loads its data from gitbase, its queries can take more time
-than the expected for the UI.
-
-When it happens, the UI can be frozen, or you can get this message in some charts:
->_Query timeout - visualization queries are set to timeout at 300 seconds.
-Perhaps your data has grown, your database is under unusual load, or you are
-simply querying a data source that is too large to be processed within the timeout
-range. If that is the case, we recommend that you summarize your data further._
-
-When it occurs, you should wait till the UI is responsive again, and separately
-refresh each failing chart with its `force refresh` option (on its top-right corner).
-With some big datasets, it took 3 refreshes and 15 minutes to get data for all charts.

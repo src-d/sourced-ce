@@ -12,7 +12,8 @@
 
 ## Learn More
 
-* [FAQ & Troubleshooting](./faq-troubleshooting.md)
+* [FAQ](./faq.md)
+* [Troubleshooting](./troubleshooting.md)
 * [Architecture](./architecture.md)
 * [Contribute](./CONTRIBUTING.md)
 * [License](../LICENSE.md)
