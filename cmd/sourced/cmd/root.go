@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
+	"github.com/src-d/sourced-ce/cmd/sourced/dir"
 	"github.com/src-d/sourced-ce/cmd/sourced/format"
 
 	"gopkg.in/src-d/go-cli.v0"
@@ -42,7 +43,7 @@ type Command struct {
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Run(os.Args); err != nil {
-		if workdir.ErrMalformed.Is(err) {
+		if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) {
 			fmt.Println(format.Colorize(
 				format.Red,
 				`Cannot perform this action, source{d} needs to be initialized first with the 'init' sub command`,

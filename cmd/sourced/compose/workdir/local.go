@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 )
 
-// Init creates a working directory in ~/.sourced for the given repositories
+// InitWithPath creates a working directory in ~/.sourced for the given repositories
 // directory. The working directory will contain a docker-compose.yml and a
 // .env file.
 // If the directory is already initialized the function returns with no error.

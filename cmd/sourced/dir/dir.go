@@ -10,7 +10,11 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	goerrors "gopkg.in/src-d/go-errors.v1"
 )
+
+// ErrNotExist is returned when .sourced dir does not exists
+var ErrNotExist = goerrors.NewKind("%s does not exist")
 
 // Path returns the absolute path for $SOURCED_DIR, or $HOME/.sourced if unset
 func Path() (string, error) {
@@ -23,7 +27,13 @@ func Path() (string, error) {
 		return "", errors.Wrap(err, "could not detect home directory")
 	}
 
-	return filepath.Join(homedir, ".sourced"), nil
+	srcdDir := filepath.Join(homedir, ".sourced")
+	_, err = os.Lstat(srcdDir)
+	if os.IsNotExist(err) {
+		return "", ErrNotExist.New(srcdDir)
+	}
+
+	return srcdDir, nil
 }
 
 // DownloadURL downloads the given url to a file to the
