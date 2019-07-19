@@ -40,7 +40,7 @@ situation you should:
 
 ## How Can I See the Status of source{d} CE Components?
 
-To see the status (and versions) of **source{d} CE** components, just run:
+To see the status of **source{d} CE** components, just run:
 
 ```
 $ sourced status
