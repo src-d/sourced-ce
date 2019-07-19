@@ -8,7 +8,7 @@ services:
       - 9432:9432
 
   gitcollector:
-    image: srcd/gitcollector:v0.0.2
+    image: srcd/gitcollector:v0.0.3
     # wait for db
     command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
@@ -28,7 +28,7 @@ services:
         consistency: delegated
 
   ghsync:
-    image: srcd/ghsync:v0.2.0-beta.2
+    image: srcd/ghsync:v0.2.0-rc.1
     entrypoint: ['/bin/sh']
     # wait for db to be created
     # we need to use something like https://github.com/vishnubob/wait-for-it
@@ -105,7 +105,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.4.0-rc.1
+    image: srcd/sourced-ui:v0.4.0-rc.2
     restart: unless-stopped
     environment:
       SYNC_MODE: ${GITBASE_SIVA}
