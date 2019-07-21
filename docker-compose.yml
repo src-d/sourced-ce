@@ -18,7 +18,7 @@ services:
       GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
       GITCOLLECTOR_HALF_CPU: 'true'
       GITCOLLECTOR_NO_UPDATES: 'true'
-      LOG_LEVEL: debug
+      LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
       - postgres
     volumes:
@@ -44,6 +44,7 @@ services:
       GHSYNC_POSTGRES_PASSWORD: metadata
       GHSYNC_POSTGRES_HOST: metadatadb
       GHSYNC_POSTGRES_PORT: 5432
+      LOG_LEVEL: ${LOG_LEVEL:-info}
 
   gitbase:
     image: srcd/gitbase:v0.23.1
@@ -53,6 +54,7 @@ services:
     environment:
       BBLFSH_ENDPOINT: bblfsh:9432
       SIVA: ${GITBASE_SIVA}
+      GITBASE_LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
       - bblfsh
     volumes:
