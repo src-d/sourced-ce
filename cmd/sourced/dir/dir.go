@@ -1,5 +1,4 @@
-// Package dir provides functions to manage the $HOME/.sourced and /tmp/srcd
-// directories
+// Package dir provides functions to manage the config directories.
 package dir
 
 import (
@@ -13,13 +12,14 @@ import (
 	goerrors "gopkg.in/src-d/go-errors.v1"
 )
 
-// ErrNotExist is returned when .sourced dir does not exists
+// ErrNotExist is returned when config dir does not exists
 var ErrNotExist = goerrors.NewKind("%s does not exist")
 
 // ErrNotValid is returned when config dir is not valid
 var ErrNotValid = goerrors.NewKind("%s is not a valid config directory: %s")
 
 // Path returns the absolute path for $SOURCED_DIR, or $HOME/.sourced if unset
+// and returns an error if it does not exist or it could not be read.
 func Path() (string, error) {
 	srcdDir, err := path()
 	if err != nil {

@@ -353,8 +353,8 @@ func workdirsPath() (string, error) {
 	return filepath.Join(path, "workdirs"), nil
 }
 
-// function takes workdirs root and absolute path to workdir
-// return human-readable name
+// decodeName takes workdirs root and absolute path to workdir
+// return human-readable name. It returns an error if the path could not be built
 func decodeName(base, target string) (string, error) {
 	p, err := filepath.Rel(base, target)
 	if err != nil {
