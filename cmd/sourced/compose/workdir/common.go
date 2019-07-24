@@ -125,7 +125,7 @@ func ActivePath() (string, error) {
 
 	resolvedPath, err := filepath.EvalSymlinks(path)
 	if os.IsNotExist(err) {
-		return "", ErrMalformed.New("active", "not found")
+		return "", ErrMalformed.New("active", err)
 	}
 
 	return resolvedPath, err
