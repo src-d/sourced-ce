@@ -23,6 +23,9 @@ var (
 	// RequiredFiles list of required files in a directory to treat it as a working directory
 	RequiredFiles = []string{".env", "docker-compose.yml"}
 
+	// OptionalFiles list of optional files that could be deleted when pruning
+	OptionalFiles = []string{"docker-compose.override.yml"}
+
 	// ErrMalformed is the returned error when the workdir is wrong
 	ErrMalformed = goerrors.NewKind("workdir %s is not valid: %s")
 )
@@ -191,7 +194,7 @@ func ListPaths() ([]string, error) {
 	return res, nil
 }
 
-// RemovePath removes working directory by removing required files
+// RemovePath removes working directory by removing required and optional files,
 // and recursively removes directories up to the workdirs root as long as they are empty
 func RemovePath(path string) error {
 	workdirsRoot, err := workdirsPath()
@@ -199,8 +202,13 @@ func RemovePath(path string) error {
 		return err
 	}
 
-	for _, f := range RequiredFiles {
-		if err := os.Remove(filepath.Join(path, f)); err != nil {
+	for _, f := range append(RequiredFiles, OptionalFiles...) {
+		file := filepath.Join(path, f)
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			continue
+		}
+
+		if err := os.Remove(file); err != nil {
 			return errors.Wrap(err, "could not remove from workdir directory")
 		}
 	}
@@ -304,27 +312,29 @@ func isEmptyFile(path string) (bool, error) {
 
 // common initialization for both local and remote data
 func initWorkdir(workdirPath string, envFile envFile) error {
+	err := os.MkdirAll(workdirPath, 0755)
+	if err != nil {
+		return errors.Wrap(err, "could not create working directory")
+	}
+
 	defaultFilePath, err := composefile.InitDefault()
 	if err != nil {
 		return err
 	}
 
-	err = os.MkdirAll(workdirPath, 0755)
-	if err != nil {
-		return errors.Wrap(err, "could not create working directory")
+	composePath := filepath.Join(workdirPath, "docker-compose.yml")
+	if err := link(defaultFilePath, composePath); err != nil {
+		return err
 	}
 
-	composePath := filepath.Join(workdirPath, "docker-compose.yml")
-	_, err = os.Stat(composePath)
+	defaultOverridePath, err := composefile.InitDefaultOverride()
 	if err != nil {
-		if !os.IsNotExist(err) {
-			return errors.Wrap(err, "could not read the existing docker-compose.yml file")
-		}
+		return err
+	}
 
-		err = os.Symlink(defaultFilePath, composePath)
-		if err != nil {
-			return errors.Wrap(err, "could not create symlink to docker-compose.yml file")
-		}
+	workdirOverridePath := filepath.Join(workdirPath, "docker-compose.override.yml")
+	if err := link(defaultOverridePath, workdirOverridePath); err != nil {
+		return err
 	}
 
 	envPath := filepath.Join(workdirPath, ".env")
@@ -342,6 +352,20 @@ func initWorkdir(workdirPath string, envFile envFile) error {
 	}
 
 	return nil
+}
+
+func link(linkTargetPath, linkPath string) error {
+	_, err := os.Stat(linkPath)
+	if err == nil {
+		return nil
+	}
+
+	if !os.IsNotExist(err) {
+		return errors.Wrap(err, "could not read the existing FILE_NAME file")
+	}
+
+	err = os.Symlink(linkTargetPath, linkPath)
+	return errors.Wrap(err, fmt.Sprintf("could not create symlink to %s", linkTargetPath))
 }
 
 func workdirsPath() (string, error) {
