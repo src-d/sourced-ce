@@ -61,7 +61,11 @@ func Prepare() error {
 
 	err = validate(srcdDir)
 	if ErrNotExist.Is(err) {
-		return os.MkdirAll(srcdDir, os.ModePerm)
+		if err := os.MkdirAll(srcdDir, os.ModePerm); err != nil {
+			return ErrNotValid.New(srcdDir, err)
+		}
+
+		return nil
 	}
 
 	return err

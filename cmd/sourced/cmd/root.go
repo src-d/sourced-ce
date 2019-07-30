@@ -63,7 +63,7 @@ func log(err error) {
 	case fmt.Sprintf("%T", err) == "*flags.Error":
 		// syntax error is already logged by go-cli
 	default:
-		printRed("Unexpected error")
+		// unknown errors have no special message
 	}
 }
 
