@@ -1,5 +1,4 @@
-// Package dir provides functions to manage the $HOME/.sourced and /tmp/srcd
-// directories
+// Package dir provides functions to manage the config directories.
 package dir
 
 import (
@@ -13,13 +12,35 @@ import (
 	goerrors "gopkg.in/src-d/go-errors.v1"
 )
 
-// ErrNotExist is returned when .sourced dir does not exists
+// ErrNotExist is returned when config dir does not exists
 var ErrNotExist = goerrors.NewKind("%s does not exist")
 
+// ErrNotValid is returned when config dir is not valid
+var ErrNotValid = goerrors.NewKind("%s is not a valid config directory: %s")
+
 // Path returns the absolute path for $SOURCED_DIR, or $HOME/.sourced if unset
+// and returns an error if it does not exist or it could not be read.
 func Path() (string, error) {
+	srcdDir, err := path()
+	if err != nil {
+		return "", err
+	}
+
+	if err := validate(srcdDir); err != nil {
+		return "", err
+	}
+
+	return srcdDir, nil
+}
+
+func path() (string, error) {
 	if d := os.Getenv("SOURCED_DIR"); d != "" {
-		return filepath.Abs(d)
+		abs, err := filepath.Abs(d)
+		if err != nil {
+			return "", errors.Wrap(err, fmt.Sprintf("could not resolve SOURCED_DIR='%s'", d))
+		}
+
+		return abs, nil
 	}
 
 	homedir, err := os.UserHomeDir()
@@ -27,13 +48,50 @@ func Path() (string, error) {
 		return "", errors.Wrap(err, "could not detect home directory")
 	}
 
-	srcdDir := filepath.Join(homedir, ".sourced")
-	_, err = os.Lstat(srcdDir)
-	if os.IsNotExist(err) {
-		return "", ErrNotExist.New(srcdDir)
+	return filepath.Join(homedir, ".sourced"), nil
+}
+
+// Prepare tries to create the config directory, returning an error if it could not
+// be created, or nill if already exist or was successfully created.
+func Prepare() error {
+	srcdDir, err := path()
+	if err != nil {
+		return err
 	}
 
-	return srcdDir, nil
+	err = validate(srcdDir)
+	if ErrNotExist.Is(err) {
+		if err := os.MkdirAll(srcdDir, os.ModePerm); err != nil {
+			return ErrNotValid.New(srcdDir, err)
+		}
+
+		return nil
+	}
+
+	return err
+}
+
+// validate validates that the passed config dir path is valid
+func validate(path string) error {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return ErrNotExist.New(path)
+	}
+
+	if err != nil {
+		return ErrNotValid.New(path, err)
+	}
+
+	readWriteAccessMode := os.FileMode(0700)
+	if info.Mode()&readWriteAccessMode != readWriteAccessMode {
+		return ErrNotValid.New(path, "it has no read-write access")
+	}
+
+	if !info.IsDir() {
+		return ErrNotValid.New(path, "it is not a directory")
+	}
+
+	return nil
 }
 
 // DownloadURL downloads the given url to a file to the

@@ -13,6 +13,8 @@ import (
 	"github.com/pkg/browser"
 	"github.com/pkg/errors"
 	"github.com/src-d/sourced-ce/cmd/sourced/compose"
+	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
+	"github.com/src-d/sourced-ce/cmd/sourced/dir"
 )
 
 // The service name used in docker-compose.yml for the srcd/sourced-ui image
@@ -34,9 +36,15 @@ func openUI() error {
 	var stdout bytes.Buffer
 	// wait for the container to start, it can take a while in some cases
 	for {
-		if err := compose.RunWithIO(context.Background(),
-			os.Stdin, &stdout, nil, "port", containerName, "8088"); err == nil {
+		err := compose.RunWithIO(context.Background(),
+			os.Stdin, &stdout, nil, "port", containerName, "8088")
+
+		if err == nil {
 			break
+		}
+
+		if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) || dir.ErrNotValid.Is(err) {
+			return err
 		}
 
 		time.Sleep(1 * time.Second)
@@ -44,7 +52,7 @@ func openUI() error {
 
 	address := strings.TrimSpace(stdout.String())
 	if address == "" {
-		return fmt.Errorf("no address found")
+		return fmt.Errorf("could not find the public port of %s", containerName)
 	}
 
 	// docker-compose returns 0.0.0.0 which is correct for the bind address
@@ -61,7 +69,7 @@ func openUI() error {
 	}
 
 	if err := browser.OpenURL(url); err != nil {
-		errors.Wrap(err, "cannot open browser")
+		return errors.Wrap(err, "could not open the browser")
 	}
 
 	return nil
@@ -88,7 +96,7 @@ Once source{d} is fully initialized, the UI will be available, by default at:
 
 	select {
 	case err := <-ch:
-		return errors.Wrap(err, "an error occurred while opening the UI")
+		return err
 	case <-time.After(timeout):
 		return fmt.Errorf("error opening the UI, the container is not running after %v", timeout)
 	}

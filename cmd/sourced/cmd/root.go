@@ -42,14 +42,31 @@ type Command struct {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := rootCmd.Run(os.Args); err != nil {
-		if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) {
-			fmt.Println(format.Colorize(
-				format.Red,
-				`Cannot perform this action, source{d} needs to be initialized first with the 'init' sub command`,
-			))
-		}
-
+	if err := dir.Prepare(); err != nil {
+		fmt.Println(err)
+		log(err)
 		os.Exit(1)
 	}
+
+	if err := rootCmd.Run(os.Args); err != nil {
+		log(err)
+		os.Exit(1)
+	}
+}
+
+func log(err error) {
+	switch {
+	case workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err):
+		printRed("Cannot perform this action, source{d} needs to be initialized first with the 'init' sub command")
+	case dir.ErrNotValid.Is(err):
+		printRed("Cannot perform this action, config directory is not valid")
+	case fmt.Sprintf("%T", err) == "*flags.Error":
+		// syntax error is already logged by go-cli
+	default:
+		// unknown errors have no special message
+	}
+}
+
+func printRed(message string) {
+	fmt.Println(format.Colorize(format.Red, message))
 }
