@@ -50,12 +50,11 @@ LIMIT 10;
 
 ```sql
 SELECT repository_id, num_files FROM (
-    SELECT COUNT(f.*) num_files, f.repository_id
-    FROM ref_commits r
-    NATURAL JOIN commit_files cf
-    NATURAL JOIN files f
-    WHERE r.ref_name = 'HEAD'
-    GROUP BY f.repository_id
+    SELECT COUNT(*) num_files, repository_id
+    FROM refs
+    NATURAL JOIN commit_files
+    WHERE ref_name = 'HEAD'
+    GROUP BY repository_id
 ) AS t
 ORDER BY num_files DESC
 LIMIT 10;
