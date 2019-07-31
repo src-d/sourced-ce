@@ -30,6 +30,91 @@ var (
 	ErrMalformed = goerrors.NewKind("workdir %s is not valid: %s")
 )
 
+// Factory is responsible for the initialization of the workdirs
+type Factory struct{}
+
+// InitLocal initializes the workdir for local path and returns the absolute path
+func (f *Factory) InitLocal(reposdir string) (string, error) {
+	dirName := f.encodeDirName(reposdir)
+
+	envf := envFile{
+		Workdir:  dirName,
+		ReposDir: reposdir,
+	}
+
+	return f.init(dirName, "local", envf)
+}
+
+// InitOrgs initializes the workdir for organizationsand returns the absolute path
+func (f *Factory) InitOrgs(orgs []string, token string) (string, error) {
+	// be indifferent to the order of passed organizations
+	sort.Strings(orgs)
+	dirName := f.encodeDirName(strings.Join(orgs, ","))
+
+	envf := envFile{
+		Workdir:             dirName,
+		GithubOrganizations: orgs,
+		GithubToken:         token,
+	}
+
+	return f.init(dirName, "orgs", envf)
+}
+
+func (f *Factory) encodeDirName(dirName string) string {
+	return base64.URLEncoding.EncodeToString([]byte(dirName))
+}
+
+func (f *Factory) buildAbsPath(dirName, subPath string) (string, error) {
+	path, err := workdirsPath()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(path, subPath, dirName), nil
+}
+
+func (f *Factory) init(dirName string, subPath string, envf envFile) (string, error) {
+	workdir, err := f.buildAbsPath(dirName, subPath)
+	if err != nil {
+		return "", err
+	}
+
+	err = os.MkdirAll(workdir, 0755)
+	if err != nil {
+		return "", errors.Wrap(err, "could not create working directory")
+	}
+
+	defaultFilePath, err := composefile.InitDefault()
+	if err != nil {
+		return "", err
+	}
+
+	composePath := filepath.Join(workdir, "docker-compose.yml")
+	if err := link(defaultFilePath, composePath); err != nil {
+		return "", err
+	}
+
+	defaultOverridePath, err := composefile.InitDefaultOverride()
+	if err != nil {
+		return "", err
+	}
+
+	workdirOverridePath := filepath.Join(workdir, "docker-compose.override.yml")
+	if err := link(defaultOverridePath, workdirOverridePath); err != nil {
+		return "", err
+	}
+
+	envPath := filepath.Join(workdir, ".env")
+	contents := envf.String()
+	err = ioutil.WriteFile(envPath, []byte(contents), 0644)
+
+	if err != nil {
+		return "", errors.Wrap(err, "could not write .env file")
+	}
+
+	return workdir, nil
+}
+
 type envFile struct {
 	Workdir             string
 	ReposDir            string
@@ -313,43 +398,6 @@ func isEmptyFile(path string) (bool, error) {
 
 	strContents := string(contents)
 	return strings.TrimSpace(strContents) == "", nil
-}
-
-// common initialization for both local and remote data
-func initWorkdir(workdirPath string, envFile envFile) error {
-	err := os.MkdirAll(workdirPath, 0755)
-	if err != nil {
-		return errors.Wrap(err, "could not create working directory")
-	}
-
-	defaultFilePath, err := composefile.InitDefault()
-	if err != nil {
-		return err
-	}
-
-	composePath := filepath.Join(workdirPath, "docker-compose.yml")
-	if err := link(defaultFilePath, composePath); err != nil {
-		return err
-	}
-
-	defaultOverridePath, err := composefile.InitDefaultOverride()
-	if err != nil {
-		return err
-	}
-
-	workdirOverridePath := filepath.Join(workdirPath, "docker-compose.override.yml")
-	if err := link(defaultOverridePath, workdirOverridePath); err != nil {
-		return err
-	}
-
-	envPath := filepath.Join(workdirPath, ".env")
-	contents := envFile.String()
-	err = ioutil.WriteFile(envPath, []byte(contents), 0644)
-	if err != nil {
-		return errors.Wrap(err, "could not write .env file")
-	}
-
-	return nil
 }
 
 func link(linkTargetPath, linkPath string) error {
