@@ -182,6 +182,11 @@ func ListPaths() ([]string, error) {
 		dirs[path] = true
 		return nil
 	})
+
+	if os.IsNotExist(err) {
+		return nil, ErrMalformed.New(wpath, err)
+	}
+
 	if err != nil {
 		return nil, err
 	}
