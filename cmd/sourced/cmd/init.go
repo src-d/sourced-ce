@@ -26,6 +26,8 @@ type initLocalCmd struct {
 	Args struct {
 		Reposdir string `positional-arg-name:"workdir"`
 	} `positional-args:"yes"`
+
+	workdirFactory *workdir.Factory
 }
 
 func (c *initLocalCmd) Execute(args []string) error {
@@ -34,22 +36,12 @@ func (c *initLocalCmd) Execute(args []string) error {
 		return err
 	}
 
-	dir, err := workdir.InitWithPath(reposdir)
+	workdir, err := c.workdirFactory.InitLocal(reposdir)
 	if err != nil {
 		return err
 	}
 
-	// Before setting a new workdir, stop the current containers
-	compose.Run(context.Background(), "stop")
-
-	err = workdir.SetActive(reposdir)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("docker-compose working directory set to %s\n", dir)
-
-	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
+	if err := activate(workdir); err != nil {
 		return err
 	}
 
@@ -86,6 +78,8 @@ type initOrgsCmd struct {
 	Args  struct {
 		Orgs []string `required:"yes"`
 	} `positional-args:"yes" required:"1"`
+
+	workdirFactory *workdir.Factory
 }
 
 func (c *initOrgsCmd) Execute(args []string) error {
@@ -94,22 +88,12 @@ func (c *initOrgsCmd) Execute(args []string) error {
 		return err
 	}
 
-	dir, err := workdir.InitWithOrgs(orgs, c.Token)
+	workdir, err := c.workdirFactory.InitOrgs(orgs, c.Token)
 	if err != nil {
 		return err
 	}
 
-	// Before setting a new workdir, stop the current containers
-	compose.Run(context.Background(), "stop")
-
-	err = workdir.SetActive(dir)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("docker-compose working directory set to %s\n", strings.Join(orgs, ","))
-
-	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
+	if err := activate(workdir); err != nil {
 		return err
 	}
 
@@ -154,6 +138,19 @@ func (c *initOrgsCmd) validate(orgs []string) error {
 	return nil
 }
 
+func activate(dir string) error {
+	// Before setting a new workdir, stop the current containers
+	compose.Run(context.Background(), "stop")
+
+	err := workdir.SetActive(dir)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("docker-compose working directory set to %s\n", dir)
+	return compose.Run(context.Background(), "up", "--detach")
+}
+
 type authTransport struct {
 	token string
 }
@@ -165,6 +162,8 @@ func (t *authTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 
 func init() {
 	c := rootCmd.AddCommand(&initCmd{})
-	c.AddCommand(&initOrgsCmd{})
-	c.AddCommand(&initLocalCmd{})
+
+	workdirFactory := &workdir.Factory{}
+	c.AddCommand(&initOrgsCmd{workdirFactory: workdirFactory})
+	c.AddCommand(&initLocalCmd{workdirFactory: workdirFactory})
 }
