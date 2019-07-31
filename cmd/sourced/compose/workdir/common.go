@@ -384,7 +384,7 @@ func decodeName(base, target string) (string, error) {
 	}
 
 	// workdirs for remote orgs encoded into base64
-	decoded, err := base64.StdEncoding.DecodeString(p)
+	decoded, err := base64.URLEncoding.DecodeString(p)
 	if err == nil {
 		return string(decoded), nil
 	}
