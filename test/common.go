@@ -32,12 +32,19 @@ type IntegrationSuite struct {
 }
 
 func (s *IntegrationSuite) SetupTest() {
-	var err error
-	s.TestDir, err = ioutil.TempDir("", strings.Replace(s.T().Name(), "/", "_", -1))
+	testDir, err := ioutil.TempDir("", strings.Replace(s.T().Name(), "/", "_", -1))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	if runtime.GOOS == "windows" {
+		testDir, err = filepath.EvalSymlinks(testDir)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	s.TestDir = testDir
 	s.Commander = &Commander{bin: srcdBin, sourcedDir: filepath.Join(s.TestDir, "sourced")}
 
 	// Instead of downloading the compose file, create a link to the local file
