@@ -160,4 +160,25 @@ github.com/golang-migrate/migrate
 
 		s.Equal("golang-migrate", rows[0]["login"])
 	})
+
+	// Test bblfsh queries through superset
+	s.T().Run("superset-bblfsh", func(t *testing.T) {
+		req := require.New(t)
+
+		lang, err := client.bblfsh("hello.js", `console.log("hello");`)
+		req.NoError(err)
+		req.Equal("javascript", lang)
+	})
+
+	// Test gitbase can connect to bblfsh with a SQL query that uses UAST
+	s.T().Run("gitbase-bblfsh", func(t *testing.T) {
+		req := require.New(t)
+
+		rows, err := client.gitbase(
+			`SELECT UAST('console.log("hello");', 'javascript') AS uast`)
+		req.NoError(err)
+
+		req.Len(rows, 1)
+		req.NotEmpty(rows[0]["uast"])
+	})
 }
