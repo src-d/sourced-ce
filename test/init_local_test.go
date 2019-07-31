@@ -123,6 +123,15 @@ repo_b
 			{"repository_id": "repo_b"},
 		}, rows)
 	})
+
+	// Test bblfsh queries through superset
+	s.T().Run("superset-bblfsh", func(t *testing.T) {
+		req := require.New(t)
+
+		lang, err := client.bblfsh("hello.js", `console.log("hello");`)
+		req.NoError(err)
+		req.Equal("javascript", lang)
+	})
 }
 
 func (s *InitLocalTestSuite) initGitRepo(path string) {

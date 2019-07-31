@@ -3,8 +3,10 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -131,4 +133,45 @@ func (c *supersetClient) gitbase(query string) ([]map[string]interface{}, error)
 
 func (c *supersetClient) metadata(query string) ([]map[string]interface{}, error) {
 	return c.sql(query, "2", "public")
+}
+
+func (c *supersetClient) bblfsh(filename, content string) (string, error) {
+	var jsonStr = []byte(fmt.Sprintf(
+		`{"mode":"semantic", "filename":%q, "content":%q, "query":""}`,
+		filename, content))
+
+	req, err := http.NewRequest("POST", "http://127.0.0.1:8088/bblfsh/api/parse", bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := c.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	var decoded struct {
+		Status   int
+		Language string
+		// Uast     interface{}
+		Errors []struct{ Message string }
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&decoded)
+	if err != nil {
+		body := ""
+		bytes, readErr := ioutil.ReadAll(res.Body)
+		if readErr != nil {
+			body = string(bytes)
+		}
+
+		return "", fmt.Errorf("could not decode the response body: %s, err: %s", body, err)
+	}
+
+	if decoded.Status != 0 {
+		return "", fmt.Errorf("/bblfsh/api/parse endpoint returned an error: %v", decoded.Errors)
+	}
+
+	return decoded.Language, nil
 }

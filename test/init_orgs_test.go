@@ -160,4 +160,13 @@ github.com/golang-migrate/migrate
 
 		s.Equal("golang-migrate", rows[0]["login"])
 	})
+
+	// Test bblfsh queries through superset
+	s.T().Run("superset-bblfsh", func(t *testing.T) {
+		req := require.New(t)
+
+		lang, err := client.bblfsh("hello.js", `console.log("hello");`)
+		req.NoError(err)
+		req.Equal("javascript", lang)
+	})
 }
