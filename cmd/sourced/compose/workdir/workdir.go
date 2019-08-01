@@ -144,7 +144,7 @@ func (f *envFile) String() string {
 // SetActive creates a symlink from the fixed active workdir path
 // to the workdir for the given repos dir.
 func SetActive(workdir string) error {
-	activePath, err := absolutePath(activeDir)
+	activePath, err := activeAbsolutePath()
 	if err != nil {
 		return err
 	}
@@ -167,7 +167,7 @@ func SetActive(workdir string) error {
 
 // UnsetActive removes symlink for active workdir
 func UnsetActive() error {
-	dir, err := absolutePath(activeDir)
+	dir, err := activeAbsolutePath()
 	if err != nil {
 		return err
 	}
@@ -200,7 +200,7 @@ func Active() (string, error) {
 
 // ActivePath returns absolute path to active working directory
 func ActivePath() (string, error) {
-	path, err := absolutePath(activeDir)
+	path, err := activeAbsolutePath()
 	if err != nil {
 		return "", err
 	}
@@ -354,18 +354,14 @@ func ValidatePath(dir string) error {
 	return nil
 }
 
-// path returns the absolute path to
-// $HOME/.sourced/workdirs/workdir
-func absolutePath(workdir string) (string, error) {
+// activeAbsolutePath returns the absolute path to the current active workdir
+func activeAbsolutePath() (string, error) {
 	path, err := workdirsPath()
 	if err != nil {
 		return "", err
 	}
 
-	// On windows replace C:\path with C\path
-	workdir = strings.Replace(workdir, ":", "", 1)
-
-	return filepath.Join(path, workdir), nil
+	return filepath.Join(path, activeDir), nil
 }
 
 func hasContent(path, file string) bool {
