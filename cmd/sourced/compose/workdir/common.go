@@ -150,11 +150,6 @@ func SetActive(workdir string) error {
 		return err
 	}
 
-	workdirPath, err := absolutePath(workdir)
-	if err != nil {
-		return err
-	}
-
 	_, err = os.Stat(activePath)
 	if !os.IsNotExist(err) {
 		err = os.Remove(activePath)
@@ -163,7 +158,7 @@ func SetActive(workdir string) error {
 		}
 	}
 
-	err = os.Symlink(workdirPath, activePath)
+	err = os.Symlink(workdir, activePath)
 	if os.IsExist(err) {
 		return nil
 	}
