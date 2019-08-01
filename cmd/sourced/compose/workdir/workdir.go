@@ -190,12 +190,12 @@ func Active() (string, error) {
 		return "", err
 	}
 
-	wpath, err := workdirsPath()
+	decoded, err := decodeName(path)
 	if err != nil {
 		return "nil", err
 	}
 
-	return decodeName(wpath, path)
+	return decoded, nil
 }
 
 // ActivePath returns absolute path to active working directory
@@ -215,11 +215,6 @@ func ActivePath() (string, error) {
 
 // List returns array of working directories names
 func List() ([]string, error) {
-	wpath, err := workdirsPath()
-	if err != nil {
-		return nil, err
-	}
-
 	workdirs, err := ListPaths()
 	if err != nil {
 		return nil, err
@@ -227,10 +222,11 @@ func List() ([]string, error) {
 
 	res := make([]string, len(workdirs))
 	for i, d := range workdirs {
-		res[i], err = decodeName(wpath, d)
+		res[i], err = decodeName(d)
 		if err != nil {
 			return nil, err
 		}
+
 	}
 
 	sort.Strings(res)
@@ -413,17 +409,25 @@ func workdirsPath() (string, error) {
 	return filepath.Join(path, "workdirs"), nil
 }
 
-// decodeName takes workdirs root and absolute path to workdir
+// decodeName takes absolute path to workdir
 // return human-readable name. It returns an error if the path could not be built
-func decodeName(base, target string) (string, error) {
-	p, err := filepath.Rel(base, target)
+func decodeName(target string) (string, error) {
+	wpath, err := workdirsPath()
 	if err != nil {
 		return "", err
 	}
 
-	decoded, err := base64.URLEncoding.DecodeString(p)
-	if err == nil {
-		return string(decoded), nil
+	subPaths := [2]string{"orgs", "local"}
+	for _, sp := range subPaths {
+		p, err := filepath.Rel(filepath.Join(wpath, sp), target)
+		if err != nil {
+			continue
+		}
+
+		decoded, err := base64.URLEncoding.DecodeString(p)
+		if err == nil {
+			return string(decoded), nil
+		}
 	}
 
 	return "", err
