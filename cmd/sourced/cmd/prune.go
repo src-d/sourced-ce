@@ -15,21 +15,26 @@ type pruneCmd struct {
 }
 
 func (c *pruneCmd) Execute(args []string) error {
-	if !c.All {
-		return c.pruneActive()
-	}
-
-	dirs, err := workdir.ListPaths()
+	workdirHandler, err := workdir.NewHandler()
 	if err != nil {
 		return err
 	}
 
-	for _, dir := range dirs {
-		if err := workdir.SetActivePath(dir); err != nil {
+	if !c.All {
+		return c.pruneActive(workdirHandler)
+	}
+
+	wds, err := workdirHandler.List()
+	if err != nil {
+		return err
+	}
+
+	for _, wd := range wds {
+		if err := workdirHandler.SetActive(wd); err != nil {
 			return err
 		}
 
-		if err = c.pruneActive(); err != nil {
+		if err = c.pruneActive(workdirHandler); err != nil {
 			return err
 		}
 	}
@@ -37,7 +42,7 @@ func (c *pruneCmd) Execute(args []string) error {
 	return nil
 }
 
-func (c *pruneCmd) pruneActive() error {
+func (c *pruneCmd) pruneActive(workdirHandler *workdir.Handler) error {
 	a := []string{"down", "--volumes"}
 	if c.Images {
 		a = append(a, "--rmi", "all")
@@ -47,16 +52,16 @@ func (c *pruneCmd) pruneActive() error {
 		return err
 	}
 
-	dir, err := workdir.ActivePath()
+	wd, err := workdirHandler.Active()
 	if err != nil {
 		return err
 	}
 
-	if err := workdir.RemovePath(dir); err != nil {
+	if err := workdirHandler.Remove(wd); err != nil {
 		return err
 	}
 
-	return workdir.UnsetActive()
+	return workdirHandler.UnsetActive()
 }
 
 func init() {

@@ -6,13 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
 	goerrors "gopkg.in/src-d/go-errors.v1"
 
-	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
 	datadir "github.com/src-d/sourced-ce/cmd/sourced/dir"
 )
 
@@ -29,335 +27,93 @@ var (
 	ErrMalformed = goerrors.NewKind("workdir %s is not valid: %s")
 )
 
-// Factory is responsible for the initialization of the workdirs
-type Factory struct{}
+// WorkdirType defines the type of the workdir
+type WorkdirType int
 
-// InitLocal initializes the workdir for local path and returns the absolute path
-func (f *Factory) InitLocal(reposdir string) (string, error) {
-	dirName := f.encodeDirName(reposdir)
+const (
+	// None refers to a failure in identifying the type of the workdir
+	None WorkdirType = iota
+	// Local refers to a workdir that has been initialized for local repos
+	Local
+	// Orgs refers to a workdir that has been initialized for organizations
+	Orgs
+)
 
-	envf := envFile{
-		Workdir:  dirName,
-		ReposDir: reposdir,
-	}
-
-	return f.init(dirName, "local", envf)
+// Workdir represents a workdir associated with a local or an orgs initialization
+type Workdir struct {
+	// Type is the WorkdirType
+	Type WorkdirType
+	// Name is a human-friendly string to identify the workdir
+	Name string
+	// Path is the absolute path corresponding to the workdir
+	Path string
 }
 
-// InitOrgs initializes the workdir for organizationsand returns the absolute path
-func (f *Factory) InitOrgs(orgs []string, token string) (string, error) {
-	// be indifferent to the order of passed organizations
-	sort.Strings(orgs)
-	dirName := f.encodeDirName(strings.Join(orgs, ","))
-
-	envf := envFile{
-		Workdir:             dirName,
-		GithubOrganizations: orgs,
-		GithubToken:         token,
-	}
-
-	return f.init(dirName, "orgs", envf)
+type builder struct {
+	workdirsPath string
 }
 
-func (f *Factory) encodeDirName(dirName string) string {
-	return base64.URLEncoding.EncodeToString([]byte(dirName))
-}
-
-func (f *Factory) buildAbsPath(dirName, subPath string) (string, error) {
-	path, err := workdirsPath()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(path, subPath, dirName), nil
-}
-
-func (f *Factory) init(dirName string, subPath string, envf envFile) (string, error) {
-	workdir, err := f.buildAbsPath(dirName, subPath)
-	if err != nil {
-		return "", err
-	}
-
-	err = os.MkdirAll(workdir, 0755)
-	if err != nil {
-		return "", errors.Wrap(err, "could not create working directory")
-	}
-
-	defaultFilePath, err := composefile.InitDefault()
-	if err != nil {
-		return "", err
-	}
-
-	composePath := filepath.Join(workdir, "docker-compose.yml")
-	if err := link(defaultFilePath, composePath); err != nil {
-		return "", err
-	}
-
-	defaultOverridePath, err := composefile.InitDefaultOverride()
-	if err != nil {
-		return "", err
-	}
-
-	workdirOverridePath := filepath.Join(workdir, "docker-compose.override.yml")
-	if err := link(defaultOverridePath, workdirOverridePath); err != nil {
-		return "", err
-	}
-
-	envPath := filepath.Join(workdir, ".env")
-	contents := envf.String()
-	err = ioutil.WriteFile(envPath, []byte(contents), 0644)
-
-	if err != nil {
-		return "", errors.Wrap(err, "could not write .env file")
-	}
-
-	return workdir, nil
-}
-
-type envFile struct {
-	Workdir             string
-	ReposDir            string
-	GithubOrganizations []string
-	GithubToken         string
-}
-
-func (f *envFile) String() string {
-	volumeType := "bind"
-	volumeSource := f.ReposDir
-	gitbaseSiva := ""
-	if f.ReposDir == "" {
-		volumeType = "volume"
-		volumeSource = "gitbase_repositories"
-		gitbaseSiva = "true"
-	}
-
-	return fmt.Sprintf(`COMPOSE_PROJECT_NAME=srcd-%s
-	GITBASE_VOLUME_TYPE=%s
-	GITBASE_VOLUME_SOURCE=%s
-	GITBASE_SIVA=%s
-	GITHUB_ORGANIZATIONS=%s
-	GITHUB_TOKEN=%s
-	`, f.Workdir, volumeType, volumeSource, gitbaseSiva,
-		strings.Join(f.GithubOrganizations, ","), f.GithubToken)
-}
-
-// SetActive creates a symlink from the fixed active workdir path
-// to the workdir for the given repos dir.
-func SetActive(workdir string) error {
-	activePath, err := activeAbsolutePath()
-	if err != nil {
-		return err
-	}
-
-	_, err = os.Stat(activePath)
-	if !os.IsNotExist(err) {
-		err = os.Remove(activePath)
-		if err != nil {
-			return errors.Wrap(err, "could not delete the previous active workdir directory symlink")
-		}
-	}
-
-	err = os.Symlink(workdir, activePath)
-	if os.IsExist(err) {
-		return nil
-	}
-
-	return err
-}
-
-// UnsetActive removes symlink for active workdir
-func UnsetActive() error {
-	dir, err := activeAbsolutePath()
-	if err != nil {
-		return err
-	}
-
-	_, err = os.Lstat(dir)
-	if !os.IsNotExist(err) {
-		err = os.Remove(dir)
-		if err != nil {
-			return errors.Wrap(err, "could not delete active workdir directory symlink")
-		}
-	}
-
-	return nil
-}
-
-// Active returns active working directory name
-func Active() (string, error) {
-	path, err := ActivePath()
-	if err != nil {
-		return "", err
-	}
-
-	decoded, err := decodeName(path)
-	if err != nil {
-		return "nil", err
-	}
-
-	return decoded, nil
-}
-
-// ActivePath returns absolute path to active working directory
-func ActivePath() (string, error) {
-	path, err := activeAbsolutePath()
-	if err != nil {
-		return "", err
-	}
-
-	resolvedPath, err := filepath.EvalSymlinks(path)
-	if os.IsNotExist(err) {
-		return "", ErrMalformed.New("active", err)
-	}
-
-	return resolvedPath, err
-}
-
-// List returns array of working directories names
-func List() ([]string, error) {
-	workdirs, err := ListPaths()
+// build returns the Workdir instance corresponding to the provided absolute path
+func (b *builder) build(path string) (*Workdir, error) {
+	wdType, err := b.typeFromPath(path)
 	if err != nil {
 		return nil, err
 	}
 
-	res := make([]string, len(workdirs))
-	for i, d := range workdirs {
-		res[i], err = decodeName(d)
-		if err != nil {
-			return nil, err
-		}
-
+	if wdType == None {
+		return nil, fmt.Errorf("invalid workdir type for path %s", path)
 	}
 
-	sort.Strings(res)
-	return res, nil
-}
-
-// ListPaths returns array of absolute paths to working directories
-func ListPaths() ([]string, error) {
-	wpath, err := workdirsPath()
+	wdName, err := b.workdirName(wdType, path)
 	if err != nil {
 		return nil, err
 	}
 
-	dirs := make(map[string]bool)
-	err = filepath.Walk(wpath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !info.IsDir() {
-			return nil
-		}
-		for _, f := range RequiredFiles {
-			if !hasContent(path, f) {
-				return nil
-			}
-		}
-
-		dirs[path] = true
-		return nil
-	})
-
-	if os.IsNotExist(err) {
-		return nil, ErrMalformed.New(wpath, err)
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	res := make([]string, 0)
-	for dir := range dirs {
-		res = append(res, dir)
-	}
-
-	return res, nil
+	return &Workdir{
+		Type: wdType,
+		Name: wdName,
+		Path: path,
+	}, nil
 }
 
-// RemovePath removes working directory by removing required and optional files,
-// and recursively removes directories up to the workdirs root as long as they are empty
-func RemovePath(path string) error {
-	workdirsRoot, err := workdirsPath()
-	if err != nil {
-		return err
+// workdirName returns the workdir name given its type and absolute path
+func (b *builder) workdirName(wdType WorkdirType, path string) (string, error) {
+	var subPath string
+	switch wdType {
+	case Local:
+		subPath = "local"
+	case Orgs:
+		subPath = "orgs"
 	}
 
-	for _, f := range append(RequiredFiles, OptionalFiles...) {
-		file := filepath.Join(path, f)
-		if _, err := os.Stat(file); os.IsNotExist(err) {
-			continue
-		}
-
-		if err := os.Remove(file); err != nil {
-			return errors.Wrap(err, "could not remove from workdir directory")
-		}
-	}
-
-	for {
-		files, err := ioutil.ReadDir(path)
-		if err != nil {
-			return errors.Wrap(err, "could not read workdir directory")
-		}
-		if len(files) > 0 {
-			return nil
-		}
-
-		if err := os.Remove(path); err != nil {
-			return errors.Wrap(err, "could not delete workdir directory")
-		}
-
-		path = filepath.Dir(path)
-		if path == workdirsRoot {
-			return nil
-		}
-	}
-}
-
-// SetActivePath similar to SetActive
-// but accepts absolute path to a directory instead of a relative one
-func SetActivePath(path string) error {
-	wpath, err := workdirsPath()
-	if err != nil {
-		return err
-	}
-
-	wd, err := filepath.Rel(wpath, path)
-	if err != nil {
-		return err
-	}
-
-	return SetActive(wd)
-}
-
-// ValidatePath validates that the passed dir is valid
-// Must be a directory (or a symlink) containing docker-compose.yml and .env files
-func ValidatePath(dir string) error {
-	pointedDir, err := filepath.EvalSymlinks(dir)
-	if err != nil {
-		return ErrMalformed.New(dir, "is not a directory")
-	}
-
-	if info, err := os.Lstat(pointedDir); err != nil || !info.IsDir() {
-		return ErrMalformed.New(pointedDir, "is not a directory")
-	}
-
-	for _, f := range RequiredFiles {
-		if !hasContent(pointedDir, f) {
-			return ErrMalformed.New(pointedDir, fmt.Sprintf("%s not found", f))
-		}
-	}
-
-	return nil
-}
-
-// activeAbsolutePath returns the absolute path to the current active workdir
-func activeAbsolutePath() (string, error) {
-	path, err := workdirsPath()
+	encoded, err := filepath.Rel(filepath.Join(b.workdirsPath, subPath), path)
 	if err != nil {
 		return "", err
 	}
 
-	return filepath.Join(path, activeDir), nil
+	decoded, err := base64.URLEncoding.DecodeString(encoded)
+	if err == nil {
+		return string(decoded), nil
+	}
+
+	return "", err
+}
+
+// typeFromPath returns the WorkdirType corresponding to the provided absolute path
+func (b *builder) typeFromPath(path string) (WorkdirType, error) {
+	suffix, err := filepath.Rel(b.workdirsPath, path)
+	if err != nil {
+		return None, err
+	}
+
+	switch filepath.Dir(suffix) {
+	case "local":
+		return Local, nil
+	case "orgs":
+		return Orgs, nil
+	default:
+		return None, nil
+	}
 }
 
 func hasContent(path, file string) bool {
@@ -407,28 +163,4 @@ func workdirsPath() (string, error) {
 	}
 
 	return filepath.Join(path, "workdirs"), nil
-}
-
-// decodeName takes absolute path to workdir
-// return human-readable name. It returns an error if the path could not be built
-func decodeName(target string) (string, error) {
-	wpath, err := workdirsPath()
-	if err != nil {
-		return "", err
-	}
-
-	subPaths := [2]string{"orgs", "local"}
-	for _, sp := range subPaths {
-		p, err := filepath.Rel(filepath.Join(wpath, sp), target)
-		if err != nil {
-			continue
-		}
-
-		decoded, err := base64.URLEncoding.DecodeString(p)
-		if err == nil {
-			return string(decoded), nil
-		}
-	}
-
-	return "", err
 }

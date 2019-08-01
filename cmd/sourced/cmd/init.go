@@ -26,22 +26,25 @@ type initLocalCmd struct {
 	Args struct {
 		Reposdir string `positional-arg-name:"workdir"`
 	} `positional-args:"yes"`
-
-	workdirFactory *workdir.Factory
 }
 
 func (c *initLocalCmd) Execute(args []string) error {
+	wdHandler, err := workdir.NewHandler()
+	if err != nil {
+		return err
+	}
+
 	reposdir, err := c.reposdirArg()
 	if err != nil {
 		return err
 	}
 
-	workdir, err := c.workdirFactory.InitLocal(reposdir)
+	wd, err := workdir.InitLocal(reposdir)
 	if err != nil {
 		return err
 	}
 
-	if err := activate(workdir); err != nil {
+	if err := activate(wdHandler, wd); err != nil {
 		return err
 	}
 
@@ -78,22 +81,25 @@ type initOrgsCmd struct {
 	Args  struct {
 		Orgs []string `required:"yes"`
 	} `positional-args:"yes" required:"1"`
-
-	workdirFactory *workdir.Factory
 }
 
 func (c *initOrgsCmd) Execute(args []string) error {
+	wdHandler, err := workdir.NewHandler()
+	if err != nil {
+		return err
+	}
+
 	orgs := c.orgsList()
 	if err := c.validate(orgs); err != nil {
 		return err
 	}
 
-	workdir, err := c.workdirFactory.InitOrgs(orgs, c.Token)
+	wd, err := workdir.InitOrgs(orgs, c.Token)
 	if err != nil {
 		return err
 	}
 
-	if err := activate(workdir); err != nil {
+	if err := activate(wdHandler, wd); err != nil {
 		return err
 	}
 
@@ -138,16 +144,16 @@ func (c *initOrgsCmd) validate(orgs []string) error {
 	return nil
 }
 
-func activate(dir string) error {
+func activate(wdHandler *workdir.Handler, workdir *workdir.Workdir) error {
 	// Before setting a new workdir, stop the current containers
 	compose.Run(context.Background(), "stop")
 
-	err := workdir.SetActive(dir)
+	err := wdHandler.SetActive(workdir)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("docker-compose working directory set to %s\n", dir)
+	fmt.Printf("docker-compose working directory set to %s\n", workdir.Path)
 	return compose.Run(context.Background(), "up", "--detach")
 }
 
@@ -163,7 +169,6 @@ func (t *authTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 func init() {
 	c := rootCmd.AddCommand(&initCmd{})
 
-	workdirFactory := &workdir.Factory{}
-	c.AddCommand(&initOrgsCmd{workdirFactory: workdirFactory})
-	c.AddCommand(&initLocalCmd{workdirFactory: workdirFactory})
+	c.AddCommand(&initOrgsCmd{})
+	c.AddCommand(&initLocalCmd{})
 }
