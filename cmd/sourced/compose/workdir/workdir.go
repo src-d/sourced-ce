@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strings"
 
@@ -426,17 +425,10 @@ func decodeName(base, target string) (string, error) {
 		return "", err
 	}
 
-	// workdirs for remote orgs encoded into base64
 	decoded, err := base64.URLEncoding.DecodeString(p)
 	if err == nil {
 		return string(decoded), nil
 	}
 
-	// for windows local path convert C\path to C:\path
-	if runtime.GOOS == "windows" {
-		return string(p[0]) + ":" + p[1:len(p)], nil
-	}
-
-	// for *nix prepend root, User/path to /Users/path
-	return filepath.Join("/", p), nil
+	return "", err
 }
