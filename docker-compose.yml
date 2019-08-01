@@ -16,7 +16,6 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       # use main db
       GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
-      GITCOLLECTOR_HALF_CPU: 'true'
       GITCOLLECTOR_NO_UPDATES: 'true'
       LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
@@ -26,6 +25,10 @@ services:
         source: ${GITBASE_VOLUME_SOURCE}
         target: /library
         consistency: delegated
+    deploy:
+      resources:
+        limits:
+          cpus: ${GITCOLLECTOR_LIMIT_CPU:-0.0}
 
   ghsync:
     image: srcd/ghsync:v0.2.0-rc.1
@@ -64,6 +67,11 @@ services:
         read_only: true
         consistency: delegated
       - gitbase_indexes:/var/lib/gitbase/index
+    deploy:
+      resources:
+        limits:
+          cpus: ${GITBASE_LIMIT_CPU:-0.0}
+          memory: ${GITBASE_LIMIT_MEM:-0}
 
   bblfsh-web:
     image: bblfsh/web:v0.11.1
