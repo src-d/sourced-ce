@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
@@ -78,6 +79,72 @@ func waitForContainer(stdout *bytes.Buffer) {
 	}
 }
 
+var newLineFormatter = regexp.MustCompile(`(\r\n|\r|\n)`)
+var stateExtractor = regexp.MustCompile(`(?m)^srcd-[\w\d]+.*(Up|Exit (\w+))`)
+
+func normalizeNewLine(s string) string {
+	return newLineFormatter.ReplaceAllString(s, "\n")
+}
+
+func runMonitor(ch chan<- error) {
+	runMonitorService := func(service string, ch chan<- error) {
+		for {
+			var stdout bytes.Buffer
+			if err := compose.RunWithIO(context.Background(),
+				os.Stdin, &stdout, nil, "ps", service); err != nil {
+				ch <- errors.Wrapf(err, "cannot get status service %s", service)
+				return
+			}
+
+			matches := stateExtractor.FindAllStringSubmatch(
+				normalizeNewLine(strings.TrimSpace(stdout.String())), -1)
+			for _, match := range matches {
+				state := match[1]
+
+				if strings.HasPrefix(state, "Exit") {
+					if service != "ghsync" && service != "gitcollector" {
+						ch <- fmt.Errorf("service '%s' is in state '%s'", service, state)
+						return
+					}
+
+					returnCode := state[len("Exit "):len(state)]
+					if returnCode != "0" {
+						ch <- fmt.Errorf("service '%s' exited with return code: %s",
+							service, returnCode)
+						return
+					}
+
+					continue
+				}
+
+				if state != "Up" {
+					ch <- fmt.Errorf("service '%s' is in state '%s'", service, state)
+					return
+				}
+
+			}
+
+			time.Sleep(1 * time.Second)
+		}
+	}
+
+	go func() {
+		var servicesBuf bytes.Buffer
+		if err := compose.RunWithIO(context.Background(),
+			os.Stdin, &servicesBuf, nil, "config", "--services"); err != nil {
+			ch <- errors.Wrap(err, "cannot get list of services")
+			return
+		}
+
+		services := strings.Split(normalizeNewLine(
+			strings.TrimSpace(servicesBuf.String())), "\n")
+
+		for _, service := range services {
+			go runMonitorService(service, ch)
+		}
+	}()
+}
+
 // OpenUI opens the browser with the UI.
 func OpenUI(timeout time.Duration) error {
 	var stdout bytes.Buffer
@@ -88,6 +155,8 @@ func OpenUI(timeout time.Duration) error {
 
 	ch := make(chan error)
 	containerReady := err == nil
+
+	runMonitor(ch)
 
 	go func() {
 		if !containerReady {
