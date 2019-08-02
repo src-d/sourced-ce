@@ -32,29 +32,7 @@ func init() {
 	rootCmd.AddCommand(&webCmd{})
 }
 
-func openUI() error {
-	var stdout bytes.Buffer
-	// wait for the container to start, it can take a while in some cases
-	for {
-		err := compose.RunWithIO(context.Background(),
-			os.Stdin, &stdout, nil, "port", containerName, "8088")
-
-		if err == nil {
-			break
-		}
-
-		if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) || dir.ErrNotValid.Is(err) {
-			return err
-		}
-
-		time.Sleep(1 * time.Second)
-	}
-
-	address := strings.TrimSpace(stdout.String())
-	if address == "" {
-		return fmt.Errorf("could not find the public port of %s", containerName)
-	}
-
+func openUI(address string) error {
 	// docker-compose returns 0.0.0.0 which is correct for the bind address
 	// but incorrect as connect address
 	url := fmt.Sprintf("http://%s", strings.Replace(address, "0.0.0.0", "127.0.0.1", 1))
@@ -75,11 +53,54 @@ func openUI() error {
 	return nil
 }
 
+func checkFailFast(stdout *bytes.Buffer) (bool, error) {
+	err := compose.RunWithIO(context.Background(),
+		os.Stdin, stdout, nil, "port", containerName, "8088")
+	if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) || dir.ErrNotValid.Is(err) {
+		return true, err
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return false, nil
+}
+
+func waitForContainer(stdout *bytes.Buffer) {
+	for {
+		if err := compose.RunWithIO(context.Background(),
+			os.Stdin, stdout, nil, "port", containerName, "8088"); err == nil {
+			break
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+}
+
 // OpenUI opens the browser with the UI.
 func OpenUI(timeout time.Duration) error {
+	var stdout bytes.Buffer
+	failFast, err := checkFailFast(&stdout)
+	if failFast {
+		return err
+	}
+
 	ch := make(chan error)
+	containerReady := err == nil
+
 	go func() {
-		ch <- openUI()
+		if !containerReady {
+			waitForContainer(&stdout)
+		}
+
+		address := strings.TrimSpace(stdout.String())
+		if address == "" {
+			ch <- fmt.Errorf("could not find the public port of %s", containerName)
+			return
+		}
+
+		ch <- openUI(address)
 	}()
 
 	fmt.Println(`
