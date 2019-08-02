@@ -343,17 +343,10 @@ func initWorkdir(workdirPath string, envFile envFile) error {
 	}
 
 	envPath := filepath.Join(workdirPath, ".env")
-	emptyFile, err := isEmptyFile(envPath)
+	contents := envFile.String()
+	err = ioutil.WriteFile(envPath, []byte(contents), 0644)
 	if err != nil {
-		return errors.Wrap(err, "could not read .env file contents")
-	}
-
-	if emptyFile {
-		contents := envFile.String()
-		err = ioutil.WriteFile(envPath, []byte(contents), 0644)
-		if err != nil {
-			return errors.Wrap(err, "could not write .env file")
-		}
+		return errors.Wrap(err, "could not write .env file")
 	}
 
 	return nil
