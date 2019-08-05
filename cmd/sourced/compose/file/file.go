@@ -216,7 +216,7 @@ func List() ([]RevOrURL, error) {
 }
 
 func composeName(rev string) string {
-	if decoded, err := base64.StdEncoding.DecodeString(rev); err == nil {
+	if decoded, err := base64.URLEncoding.DecodeString(rev); err == nil {
 		return string(decoded)
 	}
 
@@ -248,7 +248,7 @@ func path(revOrURL RevOrURL) (string, error) {
 
 	subPath := revOrURL
 	if isURL(revOrURL) {
-		subPath = base64.StdEncoding.EncodeToString([]byte(revOrURL))
+		subPath = base64.URLEncoding.EncodeToString([]byte(revOrURL))
 	}
 
 	dirPath := filepath.Join(composeDirPath, subPath)

@@ -29,27 +29,22 @@ type initLocalCmd struct {
 }
 
 func (c *initLocalCmd) Execute(args []string) error {
+	wdHandler, err := workdir.NewHandler()
+	if err != nil {
+		return err
+	}
+
 	reposdir, err := c.reposdirArg()
 	if err != nil {
 		return err
 	}
 
-	dir, err := workdir.InitWithPath(reposdir)
+	wd, err := workdir.InitLocal(reposdir)
 	if err != nil {
 		return err
 	}
 
-	// Before setting a new workdir, stop the current containers
-	compose.Run(context.Background(), "stop")
-
-	err = workdir.SetActive(reposdir)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("docker-compose working directory set to %s\n", dir)
-
-	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
+	if err := activate(wdHandler, wd); err != nil {
 		return err
 	}
 
@@ -89,27 +84,22 @@ type initOrgsCmd struct {
 }
 
 func (c *initOrgsCmd) Execute(args []string) error {
+	wdHandler, err := workdir.NewHandler()
+	if err != nil {
+		return err
+	}
+
 	orgs := c.orgsList()
 	if err := c.validate(orgs); err != nil {
 		return err
 	}
 
-	dir, err := workdir.InitWithOrgs(orgs, c.Token)
+	wd, err := workdir.InitOrgs(orgs, c.Token)
 	if err != nil {
 		return err
 	}
 
-	// Before setting a new workdir, stop the current containers
-	compose.Run(context.Background(), "stop")
-
-	err = workdir.SetActive(dir)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("docker-compose working directory set to %s\n", strings.Join(orgs, ","))
-
-	if err := compose.Run(context.Background(), "up", "--detach"); err != nil {
+	if err := activate(wdHandler, wd); err != nil {
 		return err
 	}
 
@@ -154,6 +144,19 @@ func (c *initOrgsCmd) validate(orgs []string) error {
 	return nil
 }
 
+func activate(wdHandler *workdir.Handler, workdir *workdir.Workdir) error {
+	// Before setting a new workdir, stop the current containers
+	compose.Run(context.Background(), "stop")
+
+	err := wdHandler.SetActive(workdir)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("docker-compose working directory set to %s\n", workdir.Path)
+	return compose.Run(context.Background(), "up", "--detach")
+}
+
 type authTransport struct {
 	token string
 }
@@ -165,6 +168,7 @@ func (t *authTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 
 func init() {
 	c := rootCmd.AddCommand(&initCmd{})
+
 	c.AddCommand(&initOrgsCmd{})
 	c.AddCommand(&initLocalCmd{})
 }

@@ -23,7 +23,8 @@ const dockerComposeVersion = "1.24.0"
 var composeContainerURL = fmt.Sprintf("https://github.com/docker/compose/releases/download/%s/run.sh", dockerComposeVersion)
 
 type Compose struct {
-	bin string
+	bin            string
+	workdirHandler *workdir.Handler
 }
 
 func (c *Compose) Run(ctx context.Context, arg ...string) error {
@@ -34,16 +35,16 @@ func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 	stdout, stderr io.Writer, arg ...string) error {
 	cmd := exec.CommandContext(ctx, c.bin, arg...)
 
-	dir, err := workdir.ActivePath()
+	wd, err := c.workdirHandler.Active()
 	if err != nil {
 		return err
 	}
 
-	if err := workdir.ValidatePath(dir); err != nil {
+	if err := c.workdirHandler.Validate(wd); err != nil {
 		return err
 	}
 
-	cmd.Dir = dir
+	cmd.Dir = wd.Path
 	cmd.Stdin = stdin
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
@@ -51,13 +52,21 @@ func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 	return cmd.Run()
 }
 
-func NewCompose() (*Compose, error) {
+func newCompose() (*Compose, error) {
+	workdirHandler, err := workdir.NewHandler()
+	if err != nil {
+		return nil, err
+	}
+
 	bin, err := getOrInstallComposeBinary()
 	if err != nil {
 		return nil, err
 	}
 
-	return &Compose{bin: bin}, nil
+	return &Compose{
+		bin:            bin,
+		workdirHandler: workdirHandler,
+	}, nil
 }
 
 func getOrInstallComposeBinary() (string, error) {
@@ -118,7 +127,7 @@ func downloadCompose(path string) error {
 }
 
 func Run(ctx context.Context, arg ...string) error {
-	comp, err := NewCompose()
+	comp, err := newCompose()
 	if err != nil {
 		return err
 	}
@@ -127,7 +136,7 @@ func Run(ctx context.Context, arg ...string) error {
 }
 
 func RunWithIO(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer, arg ...string) error {
-	comp, err := NewCompose()
+	comp, err := newCompose()
 	if err != nil {
 		return err
 	}

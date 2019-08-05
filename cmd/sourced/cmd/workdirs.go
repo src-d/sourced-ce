@@ -11,21 +11,26 @@ type workdirsCmd struct {
 }
 
 func (c *workdirsCmd) Execute(args []string) error {
-	dirs, err := workdir.List()
+	workdirHandler, err := workdir.NewHandler()
 	if err != nil {
 		return err
 	}
 
-	active, err := workdir.Active()
+	wds, err := workdirHandler.List()
 	if err != nil {
 		return err
 	}
 
-	for _, dir := range dirs {
-		if dir == active {
-			fmt.Printf("* %s\n", dir)
+	active, err := workdirHandler.Active()
+	if err != nil {
+		return err
+	}
+
+	for _, wd := range wds {
+		if wd.Path == active.Path {
+			fmt.Printf("* %s\n", wd.Name)
 		} else {
-			fmt.Printf("  %s\n", dir)
+			fmt.Printf("  %s\n", wd.Name)
 		}
 	}
 
