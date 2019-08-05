@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
 )
@@ -21,13 +22,17 @@ func (c *workdirsCmd) Execute(args []string) error {
 		return err
 	}
 
+	// active directory not necessary exists
+	var activePath = ""
 	active, err := workdirHandler.Active()
-	if err != nil {
+	if err == nil {
+		activePath = active.Path
+	} else if !isNotExist(err) {
 		return err
 	}
 
 	for _, wd := range wds {
-		if wd.Path == active.Path {
+		if wd.Path == activePath {
 			fmt.Printf("* %s\n", wd.Name)
 		} else {
 			fmt.Printf("  %s\n", wd.Name)
@@ -39,4 +44,20 @@ func (c *workdirsCmd) Execute(args []string) error {
 
 func init() {
 	rootCmd.AddCommand(&workdirsCmd{})
+}
+
+func isNotExist(err error) bool {
+	if os.IsNotExist(err) {
+		return true
+	}
+
+	if cause, ok := err.(causer); ok {
+		return isNotExist(cause.Cause())
+	}
+
+	return false
+}
+
+type causer interface {
+	Cause() error
 }
