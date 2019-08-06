@@ -78,7 +78,7 @@ func (h *Handler) Active() (*Workdir, error) {
 
 	resolvedPath, err := filepath.EvalSymlinks(path)
 	if os.IsNotExist(err) {
-		return nil, ErrMalformed.New("active", err)
+		return nil, ErrMalformed.Wrap(err, "active")
 	}
 
 	return h.builder.build(resolvedPath)
@@ -105,7 +105,7 @@ func (h *Handler) List() ([]*Workdir, error) {
 	})
 
 	if os.IsNotExist(err) {
-		return nil, ErrMalformed.New(h.workdirsPath, err)
+		return nil, ErrMalformed.Wrap(err, h.workdirsPath)
 	}
 
 	if err != nil {
@@ -131,16 +131,16 @@ func (h *Handler) List() ([]*Workdir, error) {
 func (h *Handler) Validate(w *Workdir) error {
 	pointedDir, err := filepath.EvalSymlinks(w.Path)
 	if err != nil {
-		return ErrMalformed.New(w.Path, "is not a directory")
+		return ErrMalformed.Wrap(fmt.Errorf("is not a directory"), w.Path)
 	}
 
 	if info, err := os.Lstat(pointedDir); err != nil || !info.IsDir() {
-		return ErrMalformed.New(pointedDir, "is not a directory")
+		return ErrMalformed.Wrap(fmt.Errorf("is not a directory"), pointedDir)
 	}
 
 	for _, f := range RequiredFiles {
 		if !hasContent(pointedDir, f) {
-			return ErrMalformed.New(pointedDir, fmt.Sprintf("%s not found", f))
+			return ErrMalformed.Wrap(fmt.Errorf("%s not found", f), pointedDir)
 		}
 	}
 

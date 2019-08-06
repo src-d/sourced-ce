@@ -24,7 +24,7 @@ var (
 	OptionalFiles = []string{"docker-compose.override.yml"}
 
 	// ErrMalformed is the returned error when the workdir is wrong
-	ErrMalformed = goerrors.NewKind("workdir %s is not valid: %s")
+	ErrMalformed = goerrors.NewKind("workdir %s is not valid")
 )
 
 // Type defines the type of the workdir
