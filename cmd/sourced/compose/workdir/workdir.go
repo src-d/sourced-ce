@@ -27,12 +27,12 @@ var (
 	ErrMalformed = goerrors.NewKind("workdir %s is not valid: %s")
 )
 
-// WorkdirType defines the type of the workdir
-type WorkdirType int
+// Type defines the type of the workdir
+type Type int
 
 const (
 	// None refers to a failure in identifying the type of the workdir
-	None WorkdirType = iota
+	None Type = iota
 	// Local refers to a workdir that has been initialized for local repos
 	Local
 	// Orgs refers to a workdir that has been initialized for organizations
@@ -41,8 +41,8 @@ const (
 
 // Workdir represents a workdir associated with a local or an orgs initialization
 type Workdir struct {
-	// Type is the WorkdirType
-	Type WorkdirType
+	// Type is the type of working directory
+	Type Type
 	// Name is a human-friendly string to identify the workdir
 	Name string
 	// Path is the absolute path corresponding to the workdir
@@ -77,7 +77,7 @@ func (b *builder) build(path string) (*Workdir, error) {
 }
 
 // workdirName returns the workdir name given its type and absolute path
-func (b *builder) workdirName(wdType WorkdirType, path string) (string, error) {
+func (b *builder) workdirName(wdType Type, path string) (string, error) {
 	var subPath string
 	switch wdType {
 	case Local:
@@ -99,8 +99,8 @@ func (b *builder) workdirName(wdType WorkdirType, path string) (string, error) {
 	return "", err
 }
 
-// typeFromPath returns the WorkdirType corresponding to the provided absolute path
-func (b *builder) typeFromPath(path string) (WorkdirType, error) {
+// typeFromPath returns the workidr type corresponding to the provided absolute path
+func (b *builder) typeFromPath(path string) (Type, error) {
 	suffix, err := filepath.Rel(b.workdirsPath, path)
 	if err != nil {
 		return None, err
