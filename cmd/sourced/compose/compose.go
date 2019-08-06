@@ -33,6 +33,7 @@ func (c *Compose) Run(ctx context.Context, arg ...string) error {
 
 func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 	stdout, stderr io.Writer, arg ...string) error {
+	arg = append([]string{"--compatibility"}, arg...)
 	cmd := exec.CommandContext(ctx, c.bin, arg...)
 
 	wd, err := c.workdirHandler.Active()
