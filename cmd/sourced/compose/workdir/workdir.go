@@ -25,6 +25,9 @@ var (
 
 	// ErrMalformed is the returned error when the workdir is wrong
 	ErrMalformed = goerrors.NewKind("workdir %s is not valid")
+
+	// ErrInitFailed is an error returned on workdir initialization for custom cases
+	ErrInitFailed = goerrors.NewKind("initialization failed")
 )
 
 // Type defines the type of the workdir
