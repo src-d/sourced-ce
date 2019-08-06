@@ -7,11 +7,15 @@
     Click to see more.
   </summary>
 
-Initial release. It includes a `docker-compose.yml` file to deploy source{d} CE locally, and a `sourced` installer command.
+</details>
+
+## [v0.14.0](https://github.com/src-d/sourced-ce/releases/tag/v0.14.0) - 2019-08-07
+
+Initial release of **source{d} Community Edition (CE)**, the data platform for your software development life cycle.
 
 The `sourced` binary is a wrapper for Docker Compose that downloads the `docker-compose.yml` file from this repository, and includes the following sub commands:
 
-- `init`: Initialize source{d} to work on local or Github orgs datasets
+- `init`: Initialize source{d} to work on local or GitHub organization datasets
   - `local`: Initialize source{d} to analyze local repositories
   - `orgs`: Initialize source{d} to analyze GitHub organizations
 - `status`: Show the status of all components
@@ -28,4 +32,23 @@ The `sourced` binary is a wrapper for Docker Compose that downloads the `docker-
   - `set`: Set the active docker compose file
 - `restart`: Update current installation according to the active docker compose file
 
-</details>
+### Known Issues
+
+- On Windows, if you use `sourced init local` on a directory with a long path, you may encounter the following error:
+  ```
+  Can't find a suitable configuration file in this directory or any
+  parent. Are you in the right directory?
+  ```
+
+  This is caused by the [`MAX_PATH` limitation on windows](https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#maximum-path-length-limitation). The only workaround is to move the target directory to a shorter path, closer to the root of your drive ([#191](https://github.com/src-d/sourced-ce/issues/191)).
+
+- Linux only: Docker installed from snap packages is not supported, please install it following [the official documentation](https://docs.docker.com/install/) ([#78](https://github.com/src-d/sourced-ce/issues/78)).
+
+### Upgrading
+
+For internal releases we don't support upgrading. If you have a previous `sourced-ce` pre-release version installed, clean up all your data **before** downloading this release. This will delete everything, including the UI data for dashboards, charts, users, etc:
+
+```shell
+sourced prune --all
+rm -rf ~/.sourced
+```
