@@ -139,20 +139,18 @@ func runMonitor(ch chan<- error) {
 		}
 	}
 
-	go func() {
-		var servicesBuf bytes.Buffer
-		if err := compose.RunWithIO(context.Background(),
-			os.Stdin, &servicesBuf, nil, "config", "--services"); err != nil {
-			ch <- errors.Wrap(err, "cannot get list of services")
-			return
-		}
+	var servicesBuf bytes.Buffer
+	if err := compose.RunWithIO(context.Background(),
+		os.Stdin, &servicesBuf, nil, "config", "--services"); err != nil {
+		ch <- errors.Wrap(err, "cannot get list of services")
+		return
+	}
 
-		services := strings.Split(strings.TrimSpace(servicesBuf.String()), "\n")
+	services := strings.Split(strings.TrimSpace(servicesBuf.String()), "\n")
 
-		for _, service := range services {
-			go runMonitorService(service, ch)
-		}
-	}()
+	for _, service := range services {
+		go runMonitorService(service, ch)
+	}
 }
 
 // OpenUI opens the browser with the UI.
@@ -166,7 +164,7 @@ func OpenUI(timeout time.Duration) error {
 	ch := make(chan error)
 	containerReady := err == nil
 
-	runMonitor(ch)
+	go runMonitor(ch)
 
 	go func() {
 		if !containerReady {
