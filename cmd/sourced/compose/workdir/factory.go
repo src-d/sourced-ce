@@ -30,7 +30,7 @@ func InitLocal(reposdir string) (*Workdir, error) {
 }
 
 // InitOrgs initializes the workdir for organizations and returns the Workdir instance
-func InitOrgs(orgs []string, token string) (*Workdir, error) {
+func InitOrgs(orgs []string, token string, withForks bool) (*Workdir, error) {
 	// be indifferent to the order of passed organizations
 	sort.Strings(orgs)
 	dirName := encodeDirName(strings.Join(orgs, ","))
@@ -39,6 +39,7 @@ func InitOrgs(orgs []string, token string) (*Workdir, error) {
 		Workdir:             dirName,
 		GithubOrganizations: orgs,
 		GithubToken:         token,
+		WithForks:           withForks,
 	}
 
 	return initialize(dirName, "orgs", envf)
@@ -110,6 +111,7 @@ type envFile struct {
 	ReposDir            string
 	GithubOrganizations []string
 	GithubToken         string
+	WithForks           bool
 }
 
 func (f *envFile) String() string {
@@ -120,6 +122,11 @@ func (f *envFile) String() string {
 		volumeType = "volume"
 		volumeSource = "gitbase_repositories"
 		gitbaseSiva = "true"
+	}
+
+	noForks := "true"
+	if f.WithForks {
+		noForks = "false"
 	}
 
 	// limit CPU for containers
@@ -153,11 +160,12 @@ func (f *envFile) String() string {
 	GITBASE_SIVA=%s
 	GITHUB_ORGANIZATIONS=%s
 	GITHUB_TOKEN=%s
+	NO_FORKS=%s
 	GITBASE_LIMIT_CPU=%s
 	GITCOLLECTOR_LIMIT_CPU=%s
 	GITBASE_LIMIT_MEM=%s
 	`, f.Workdir, volumeType, volumeSource, gitbaseSiva,
-		strings.Join(f.GithubOrganizations, ","), f.GithubToken,
+		strings.Join(f.GithubOrganizations, ","), f.GithubToken, noForks,
 		gitbaseLimitCPU, gitcollectorLimitCPU, gitbaseLimitMem)
 }
 
