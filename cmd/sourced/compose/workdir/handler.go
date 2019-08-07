@@ -81,7 +81,7 @@ func (h *Handler) Active() (*Workdir, error) {
 		return nil, ErrMalformed.Wrap(err, "active")
 	}
 
-	return h.builder.build(resolvedPath)
+	return h.builder.Build(resolvedPath)
 }
 
 // List returns array of working directories
@@ -114,7 +114,7 @@ func (h *Handler) List() ([]*Workdir, error) {
 
 	wds := make([]*Workdir, 0, len(dirs))
 	for _, p := range dirs {
-		wd, err := h.builder.build(p)
+		wd, err := h.builder.Build(p)
 		if err != nil {
 			return nil, err
 		}

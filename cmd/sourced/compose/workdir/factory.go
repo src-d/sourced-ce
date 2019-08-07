@@ -148,7 +148,7 @@ func initialize(dirName string, subPath string, envf envFile) (*Workdir, error) 
 	}
 
 	b := &builder{workdirsPath: path}
-	return b.build(workdir)
+	return b.Build(workdir)
 }
 
 type envFile struct {

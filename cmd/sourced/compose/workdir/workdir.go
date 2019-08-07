@@ -57,7 +57,8 @@ type builder struct {
 }
 
 // build returns the Workdir instance corresponding to the provided absolute path
-func (b *builder) build(path string) (*Workdir, error) {
+// the path must be inside `workdirsPath`
+func (b *builder) Build(path string) (*Workdir, error) {
 	wdType, err := b.typeFromPath(path)
 	if err != nil {
 		return nil, err
@@ -102,7 +103,7 @@ func (b *builder) workdirName(wdType Type, path string) (string, error) {
 	return "", err
 }
 
-// typeFromPath returns the workidr type corresponding to the provided absolute path
+// typeFromPath returns the workdir type corresponding to the provided absolute path
 func (b *builder) typeFromPath(path string) (Type, error) {
 	suffix, err := filepath.Rel(b.workdirsPath, path)
 	if err != nil {
