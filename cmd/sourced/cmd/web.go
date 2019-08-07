@@ -79,12 +79,7 @@ func waitForContainer(stdout *bytes.Buffer) {
 	}
 }
 
-var newLineFormatter = regexp.MustCompile(`(\r\n|\r|\n)`)
 var stateExtractor = regexp.MustCompile(`(?m)^srcd-[\w\d]+.*(Up|Exit (\w+))`)
-
-func normalizeNewLine(s string) string {
-	return newLineFormatter.ReplaceAllString(s, "\n")
-}
 
 // runMonitor checks the status of the containers in order to early exit in case
 // an unrecoverable error occurs.
@@ -113,7 +108,7 @@ func runMonitor(ch chan<- error) {
 			}
 
 			matches := stateExtractor.FindAllStringSubmatch(
-				normalizeNewLine(strings.TrimSpace(stdout.String())), -1)
+				strings.TrimSpace(stdout.String()), -1)
 			for _, match := range matches {
 				state := match[1]
 
@@ -152,8 +147,7 @@ func runMonitor(ch chan<- error) {
 			return
 		}
 
-		services := strings.Split(normalizeNewLine(
-			strings.TrimSpace(servicesBuf.String())), "\n")
+		services := strings.Split(strings.TrimSpace(servicesBuf.String()), "\n")
 
 		for _, service := range services {
 			go runMonitorService(service, ch)
