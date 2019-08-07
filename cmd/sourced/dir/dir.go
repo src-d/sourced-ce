@@ -21,7 +21,7 @@ var ErrNotValid = goerrors.NewKind("%s is not a valid config directory: %s")
 // Path returns the absolute path for $SOURCED_DIR, or $HOME/.sourced if unset
 // and returns an error if it does not exist or it could not be read.
 func Path() (string, error) {
-	srcdDir, err := path()
+	srcdDir, err := srcdPath()
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +33,7 @@ func Path() (string, error) {
 	return srcdDir, nil
 }
 
-func path() (string, error) {
+func srcdPath() (string, error) {
 	if d := os.Getenv("SOURCED_DIR"); d != "" {
 		abs, err := filepath.Abs(d)
 		if err != nil {
@@ -54,7 +54,7 @@ func path() (string, error) {
 // Prepare tries to create the config directory, returning an error if it could not
 // be created, or nill if already exist or was successfully created.
 func Prepare() error {
-	srcdDir, err := path()
+	srcdDir, err := srcdPath()
 	if err != nil {
 		return err
 	}
@@ -82,13 +82,13 @@ func validate(path string) error {
 		return ErrNotValid.New(path, err)
 	}
 
+	if !info.IsDir() {
+		return ErrNotValid.New(path, "it is not a directory")
+	}
+
 	readWriteAccessMode := os.FileMode(0700)
 	if info.Mode()&readWriteAccessMode != readWriteAccessMode {
 		return ErrNotValid.New(path, "it has no read-write access")
-	}
-
-	if !info.IsDir() {
-		return ErrNotValid.New(path, "it is not a directory")
 	}
 
 	return nil
