@@ -115,7 +115,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.4.0-rc.2
+    image: srcd/sourced-ui:v0.4.0
     restart: unless-stopped
     environment:
       SYNC_MODE: ${GITBASE_SIVA}
