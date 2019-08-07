@@ -79,7 +79,7 @@ func waitForContainer(stdout *bytes.Buffer) {
 	}
 }
 
-var stateExtractor = regexp.MustCompile(`(?m)^srcd-[\w\d]+.*(Up|Exit (\w+))`)
+var stateExtractor = regexp.MustCompile(`(?m)^srcd-\w+.*(Up|Exit (\d+))`)
 
 // runMonitor checks the status of the containers in order to early exit in case
 // an unrecoverable error occurs.
