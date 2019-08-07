@@ -52,7 +52,7 @@ func srcdPath() (string, error) {
 }
 
 // Prepare tries to create the config directory, returning an error if it could not
-// be created, or nill if already exist or was successfully created.
+// be created, or nil if already exist or was successfully created.
 func Prepare() error {
 	srcdDir, err := srcdPath()
 	if err != nil {
