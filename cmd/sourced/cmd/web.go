@@ -102,24 +102,6 @@ func normalizeNewLine(s string) string {
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /bin/bblfsh-web -addr :808 ...   Up                      0.0.0.0:9999->8080/tcp
 // 2vudhlzztdlbg_bblfsh-web_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /tini -- bblfshd                 Up                      0.0.0.0:9432->9432/tcp
-// 2vudhlzztdlbg_bblfsh_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /bin/sh -c sleep 10s && gh ...   Up
-// 2vudhlzztdlbg_ghsync_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   ./init.sh                        Up                      0.0.0.0:3306->3306/tcp
-// 2vudhlzztdlbg_gitbase_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /bin/dumb-init -- /bin/sh  ...   Up
-// 2vudhlzztdlbg_gitcollector_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /home/entrypoint.sh start- ...   Up                      0.0.0.0:10000->10000/tcp, 0.0.0.0:4040->4040/tcp, 8888/tcp
-// 2vudhlzztdlbg_gsc_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   docker-entrypoint.sh postgres    Up                      0.0.0.0:5433->5432/tcp
-// 2vudhlzztdlbg_metadatadb_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   docker-entrypoint.sh postgres    Up                      0.0.0.0:5432->5432/tcp
-// 2vudhlzztdlbg_postgres_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   docker-entrypoint.sh redis ...   Up                      0.0.0.0:6379->6379/tcp
-// 2vudhlzztdlbg_redis_1
-// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /entrypoint.sh                   Up (health: starting)   0.0.0.0:8088->8088/tcp
-// 2vudhlzztdlbg_sourced-ui_1
 func runMonitor(ch chan<- error) {
 	runMonitorService := func(service string, ch chan<- error) {
 		for {
