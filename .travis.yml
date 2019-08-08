@@ -32,7 +32,7 @@ jobs:
       name: 'Go Unit Tests'
       script:
         - make packages
-        - make test-coverage
+        - make test-coverage codecov
 
     - stage: tests
       name: 'Integration Tests Linux'
