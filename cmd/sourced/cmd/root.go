@@ -58,6 +58,8 @@ func log(err error) {
 	switch {
 	case workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err):
 		printRed("Cannot perform this action, source{d} needs to be initialized first with the 'init' sub command")
+	case workdir.ErrInitFailed.Is(err):
+		printRed("Cannot perform this action, full re-initialization is needed, run 'prune' command first")
 	case dir.ErrNotValid.Is(err):
 		printRed("Cannot perform this action, config directory is not valid")
 	case fmt.Sprintf("%T", err) == "*flags.Error":

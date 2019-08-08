@@ -1,6 +1,8 @@
 package workdir
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -35,7 +37,18 @@ func InitOrgs(orgs []string, token string, withForks bool) (*Workdir, error) {
 	sort.Strings(orgs)
 	dirName := encodeDirName(strings.Join(orgs, ","))
 
-	envf := envFile{
+	envf := envFile{}
+	err := readEnvFile(dirName, "orgs", &envf)
+	if err == nil && envf.WithForks != withForks {
+		return nil, ErrInitFailed.Wrap(
+			fmt.Errorf("workdir was previously initialized with a different value for forks support"))
+	}
+	if err != nil && !os.IsNotExist(err) {
+		return nil, err
+	}
+
+	// re-create env file to make sure all fields are updated
+	envf = envFile{
 		Workdir:             dirName,
 		GithubOrganizations: orgs,
 		GithubToken:         token,
@@ -43,6 +56,21 @@ func InitOrgs(orgs []string, token string, withForks bool) (*Workdir, error) {
 	}
 
 	return initialize(dirName, "orgs", envf)
+}
+
+func readEnvFile(dirName string, subPath string, envf *envFile) error {
+	workdir, err := workdirPath(dirName, subPath)
+	if err != nil {
+		return err
+	}
+
+	envPath := filepath.Join(workdir, ".env")
+	b, err := ioutil.ReadFile(envPath)
+	if err != nil {
+		return err
+	}
+
+	return envf.UnmarshalEnv(b)
 }
 
 func encodeDirName(dirName string) string {
@@ -58,13 +86,27 @@ func buildAbsPath(dirName, subPath string) (string, error) {
 	return filepath.Join(path, subPath, dirName), nil
 }
 
+func workdirPath(dirName string, subPath string) (string, error) {
+	path, err := workdirsPath()
+	if err != nil {
+		return "", err
+	}
+
+	workdir := filepath.Join(path, subPath, dirName)
+	if err != nil {
+		return "", err
+	}
+
+	return workdir, nil
+}
+
 func initialize(dirName string, subPath string, envf envFile) (*Workdir, error) {
 	path, err := workdirsPath()
 	if err != nil {
 		return nil, err
 	}
 
-	workdir := filepath.Join(path, subPath, dirName)
+	workdir, err := workdirPath(dirName, subPath)
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +137,11 @@ func initialize(dirName string, subPath string, envf envFile) (*Workdir, error) 
 	}
 
 	envPath := filepath.Join(workdir, ".env")
-	contents := envf.String()
-	err = ioutil.WriteFile(envPath, []byte(contents), 0644)
+	contents, err := envf.MarshalEnv()
+	if err != nil {
+		return nil, err
+	}
+	err = ioutil.WriteFile(envPath, contents, 0644)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "could not write .env file")
@@ -114,7 +159,7 @@ type envFile struct {
 	WithForks           bool
 }
 
-func (f *envFile) String() string {
+func (f *envFile) MarshalEnv() ([]byte, error) {
 	volumeType := "bind"
 	volumeSource := f.ReposDir
 	gitbaseSiva := ""
@@ -154,7 +199,7 @@ func (f *envFile) String() string {
 		gitbaseLimitMem = strconv.FormatUint(uint64(float64(dockerMem)*0.9), 10)
 	}
 
-	return fmt.Sprintf(`COMPOSE_PROJECT_NAME=srcd-%s
+	result := fmt.Sprintf(`COMPOSE_PROJECT_NAME=srcd-%s
 	GITBASE_VOLUME_TYPE=%s
 	GITBASE_VOLUME_SOURCE=%s
 	GITBASE_SIVA=%s
@@ -167,6 +212,42 @@ func (f *envFile) String() string {
 	`, f.Workdir, volumeType, volumeSource, gitbaseSiva,
 		strings.Join(f.GithubOrganizations, ","), f.GithubToken, noForks,
 		gitbaseLimitCPU, gitcollectorLimitCPU, gitbaseLimitMem)
+
+	return []byte(result), nil
+}
+
+func (f *envFile) UnmarshalEnv(b []byte) error {
+	r := bytes.NewReader(b)
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || !strings.Contains(line, "=") {
+			continue
+		}
+
+		parts := strings.SplitN(scanner.Text(), "=", 2)
+		value := parts[1]
+		switch parts[0] {
+		case "COMPOSE_PROJECT_NAME":
+			f.Workdir = strings.TrimPrefix(value, "srcd-")
+		case "GITBASE_VOLUME_SOURCE":
+			f.ReposDir = value
+		case "GITHUB_ORGANIZATIONS":
+			f.GithubOrganizations = strings.Split(value, ",")
+		case "GITHUB_TOKEN":
+			f.GithubToken = value
+		case "NO_FORKS":
+			if value == "false" {
+				f.WithForks = true
+			}
+		}
+	}
+
+	if len(f.GithubOrganizations) > 0 {
+		f.ReposDir = ""
+	}
+
+	return scanner.Err()
 }
 
 // returns number of CPUs available to docker
