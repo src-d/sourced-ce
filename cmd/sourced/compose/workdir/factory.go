@@ -220,13 +220,14 @@ func (f *envFile) UnmarshalEnv(b []byte) error {
 	r := bytes.NewReader(b)
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		if strings.TrimSpace(scanner.Text()) == "" {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || !strings.Contains(line, "=") {
 			continue
 		}
 
-		line := strings.SplitN(scanner.Text(), "=", 2)
-		value := line[1]
-		switch line[0] {
+		parts := strings.SplitN(scanner.Text(), "=", 2)
+		value := parts[1]
+		switch parts[0] {
 		case "COMPOSE_PROJECT_NAME":
 			f.Workdir = strings.TrimPrefix(value, "srcd-")
 		case "GITBASE_VOLUME_SOURCE":
