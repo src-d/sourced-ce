@@ -51,6 +51,23 @@ services:
       GHSYNC_NO_FORKS: ${NO_FORKS:-true}
       LOG_LEVEL: ${LOG_LEVEL:-info}
 
+  gsc:
+    image: srcd/gitbase-spark-connector-enterprise:latest
+    command:
+      - start-thrift-server
+    depends_on:
+      - gitbase
+      - bblfsh
+    ports:
+      # spark UI
+      - 4040:4040
+      # Thrift server
+      - 10000:10000
+    environment:
+      - BBLFSH_HOST=bblfsh
+      - BBLFSH_PORT=9432
+      - GITBASE_SERVERS=gitbase:3306
+
   gitbase:
     image: srcd/gitbase:v0.23.1
     restart: unless-stopped
@@ -120,6 +137,7 @@ services:
     image: srcd/sourced-ui:v0.4.0
     restart: unless-stopped
     environment:
+      MODE: Enterprise
       SYNC_MODE: ${GITBASE_SIVA}
       ADMIN_LOGIN: admin
       ADMIN_FIRST_NAME: admin
@@ -133,11 +151,9 @@ services:
       POSTGRES_PORT: 5432
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      GITBASE_DB: gitbase
-      GITBASE_USER: root
-      GITBASE_PASSWORD:
-      GITBASE_HOST: gitbase
-      GITBASE_PORT: 3306
+      GITBASE_DB: default
+      GITBASE_HOST: gsc
+      GITBASE_PORT: 10000
       METADATA_DB: metadata
       METADATA_USER: metadata
       METADATA_PASSWORD: metadata
