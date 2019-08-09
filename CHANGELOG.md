@@ -7,6 +7,14 @@
     Click to see more.
   </summary>
 
+### Changed
+
+- Refactor of the `status` command ([#203](https://github.com/src-d/sourced-ce/issues/203)):
+  - `sourced status components` shows the previous output of `sourced status`
+  - `sourced status workdirs` replaces `sourced workdirs`
+  - `sourced status config` shows the contents of the Docker Compose environment variables. This is useful, for example, to check if the active working directory was configured to include or skip forks when downloading the data from GitHub
+  - `sourced status all` shows all of the above
+
 </details>
 
 ## [v0.14.0](https://github.com/src-d/sourced-ce/releases/tag/v0.14.0) - 2019-08-07
