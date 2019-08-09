@@ -200,16 +200,16 @@ func (f *envFile) MarshalEnv() ([]byte, error) {
 	}
 
 	result := fmt.Sprintf(`COMPOSE_PROJECT_NAME=srcd-%s
-	GITBASE_VOLUME_TYPE=%s
-	GITBASE_VOLUME_SOURCE=%s
-	GITBASE_SIVA=%s
-	GITHUB_ORGANIZATIONS=%s
-	GITHUB_TOKEN=%s
-	NO_FORKS=%s
-	GITBASE_LIMIT_CPU=%s
-	GITCOLLECTOR_LIMIT_CPU=%s
-	GITBASE_LIMIT_MEM=%s
-	`, f.Workdir, volumeType, volumeSource, gitbaseSiva,
+GITBASE_VOLUME_TYPE=%s
+GITBASE_VOLUME_SOURCE=%s
+GITBASE_SIVA=%s
+GITHUB_ORGANIZATIONS=%s
+GITHUB_TOKEN=%s
+NO_FORKS=%s
+GITBASE_LIMIT_CPU=%s
+GITCOLLECTOR_LIMIT_CPU=%s
+GITBASE_LIMIT_MEM=%s
+`, f.Workdir, volumeType, volumeSource, gitbaseSiva,
 		strings.Join(f.GithubOrganizations, ","), f.GithubToken, noForks,
 		gitbaseLimitCPU, gitcollectorLimitCPU, gitbaseLimitMem)
 
