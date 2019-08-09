@@ -131,6 +131,10 @@ func (c *supersetClient) gitbase(query string) ([]map[string]interface{}, error)
 	return c.sql(query, "1", "gitbase")
 }
 
+func (c *supersetClient) gsc(query string) ([]map[string]interface{}, error) {
+	return c.sql(query, "1", "default")
+}
+
 func (c *supersetClient) metadata(query string) ([]map[string]interface{}, error) {
 	return c.sql(query, "2", "public")
 }

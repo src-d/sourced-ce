@@ -139,10 +139,10 @@ github.com/golang-migrate/migrate
 	})
 
 	// Test gitbase queries through superset
-	s.T().Run("superset-gitbase", func(t *testing.T) {
+	s.T().Run("superset-gsc", func(t *testing.T) {
 		req := require.New(t)
 
-		rows, err := client.gitbase("select * from repositories")
+		rows, err := client.gsc("select * from repositories")
 		req.NoError(err)
 
 		s.Equal([]map[string]interface{}{
@@ -174,7 +174,7 @@ github.com/golang-migrate/migrate
 	s.T().Run("gitbase-bblfsh", func(t *testing.T) {
 		req := require.New(t)
 
-		rows, err := client.gitbase(
+		rows, err := client.gsc(
 			`SELECT UAST('console.log("hello");', 'javascript') AS uast`)
 		req.NoError(err)
 

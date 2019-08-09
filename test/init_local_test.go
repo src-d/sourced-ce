@@ -112,11 +112,11 @@ repo_b
 		}, links)
 	})
 
-	// Test gitbase queries through superset
-	s.T().Run("superset-gitbase", func(t *testing.T) {
+	// Test gsc queries through superset
+	s.T().Run("superset-gsc", func(t *testing.T) {
 		req := require.New(t)
 
-		rows, err := client.gitbase("select * from repositories")
+		rows, err := client.gsc("select * from repositories")
 		req.NoError(err)
 
 		s.Equal([]map[string]interface{}{
@@ -137,7 +137,7 @@ repo_b
 	s.T().Run("gitbase-bblfsh", func(t *testing.T) {
 		req := require.New(t)
 
-		rows, err := client.gitbase(
+		rows, err := client.gsc(
 			`SELECT UAST('console.log("hello");', 'javascript') AS uast`)
 		req.NoError(err)
 
