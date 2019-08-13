@@ -34,16 +34,13 @@ func NewHandler() (*Handler, error) {
 
 // SetActive creates a symlink from the fixed active workdir path to the prodived workdir
 func (h *Handler) SetActive(w *Workdir) error {
-	path, err := h.activeAbsolutePath()
-	if err != nil {
-		return err
-	}
+	path := h.activeAbsolutePath()
 
 	if err := h.UnsetActive(); err != nil {
 		return err
 	}
 
-	err = os.Symlink(w.Path, path)
+	err := os.Symlink(w.Path, path)
 	if os.IsExist(err) {
 		return nil
 	}
@@ -53,12 +50,9 @@ func (h *Handler) SetActive(w *Workdir) error {
 
 // UnsetActive removes symlink for active workdir
 func (h *Handler) UnsetActive() error {
-	path, err := h.activeAbsolutePath()
-	if err != nil {
-		return err
-	}
+	path := h.activeAbsolutePath()
 
-	_, err = os.Lstat(path)
+	_, err := os.Lstat(path)
 	if !os.IsNotExist(err) {
 		err = os.Remove(path)
 		if err != nil {
@@ -71,17 +65,14 @@ func (h *Handler) UnsetActive() error {
 
 // Active returns active working directory
 func (h *Handler) Active() (*Workdir, error) {
-	path, err := h.activeAbsolutePath()
-	if err != nil {
-		return nil, err
-	}
+	path := h.activeAbsolutePath()
 
 	resolvedPath, err := filepath.EvalSymlinks(path)
 	if os.IsNotExist(err) {
 		return nil, ErrMalformed.Wrap(err, "active")
 	}
 
-	return h.builder.build(resolvedPath)
+	return h.builder.Build(resolvedPath)
 }
 
 // List returns array of working directories
@@ -114,7 +105,7 @@ func (h *Handler) List() ([]*Workdir, error) {
 
 	wds := make([]*Workdir, 0, len(dirs))
 	for _, p := range dirs {
-		wd, err := h.builder.build(p)
+		wd, err := h.builder.Build(p)
 		if err != nil {
 			return nil, err
 		}
@@ -192,6 +183,6 @@ func (h *Handler) Remove(w *Workdir) error {
 	}
 }
 
-func (h *Handler) activeAbsolutePath() (string, error) {
-	return filepath.Join(h.workdirsPath, activeDir), nil
+func (h *Handler) activeAbsolutePath() string {
+	return filepath.Join(h.workdirsPath, activeDir)
 }

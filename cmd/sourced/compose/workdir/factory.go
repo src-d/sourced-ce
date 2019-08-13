@@ -77,15 +77,6 @@ func encodeDirName(dirName string) string {
 	return base64.URLEncoding.EncodeToString([]byte(dirName))
 }
 
-func buildAbsPath(dirName, subPath string) (string, error) {
-	path, err := workdirsPath()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(path, subPath, dirName), nil
-}
-
 func workdirPath(dirName string, subPath string) (string, error) {
 	path, err := workdirsPath()
 	if err != nil {
@@ -148,7 +139,7 @@ func initialize(dirName string, subPath string, envf envFile) (*Workdir, error) 
 	}
 
 	b := &builder{workdirsPath: path}
-	return b.build(workdir)
+	return b.Build(workdir)
 }
 
 type envFile struct {
