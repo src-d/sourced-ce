@@ -24,7 +24,7 @@ func (c *statusAllCmd) Execute(args []string) error {
 
 	err := printWorkdirsCmd()
 	if err != nil {
-		printRed(err.Error())
+		return err
 	}
 
 	active, err := activeWorkdir()
@@ -41,14 +41,14 @@ func (c *statusAllCmd) Execute(args []string) error {
 
 	err = printConfigCmd(active)
 	if err != nil {
-		printRed(err.Error())
+		return err
 	}
 
 	fmt.Print("\nStatus of all components:\n\n")
 
 	err = printComponentsCmd()
 	if err != nil {
-		printRed(err.Error())
+		return err
 	}
 
 	return nil
