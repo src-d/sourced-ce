@@ -7,6 +7,8 @@
     Click to see more.
   </summary>
 
+- Remove completion subcommand on Windows (#169)
+
 </details>
 
 ## [v0.14.0](https://github.com/src-d/sourced-ce/releases/tag/v0.14.0) - 2019-08-07
