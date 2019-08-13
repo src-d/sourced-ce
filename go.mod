@@ -31,7 +31,7 @@ require (
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
 	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734
 	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c
-	gopkg.in/src-d/go-cli.v0 v0.0.0-20190422143124-3a646154da79
+	gopkg.in/src-d/go-cli.v0 v0.0.0-20190812132843-b3f24f71753d
 	gopkg.in/src-d/go-errors.v1 v1.0.0
 	gopkg.in/src-d/go-log.v1 v1.0.2 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
