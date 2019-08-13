@@ -52,7 +52,7 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-info}
 
   gsc:
-    image: srcd/gitbase-spark-connector-enterprise:latest
+    image: srcd/gitbase-spark-connector-enterprise:v0.6.0
     command:
       - start-thrift-server
     depends_on:
