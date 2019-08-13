@@ -44,8 +44,7 @@ func (s *InitLocalTestSuite) TestWithInvalidWorkdir() {
 func (s *InitLocalTestSuite) TestChangeWorkdir() {
 	req := s.Require()
 
-	// TODO will need to change with https://github.com/src-d/sourced-ce/issues/144
-	r := s.RunCommand("workdirs")
+	r := s.RunCommand("status", "workdirs")
 	req.Error(r.Error)
 
 	// Create 2 workdirs, each with a repo
@@ -61,7 +60,7 @@ func (s *InitLocalTestSuite) TestChangeWorkdir() {
 	r = s.RunCommand("init", "local", workdirA)
 	req.NoError(r.Error, r.Combined())
 
-	r = s.RunCommand("workdirs")
+	r = s.RunCommand("status", "workdirs")
 	req.NoError(r.Error, r.Combined())
 
 	req.Equal(fmt.Sprintf("* %v\n", workdirA), r.Stdout())
@@ -78,7 +77,7 @@ repo_a
 	r = s.RunCommand("init", "local", workdirB)
 	req.NoError(r.Error, r.Combined())
 
-	r = s.RunCommand("workdirs")
+	r = s.RunCommand("status", "workdirs")
 	req.NoError(r.Error, r.Combined())
 
 	req.Equal(fmt.Sprintf("  %v\n* %v\n", workdirA, workdirB), r.Stdout())
