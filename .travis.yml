@@ -1,6 +1,7 @@
 branches:
   only:
     - master
+    - gsc
     - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 
 dist: xenial
