@@ -3,8 +3,11 @@
 ## [Unreleased]
 <details>
   <summary>
-    Changes that have landed in master but are not yet released.
-    Click to see more.
+
+### Added
+
+- Add a monitoring of containers state while waiting for the web UI to open during initialization ([#147](https://github.com/src-d/sourced-ce/issues/147)).
+
   </summary>
 
 </details>
