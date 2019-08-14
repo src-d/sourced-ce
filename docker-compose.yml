@@ -12,13 +12,13 @@ services:
     # wait for db
     command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
-      GITHUB_ORGANIZATIONS: ${GITHUB_ORGANIZATIONS:-}
-      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_ORGANIZATIONS: ${GITHUB_ORGANIZATIONS-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN-}
       # use main db
       GITCOLLECTOR_METRICS_DB_URI: postgresql://superset:superset@postgres:5432/superset?sslmode=disable
       GITCOLLECTOR_NO_UPDATES: 'true'
-      GITCOLLECTOR_NO_FORKS: ${NO_FORKS:-true}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
+      GITCOLLECTOR_NO_FORKS: ${NO_FORKS-true}
+      LOG_LEVEL: ${LOG_LEVEL-info}
     depends_on:
       - postgres
     volumes:
@@ -29,7 +29,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: ${GITCOLLECTOR_LIMIT_CPU:-0.0}
+          cpus: ${GITCOLLECTOR_LIMIT_CPU-0.0}
 
   ghsync:
     image: srcd/ghsync:v0.2.0-rc.2
@@ -41,15 +41,15 @@ services:
     depends_on:
       - metadatadb
     environment:
-      GHSYNC_ORGS: ${GITHUB_ORGANIZATIONS:-}
-      GHSYNC_TOKEN: ${GITHUB_TOKEN:-}
+      GHSYNC_ORGS: ${GITHUB_ORGANIZATIONS-}
+      GHSYNC_TOKEN: ${GITHUB_TOKEN-}
       GHSYNC_POSTGRES_DB: metadata
       GHSYNC_POSTGRES_USER: metadata
       GHSYNC_POSTGRES_PASSWORD: metadata
       GHSYNC_POSTGRES_HOST: metadatadb
       GHSYNC_POSTGRES_PORT: 5432
-      GHSYNC_NO_FORKS: ${NO_FORKS:-true}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
+      GHSYNC_NO_FORKS: ${NO_FORKS-true}
+      LOG_LEVEL: ${LOG_LEVEL-info}
 
   gitbase:
     image: srcd/gitbase:v0.23.1
@@ -59,7 +59,7 @@ services:
     environment:
       BBLFSH_ENDPOINT: bblfsh:9432
       SIVA: ${GITBASE_SIVA}
-      GITBASE_LOG_LEVEL: ${LOG_LEVEL:-info}
+      GITBASE_LOG_LEVEL: ${LOG_LEVE-info}
     depends_on:
       - bblfsh
     volumes:
@@ -72,8 +72,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: ${GITBASE_LIMIT_CPU:-0.0}
-          memory: ${GITBASE_LIMIT_MEM:-0}
+          cpus: ${GITBASE_LIMIT_CPU-0.0}
+          memory: ${GITBASE_LIMIT_MEM-0}
 
   bblfsh-web:
     image: bblfsh/web:v0.11.1
