@@ -68,10 +68,6 @@ type composeSetDefaultCmd struct {
 	Command `name:"set" short-description:"Set the active docker compose file" long-description:"Set the active docker compose file"`
 
 	Args struct {
-<<<<<<< HEAD
-=======
-		// Version string `positional-arg-name:"version" description:"Either a revision (tag, full sha1) or a URL to a docker-compose.yml file"`
->>>>>>> f8b01f1... Added index numbers for docker compose files. Signed-off-by: Cihan Mete Bahadir <c.mete.bahadir@gmail.com>
 		Index string `positional-arg-name:"index" description:"Index of the docker compose file returned from 'sourced compose list'"`
 	} `positional-args:"yes" required:"yes"`
 }
