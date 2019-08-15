@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
@@ -32,29 +33,7 @@ func init() {
 	rootCmd.AddCommand(&webCmd{})
 }
 
-func openUI() error {
-	var stdout bytes.Buffer
-	// wait for the container to start, it can take a while in some cases
-	for {
-		err := compose.RunWithIO(context.Background(),
-			os.Stdin, &stdout, nil, "port", containerName, "8088")
-
-		if err == nil {
-			break
-		}
-
-		if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) || dir.ErrNotValid.Is(err) {
-			return err
-		}
-
-		time.Sleep(1 * time.Second)
-	}
-
-	address := strings.TrimSpace(stdout.String())
-	if address == "" {
-		return fmt.Errorf("could not find the public port of %s", containerName)
-	}
-
+func openUI(address string) error {
 	// docker-compose returns 0.0.0.0 which is correct for the bind address
 	// but incorrect as connect address
 	url := fmt.Sprintf("http://%s", strings.Replace(address, "0.0.0.0", "127.0.0.1", 1))
@@ -75,11 +54,130 @@ func openUI() error {
 	return nil
 }
 
+func checkFailFast(stdout *bytes.Buffer) (bool, error) {
+	err := compose.RunWithIO(context.Background(),
+		os.Stdin, stdout, nil, "port", containerName, "8088")
+	if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) || dir.ErrNotValid.Is(err) {
+		return true, err
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return false, nil
+}
+
+func waitForContainer(stdout *bytes.Buffer) {
+	for {
+		if err := compose.RunWithIO(context.Background(),
+			os.Stdin, stdout, nil, "port", containerName, "8088"); err == nil {
+			break
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+}
+
+var stateExtractor = regexp.MustCompile(`(?m)^srcd-\w+.*(Up|Exit (\d+))`)
+
+// runMonitor checks the status of the containers in order to early exit in case
+// an unrecoverable error occurs.
+// The monitoring is performed by running `docker-compose ps <service>` for each
+// service returned by `docker-compose config --services`, and by grepping the
+// state from the stdout using a regex.
+// Getting the state of all the containers in a single pass by running `docker-compose ps`
+// and by using a multi-line regex to extract both service name and state is not reliable.
+// The reason is that the prefix of a container can be very long, especially for local
+// initialization, due to the value that we set for `COMPOSE_PROJECT_NAME` env var, and
+// docker-compose may split the name into multiple lines.
+// E.g.:
+//
+// Name                                                       Command                       State                                     Ports
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /bin/bblfsh-web -addr :808 ...   Up                      0.0.0.0:9999->8080/tcp
+// 2vudhlzztdlbg_bblfsh-web_1
+func runMonitor(ch chan<- error) {
+	runMonitorService := func(service string, ch chan<- error) {
+		for {
+			var stdout bytes.Buffer
+			if err := compose.RunWithIO(context.Background(),
+				os.Stdin, &stdout, nil, "ps", service); err != nil {
+				ch <- errors.Wrapf(err, "cannot get status service %s", service)
+				return
+			}
+
+			matches := stateExtractor.FindAllStringSubmatch(
+				strings.TrimSpace(stdout.String()), -1)
+			for _, match := range matches {
+				state := match[1]
+
+				if strings.HasPrefix(state, "Exit") {
+					if service != "ghsync" && service != "gitcollector" {
+						ch <- fmt.Errorf("service '%s' is in state '%s'", service, state)
+						return
+					}
+
+					returnCode := state[len("Exit "):len(state)]
+					if returnCode != "0" {
+						ch <- fmt.Errorf("service '%s' exited with return code: %s",
+							service, returnCode)
+						return
+					}
+
+					continue
+				}
+
+				if state != "Up" {
+					ch <- fmt.Errorf("service '%s' is in state '%s'", service, state)
+					return
+				}
+
+			}
+
+			time.Sleep(1 * time.Second)
+		}
+	}
+
+	var servicesBuf bytes.Buffer
+	if err := compose.RunWithIO(context.Background(),
+		os.Stdin, &servicesBuf, nil, "config", "--services"); err != nil {
+		ch <- errors.Wrap(err, "cannot get list of services")
+		return
+	}
+
+	services := strings.Split(strings.TrimSpace(servicesBuf.String()), "\n")
+
+	for _, service := range services {
+		go runMonitorService(service, ch)
+	}
+}
+
 // OpenUI opens the browser with the UI.
 func OpenUI(timeout time.Duration) error {
+	var stdout bytes.Buffer
+	failFast, err := checkFailFast(&stdout)
+	if failFast {
+		return err
+	}
+
 	ch := make(chan error)
+	containerReady := err == nil
+
+	go runMonitor(ch)
+
 	go func() {
-		ch <- openUI()
+		if !containerReady {
+			waitForContainer(&stdout)
+		}
+
+		address := strings.TrimSpace(stdout.String())
+		if address == "" {
+			ch <- fmt.Errorf("could not find the public port of %s", containerName)
+			return
+		}
+
+		ch <- openUI(address)
 	}()
 
 	fmt.Println(`
