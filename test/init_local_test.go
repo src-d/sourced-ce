@@ -41,6 +41,30 @@ func (s *InitLocalTestSuite) TestWithInvalidWorkdir() {
 	)
 }
 
+func (s *InitLocalTestSuite) TestListComposeFiles() {
+	require := s.Require()
+	r := s.RunCommand("compose", "list")
+	stdOut := r.Stdout()
+	require.Equal(fmt.Sprintf("[0]  local\n"), stdOut)
+}
+
+func (s *InitLocalTestSuite) TestSetComposeFile() {
+	require := s.Require()
+	r_set := s.RunCommand("compose", "set", "0")
+	require.Equal(fmt.Sprintf("Active docker compose file was changed successfully.\n"+
+		"To update your current installation use `sourced restart`\n"), r_set.Stdout())
+
+	r_list := s.RunCommand("compose", "list")
+	require.Equal(fmt.Sprintf("[0]  local\n"), r_list.Stdout())
+}
+
+func (s *InitLocalTestSuite) TestSetComposeFilesWithStringIndex() {
+	require := s.Require()
+	r := s.RunCommand("compose", "set", "local")
+	stdOut := r.Stdout()
+	require.Equal(fmt.Sprintf("Provide the index of the docker compose file in 'sourced compose list'\n"), stdOut)
+}
+
 func (s *InitLocalTestSuite) TestChangeWorkdir() {
 	req := s.Require()
 

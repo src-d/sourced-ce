@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
 
 	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
 
@@ -51,7 +52,8 @@ func (c *composeListCmd) Execute(args []string) error {
 		return err
 	}
 
-	for _, file := range files {
+	for index, file := range files {
+		fmt.Printf("[%d]", index)
 		if file == active {
 			fmt.Printf("* %s\n", file)
 		} else {
@@ -66,18 +68,32 @@ type composeSetDefaultCmd struct {
 	Command `name:"set" short-description:"Set the active docker compose file" long-description:"Set the active docker compose file"`
 
 	Args struct {
-		Version string `positional-arg-name:"version" description:"Either a revision (tag, full sha1) or a URL to a docker-compose.yml file"`
+<<<<<<< HEAD
+=======
+		// Version string `positional-arg-name:"version" description:"Either a revision (tag, full sha1) or a URL to a docker-compose.yml file"`
+>>>>>>> f8b01f1... Added index numbers for docker compose files. Signed-off-by: Cihan Mete Bahadir <c.mete.bahadir@gmail.com>
+		Index string `positional-arg-name:"index" description:"Index of the docker compose file returned from 'sourced compose list'"`
 	} `positional-args:"yes" required:"yes"`
 }
 
 func (c *composeSetDefaultCmd) Execute(args []string) error {
-	err := composefile.SetActive(c.Args.Version)
+	files, err := composefile.List()
+
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Active docker compose file was changed successfully.")
-	fmt.Println("To update your current installation use `sourced restart`")
+	index, err := strconv.Atoi(c.Args.Index)
+
+	if err == nil && index >= 0 && index < len(files) {
+		active := files[index]
+		err = composefile.SetActive(active)
+		fmt.Println("Active docker compose file was changed successfully.")
+		fmt.Println("To update your current installation use `sourced restart`")
+	} else {
+		fmt.Println("Provide the index of the docker compose file in 'sourced compose list'")
+	}
+
 	return nil
 }
 
