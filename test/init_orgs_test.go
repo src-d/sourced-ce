@@ -93,13 +93,13 @@ func (s *InitOrgsTestSuite) TestOneOrg() {
 	req := s.Require()
 
 	// TODO will need to change with https://github.com/src-d/sourced-ce/issues/144
-	r := s.RunCommand("workdirs")
+	r := s.RunCommand("status", "workdirs")
 	req.Error(r.Error)
 
 	r = s.RunCommand("init", "orgs", "golang-migrate")
 	req.NoError(r.Error, r.Combined())
 
-	r = s.RunCommand("workdirs")
+	r = s.RunCommand("status", "workdirs")
 	req.NoError(r.Error, r.Combined())
 
 	req.Equal("* golang-migrate\n", r.Stdout())
