@@ -6,7 +6,6 @@ _For tips and advices to deal with unexpected errors, please refer to_ [_Trouble
 
 * [Where Can I Find More Assistance to Run source{d} or Notify You About Any Issue or Suggestion?](faq.md#where-can-i-find-more-assistance-to-run-source-d-or-notify-you-about-any-issue-or-suggestion)
 * [How Can I Update My Version Of **source{d} CE**?](faq.md#how-can-i-update-my-version-of-source-d-ce)
-* [How To Restore Dashboards and Charts to Defaults](faq.md#how-to-restore-dashboards-and-charts-to-defaults)
 * [How to Update the Data from the Organizations That I'm Analyzing](faq.md#how-to-update-the-data-from-the-organizations-being-analyzed)
 * [Can I Query Gitbase or Babelfish with External Tools?](faq.md#can-i-query-gitbase-or-babelfish-with-external-tools)
 * [Where Can I Read More About the Web Interface?](faq.md#where-can-i-read-more-about-the-web-interface)
@@ -43,35 +42,10 @@ When there is a new release of **source{d} CE**, it is noticed every time a `sou
 3. run `sourced compose download`
 4. run `sourced restart` to apply the new configuration.
 
-This process will reinstall **source{d} CE** with the new components, but it will keep your data \(repositories, charts, dashboards, etc\). If you want to replace all the current dashboards with the ones from the release that you just installed, you have two alternatives:
+This process will reinstall **source{d} CE** with the new components, but it will keep your data (repositories, charts, dashboards, etc).
 
-* run `sourced prune --all` before running `sourced init`; but if you were using
+If you want to replace all the current dashboards with the ones from the release that you just installed, the official way to proceed is to run `sourced prune --all` before running `sourced init`; please, notice that it will also delete your saved queries and charts, and if you were using repositories and metadata downloaded from a GitHub organization, they will be deleted, and downloaded again.
 
-  repositories downloaded from a GitHub organization, they will be deleted, and
-
-  downloaded again.
-
-* drop only the dashboards, and load the new ones, following also this other
-
-  instructions: [How To Restore Dashboards and Charts to Defaults](faq.md#how-to-restore-dashboards-and-charts-to-defaults)
-
-## How To Restore Dashboards and Charts to Defaults
-
-In some circumstances, you may want to restore the UI dashboard and charts to its defaults. Currently, there is no clean way of doing it without deleting all the state of the UI.
-
-Following these steps, all the state modified from the UI \(charts, dashboards, saved queries, users, roles, etcetera\) will be replaced by the default ones for the version of **source{d} CE** that you're currently using. If you're using repositories from a GitHub organization, all its data will be preserved, and only charts and dashboards will be restarted.
-
-To do so, you only need to delete the docker volume containing the PostgreSQL database, and restart **source{d} CE**. It can be done following these steps if you already have [Docker Compose](https://docs.docker.com/compose/) installed:
-
-```text
-$ cd ~/.sourced/workdirs/__active__
-$ source .env
-$ docker-compose stop postgres
-$ docker-compose rm -f postgres
-$ ENV_PREFIX=`awk '{print tolower($0)}' <<< ${COMPOSE_PROJECT_NAME}`
-$ docker volume rm ${ENV_PREFIX}_postgres
-$ sourced restart
-```
 
 ## How to Update the Data from the Organizations Being Analyzed
 
