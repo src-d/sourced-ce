@@ -175,7 +175,7 @@ github.com/golang-migrate/migrate
 		req := require.New(t)
 
 		rows, err := client.gsc(
-			`SELECT UAST('console.log("hello");', 'javascript') AS uast`)
+			`SELECT UAST(blob_content, LANGUAGE(file_path, blob_content)) AS uast from files WHERE LANGUAGE(file_path, blob_content) == 'Go' limit 1`)
 		req.NoError(err)
 
 		req.Len(rows, 1)

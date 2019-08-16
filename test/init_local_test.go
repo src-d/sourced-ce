@@ -4,6 +4,7 @@ package test
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -138,7 +139,7 @@ repo_b
 		req := require.New(t)
 
 		rows, err := client.gsc(
-			`SELECT UAST('console.log("hello");', 'javascript') AS uast`)
+			`SELECT UAST(blob_content, LANGUAGE(file_path, blob_content)) AS uast from files WHERE LANGUAGE(file_path, blob_content) == 'JavaScript' limit 1`)
 		req.NoError(err)
 
 		req.Len(rows, 1)
@@ -152,7 +153,19 @@ func (s *InitLocalTestSuite) initGitRepo(path string) {
 	err := os.MkdirAll(path, os.ModePerm)
 	s.Require().NoError(err)
 
+	ioutil.WriteFile(filepath.Join(path, "hello.js"), []byte(`console.log("hello");`), 0644)
+
 	cmd := exec.Command("git", "init", path)
+	err = cmd.Run()
+	s.Require().NoError(err)
+
+	cmd = exec.Command("git", "add", "-A")
+	cmd.Dir = path
+	err = cmd.Run()
+	s.Require().NoError(err)
+
+	cmd = exec.Command("git", "commit", "-m", "add hello.js")
+	cmd.Dir = path
 	err = cmd.Run()
 	s.Require().NoError(err)
 }
