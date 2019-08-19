@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Increase timeout for start command ([#219](https://github.com/src-d/sourced-ce/pull/219))
+
 ## [v0.15.1](https://github.com/src-d/sourced-ce/releases/tag/v0.15.1) - 2019-08-27
 
 ### Fixed
