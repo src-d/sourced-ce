@@ -7,8 +7,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -42,27 +44,39 @@ func (s *InitLocalTestSuite) TestWithInvalidWorkdir() {
 }
 
 func (s *InitLocalTestSuite) TestListComposeFiles() {
-	require := s.Require()
-	r := s.RunCommand("compose", "list")
-	stdOut := r.Stdout()
-	require.Equal(fmt.Sprintf("[0]  local\n"), stdOut)
+	list := "list"
+	s.T().Run(list, func(t *testing.T) {
+		assert := assert.New(t)
+
+		r := s.RunCommand("compose", list)
+		stdOut := r.Stdout()
+		check := strings.Contains(stdOut, "[0]  local")
+		assert.True(check)
+	})
 }
 
 func (s *InitLocalTestSuite) TestSetComposeFile() {
-	require := s.Require()
-	r_set := s.RunCommand("compose", "set", "0")
-	require.Equal(fmt.Sprintf("Active docker compose file was changed successfully.\n"+
-		"To update your current installation use `sourced restart`\n"), r_set.Stdout())
+	set := "set"
+	s.T().Run(set, func(t *testing.T) {
+		assert := assert.New(t)
 
-	r_list := s.RunCommand("compose", "list")
-	require.Equal(fmt.Sprintf("[0]  local\n"), r_list.Stdout())
+		r := s.RunCommand("compose", set, "0")
+		stdOut := r.Stdout()
+		check := strings.Contains(stdOut, "Active docker compose file was changed successfully")
+		assert.True(check)
+	})
 }
 
 func (s *InitLocalTestSuite) TestSetComposeFilesWithStringIndex() {
-	require := s.Require()
-	r := s.RunCommand("compose", "set", "local")
-	stdOut := r.Stdout()
-	require.Equal(fmt.Sprintf("Provide the index of the docker compose file in 'sourced compose list'\n"), stdOut)
+	set := "set"
+	s.T().Run(set, func(t *testing.T) {
+		assert := assert.New(t)
+
+		r := s.RunCommand("compose", set, "local")
+		stdOut := r.Stdout()
+		check := strings.Contains(stdOut, "Provide the index of the docker compose file in 'sourced compose list")
+		assert.True(check)
+	})
 }
 
 func (s *InitLocalTestSuite) TestChangeWorkdir() {
