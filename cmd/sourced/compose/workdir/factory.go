@@ -216,15 +216,18 @@ func (f *envFile) UnmarshalEnv(b []byte) error {
 			continue
 		}
 
-		parts := strings.SplitN(scanner.Text(), "=", 2)
+		parts := strings.SplitN(line, "=", 2)
 		value := parts[1]
+
 		switch parts[0] {
 		case "COMPOSE_PROJECT_NAME":
 			f.Workdir = strings.TrimPrefix(value, "srcd-")
 		case "GITBASE_VOLUME_SOURCE":
 			f.ReposDir = value
 		case "GITHUB_ORGANIZATIONS":
-			f.GithubOrganizations = strings.Split(value, ",")
+			if value != "" {
+				f.GithubOrganizations = strings.Split(value, ",")
+			}
 		case "GITHUB_TOKEN":
 			f.GithubToken = value
 		case "NO_FORKS":
