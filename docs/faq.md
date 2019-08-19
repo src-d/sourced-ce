@@ -10,7 +10,7 @@ _For tips and advices to deal with unexpected errors, please refer to [Troublesh
 - [How to Update the Data from the Organizations That I'm Analyzing](#how-to-update-the-data-from-the-organizations-being-analyzed)
 - [Can I Query Gitbase or Babelfish with External Tools?](#can-i-query-gitbase-or-babelfish-with-external-tools)
 - [Where Can I Read More About the Web Interface?](#where-can-i-read-more-about-the-web-interface)
-
+- [I Get IOError Permission denied](#i-get-ioerror-permission-denied)
 
 ## Where Can I Find More Assistance to Run source{d} or Notify You About Any Issue or Suggestion?
 
@@ -137,3 +137,13 @@ the [Architecture documentation](./architecture.md#docker-networking)
 The user interface is based in the open-sourced [Apache Superset](http://superset.apache.org),
 so you can also refer to [Superset tutorials](http://superset.apache.org/tutorial.html)
 for advanced usage of the web interface.
+
+## I Get IOError Permission denied
+
+If you get this error message:
+
+```
+IOError: [Errno 13] Permission denied: u'./.env'
+```
+
+This may happen if you have installed Docker from a snap package. This installation mode is not supported, please install it following [the official documentation](./quickstart/1-install-requirements.md#install-docker) (See [#78](https://github.com/src-d/sourced-ce/issues/78)).

@@ -4,6 +4,8 @@
 
 _Please note that Docker Toolbox is not supported. In case that you're running Docker Toolbox, please consider updating to newer Docker Desktop for Mac or Docker Desktop for Windows._
 
+_For Linux installations, using Docker installed from a snap package is not supported._
+
 Follow the instructions based on your OS:
 
 - [Docker for Ubuntu Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce-1)
