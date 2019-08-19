@@ -84,6 +84,9 @@ func (c *composeSetDefaultCmd) Execute(args []string) error {
 	if err == nil && index >= 0 && index < len(files) {
 		active := files[index]
 		err = composefile.SetActive(active)
+		if err != nil {
+			return err
+		}
 		fmt.Println("Active docker compose file was changed successfully.")
 		fmt.Println("To update your current installation use `sourced restart`")
 	} else {
