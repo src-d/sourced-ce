@@ -23,8 +23,6 @@ type testCase struct {
 func TestFindUpdatesSuccess(t *testing.T) {
 	os.RemoveAll(filepath.Join(dir.TmpPath(), "httpcache"))
 
-	assert := assert.New(t)
-
 	cases := []testCase{
 		{
 			responseTag: "v0.14.0",
@@ -53,13 +51,16 @@ func TestFindUpdatesSuccess(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		restore := mockGithub(c.responseTag)
-		defer restore()
+		name := fmt.Sprintf("%s_to_%s", c.current, c.responseTag)
+		t.Run(name, func(t *testing.T) {
+			restore := mockGithub(c.responseTag)
+			defer restore()
 
-		update, latest, err := FindUpdates(c.current)
-		assert.Nil(err)
-		assert.Equal(c.update, update)
-		assert.Equal(c.latest, latest)
+			update, latest, err := FindUpdates(c.current)
+			assert.Nil(t, err)
+			assert.Equal(t, c.update, update)
+			assert.Equal(t, c.latest, latest)
+		})
 	}
 }
 
