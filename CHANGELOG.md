@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Removed
+
+- `completion` sub-command on Windows ([#169](https://github.com/src-d/sourced-ce/issues/169))
+
 ## [v0.15.0](https://github.com/src-d/sourced-ce/releases/tag/v0.15.0) - 2019-08-21
 
 ### Components
