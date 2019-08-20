@@ -32,7 +32,7 @@ services:
           cpus: ${GITCOLLECTOR_LIMIT_CPU-0.0}
 
   ghsync:
-    image: srcd/ghsync:v0.2.0-rc.2
+    image: srcd/ghsync:v0.2.0
     entrypoint: ['/bin/sh']
     # wait for db to be created
     # we need to use something like https://github.com/vishnubob/wait-for-it
