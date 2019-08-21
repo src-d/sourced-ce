@@ -1,14 +1,18 @@
 # Changelog
 
 ## [Unreleased]
-<details>
-  <summary>
+
+## [v0.15.0](https://github.com/src-d/sourced-ce/releases/tag/v0.15.0) - 2019-08-21
+
+### Components
+
+- `srcd/sourced-ui` has been updated to [v0.5.0](https://github.com/src-d/sourced-ui/releases/tag/v0.5.0).
+- `srcd/ghsync` has been updated to [v0.2.0](https://github.com/src-d/ghsync/releases/tag/v0.2.0).
 
 ### Added
 
 - Add a monitoring of containers state while waiting for the web UI to open during initialization ([#147](https://github.com/src-d/sourced-ce/issues/147)).
-
-  </summary>
+- Exclude forks by default in `sourced init orgs`, adding a new flag `--with-forks` to include them if needed ([#109](https://github.com/src-d/sourced-ce/issues/109)).
 
 ### Changed
 
@@ -17,8 +21,6 @@
   - `sourced status workdirs` replaces `sourced workdirs`
   - `sourced status config` shows the contents of the Docker Compose environment variables. This is useful, for example, to check if the active working directory was configured to include or skip forks when downloading the data from GitHub
   - `sourced status all` shows all of the above
-
-</details>
 
 ## [v0.14.0](https://github.com/src-d/sourced-ce/releases/tag/v0.14.0) - 2019-08-07
 

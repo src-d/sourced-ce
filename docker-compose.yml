@@ -32,7 +32,7 @@ services:
           cpus: ${GITCOLLECTOR_LIMIT_CPU-0.0}
 
   ghsync:
-    image: srcd/ghsync:v0.2.0-rc.2
+    image: srcd/ghsync:v0.2.0
     entrypoint: ['/bin/sh']
     # wait for db to be created
     # we need to use something like https://github.com/vishnubob/wait-for-it
@@ -117,7 +117,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.4.0
+    image: srcd/sourced-ui:v0.5.0
     restart: unless-stopped
     environment:
       SYNC_MODE: ${GITBASE_SIVA}
