@@ -67,6 +67,24 @@ func (s *InitLocalTestSuite) TestSetComposeFile() {
 	})
 }
 
+func (s *InitLocalTestSuite) TestSetComposeFilIndexOutOfRange() {
+	set := "set"
+	s.T().Run(set, func(t *testing.T) {
+		assert := assert.New(t)
+
+		r := s.RunCommand("compose", set, "5")
+		stdOut := r.Stdout()
+		check := strings.Contains(stdOut, "Index is out of range of the files in 'sourced compose list'")
+		assert.True(check)
+	})
+}
+
+func (s *InitLocalTestSuite) TestSetComposeNotFound() {
+	require := s.Require()
+	r := s.RunCommand("compose", "set", "NotFound")
+	require.Error(r.Error)
+}
+
 func (s *InitLocalTestSuite) TestSetComposeFilesWithStringIndex() {
 	set := "set"
 	s.T().Run(set, func(t *testing.T) {
@@ -74,7 +92,7 @@ func (s *InitLocalTestSuite) TestSetComposeFilesWithStringIndex() {
 
 		r := s.RunCommand("compose", set, "local")
 		stdOut := r.Stdout()
-		check := strings.Contains(stdOut, "Provide the index of the docker compose file in 'sourced compose list")
+		check := strings.Contains(stdOut, "Active docker compose file was changed successfully")
 		assert.True(check)
 	})
 }

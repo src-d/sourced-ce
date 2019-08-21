@@ -68,7 +68,7 @@ type composeSetDefaultCmd struct {
 	Command `name:"set" short-description:"Set the active docker compose file" long-description:"Set the active docker compose file"`
 
 	Args struct {
-		Index string `positional-arg-name:"index" description:"Index of the docker compose file returned from 'sourced compose list'"`
+		File string `positional-arg-name:"index/name" description:"Provide name or index of compose file on 'sourced compose list'"`
 	} `positional-args:"yes" required:"yes"`
 }
 
@@ -79,20 +79,29 @@ func (c *composeSetDefaultCmd) Execute(args []string) error {
 		return err
 	}
 
-	index, err := strconv.Atoi(c.Args.Index)
+	index, err := strconv.Atoi(c.Args.File)
 
-	if err == nil && index >= 0 && index < len(files) {
-		active := files[index]
-		err = composefile.SetActive(active)
+	if err == nil {
+		if index >= 0 && index < len(files) {
+			active := files[index]
+			err = composefile.SetActive(active)
+		} else {
+			fmt.Println("Index is out of range of the files in 'sourced compose list'")
+			return nil
+		}
 		if err != nil {
 			return err
 		}
-		fmt.Println("Active docker compose file was changed successfully.")
-		fmt.Println("To update your current installation use `sourced restart`")
-	} else {
-		fmt.Println("Provide the index of the docker compose file in 'sourced compose list'")
+
+	} else if err != nil {
+		err := composefile.SetActive(c.Args.File)
+		if err != nil {
+			return err
+		}
 	}
 
+	fmt.Println("Active docker compose file was changed successfully.")
+	fmt.Println("To update your current installation use `sourced restart`")
 	return nil
 }
 
