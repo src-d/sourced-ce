@@ -86,11 +86,7 @@ func (c *composeSetDefaultCmd) Execute(args []string) error {
 			active := files[index]
 			err = composefile.SetActive(active)
 		} else {
-			fmt.Println("Index is out of range of the files in 'sourced compose list'")
-			return nil
-		}
-		if err != nil {
-			return err
+			return fmt.Errorf("File not found with provided index check the output of 'sourced compose list'")
 		}
 
 	} else if err != nil {

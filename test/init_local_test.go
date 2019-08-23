@@ -73,8 +73,8 @@ func (s *InitLocalTestSuite) TestSetComposeFilIndexOutOfRange() {
 		assert := assert.New(t)
 
 		r := s.RunCommand("compose", set, "5")
-		stdOut := r.Stdout()
-		check := strings.Contains(stdOut, "Index is out of range of the files in 'sourced compose list'")
+		stdErr := r.Stderr()
+		check := strings.Contains(stdErr, "File not found with provided index check the output of 'sourced compose list'")
 		assert.True(check)
 	})
 }
