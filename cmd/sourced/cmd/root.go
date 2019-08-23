@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
 	"github.com/src-d/sourced-ce/cmd/sourced/dir"
@@ -27,9 +28,11 @@ func Init(v, build string) {
 		Build:   build,
 	})
 
-	rootCmd.AddCommand(&cli.CompletionCommand{
-		Name: name,
-	}, cli.InitCompletionCommand(name))
+	if runtime.GOOS != "windows" {
+		rootCmd.AddCommand(&cli.CompletionCommand{
+			Name: name,
+		}, cli.InitCompletionCommand(name))
+	}
 }
 
 // Command implements the default group flags. It is meant to be embedded into
