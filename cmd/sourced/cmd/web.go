@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"regexp"
 	"runtime"
 	"strings"
@@ -14,8 +15,6 @@ import (
 	"github.com/pkg/browser"
 	"github.com/pkg/errors"
 	"github.com/src-d/sourced-ce/cmd/sourced/compose"
-	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
-	"github.com/src-d/sourced-ce/cmd/sourced/dir"
 )
 
 // The service name used in docker-compose.yml for the srcd/sourced-ui image
@@ -54,32 +53,39 @@ func openUI(address string) error {
 	return nil
 }
 
-func checkFailFast(stdout *bytes.Buffer) (bool, error) {
-	err := compose.RunWithIO(context.Background(),
-		os.Stdin, stdout, nil, "port", containerName, "8088")
-	if workdir.ErrMalformed.Is(err) || dir.ErrNotExist.Is(err) || dir.ErrNotValid.Is(err) {
-		return true, err
+var stateExtractor = regexp.MustCompile(`(?m)^srcd-\w+.*(Up|Exit (\d+))`)
+
+func checkServiceStatus(service string) error {
+	var stdout bytes.Buffer
+	if err := compose.RunWithIO(context.Background(),
+		os.Stdin, &stdout, nil, "ps", service); err != nil {
+		return errors.Wrapf(err, "cannot get status service %s", service)
 	}
 
-	if err != nil {
-		return false, err
-	}
+	matches := stateExtractor.FindAllStringSubmatch(strings.TrimSpace(stdout.String()), -1)
+	for _, match := range matches {
+		state := match[1]
 
-	return false, nil
-}
+		if strings.HasPrefix(state, "Exit") {
+			if service != "ghsync" && service != "gitcollector" {
+				return fmt.Errorf("service '%s' is in state '%s'", service, state)
+			}
 
-func waitForContainer(stdout *bytes.Buffer) {
-	for {
-		if err := compose.RunWithIO(context.Background(),
-			os.Stdin, stdout, nil, "port", containerName, "8088"); err == nil {
-			break
+			returnCode := state[len("Exit "):len(state)]
+			if returnCode != "0" {
+				return fmt.Errorf("service '%s' exited with return code: %s", service, returnCode)
+			}
+
+			continue
 		}
 
-		time.Sleep(1 * time.Second)
+		if state != "Up" {
+			return fmt.Errorf("service '%s' is in state '%s'", service, state)
+		}
 	}
-}
 
-var stateExtractor = regexp.MustCompile(`(?m)^srcd-\w+.*(Up|Exit (\d+))`)
+	return nil
+}
 
 // runMonitor checks the status of the containers in order to early exit in case
 // an unrecoverable error occurs.
@@ -98,47 +104,6 @@ var stateExtractor = regexp.MustCompile(`(?m)^srcd-\w+.*(Up|Exit (\d+))`)
 // srcd-l1vzzxjzl3nln2vudhlzztdlbi9qcm9qzwn0cy8uz28td29ya3nwywnll3nyyy9naxrodwiuy29tl3nln   /bin/bblfsh-web -addr :808 ...   Up                      0.0.0.0:9999->8080/tcp
 // 2vudhlzztdlbg_bblfsh-web_1
 func runMonitor(ch chan<- error) {
-	runMonitorService := func(service string, ch chan<- error) {
-		for {
-			var stdout bytes.Buffer
-			if err := compose.RunWithIO(context.Background(),
-				os.Stdin, &stdout, nil, "ps", service); err != nil {
-				ch <- errors.Wrapf(err, "cannot get status service %s", service)
-				return
-			}
-
-			matches := stateExtractor.FindAllStringSubmatch(
-				strings.TrimSpace(stdout.String()), -1)
-			for _, match := range matches {
-				state := match[1]
-
-				if strings.HasPrefix(state, "Exit") {
-					if service != "ghsync" && service != "gitcollector" {
-						ch <- fmt.Errorf("service '%s' is in state '%s'", service, state)
-						return
-					}
-
-					returnCode := state[len("Exit "):len(state)]
-					if returnCode != "0" {
-						ch <- fmt.Errorf("service '%s' exited with return code: %s",
-							service, returnCode)
-						return
-					}
-
-					continue
-				}
-
-				if state != "Up" {
-					ch <- fmt.Errorf("service '%s' is in state '%s'", service, state)
-					return
-				}
-
-			}
-
-			time.Sleep(1 * time.Second)
-		}
-	}
-
 	var servicesBuf bytes.Buffer
 	if err := compose.RunWithIO(context.Background(),
 		os.Stdin, &servicesBuf, nil, "config", "--services"); err != nil {
@@ -149,36 +114,52 @@ func runMonitor(ch chan<- error) {
 	services := strings.Split(strings.TrimSpace(servicesBuf.String()), "\n")
 
 	for _, service := range services {
-		go runMonitorService(service, ch)
+		if err := checkServiceStatus(service); err != nil {
+			ch <- err
+			return
+		}
+		time.Sleep(time.Second)
 	}
+}
+
+func getContainerPublicAddress(containerName, privatePort string) (string, error) {
+	var stdout bytes.Buffer
+	for {
+		err := compose.RunWithIO(context.Background(), nil, &stdout, nil, "port", containerName, privatePort)
+		if err == nil {
+			break
+		}
+		// skip any unsuccessful command exits
+		if _, ok := err.(*exec.ExitError); !ok {
+			return "", err
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+
+	address := strings.TrimSpace(stdout.String())
+	if address == "" {
+		return "", fmt.Errorf("could not find the public port of %s", containerName)
+	}
+
+	return address, nil
 }
 
 // OpenUI opens the browser with the UI.
 func OpenUI(timeout time.Duration) error {
-	var stdout bytes.Buffer
-	failFast, err := checkFailFast(&stdout)
-	if failFast {
-		return err
-	}
-
 	ch := make(chan error)
-	containerReady := err == nil
-
-	go runMonitor(ch)
 
 	go func() {
-		if !containerReady {
-			waitForContainer(&stdout)
-		}
-
-		address := strings.TrimSpace(stdout.String())
-		if address == "" {
-			ch <- fmt.Errorf("could not find the public port of %s", containerName)
+		address, err := getContainerPublicAddress(containerName, "8088")
+		if err != nil {
+			ch <- err
 			return
 		}
 
 		ch <- openUI(address)
 	}()
+
+	go runMonitor(ch)
 
 	fmt.Println(`
 Once source{d} is fully initialized, the UI will be available, by default at:
