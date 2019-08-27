@@ -2,18 +2,26 @@
 
 ## [Unreleased]
 
+## [v0.15.1](https://github.com/src-d/sourced-ce/releases/tag/v0.15.1) - 2019-08-27
+
 ### Fixed
 
-- Fix incompatibility of empty resourse limits ([#227](https://github.com/src-d/sourced-ce/issues/227))
+- Fix incompatibility of empty resource limits ([#227](https://github.com/src-d/sourced-ce/issues/227)).
+- Fix incorrect value for `GITCOLLECTOR_LIMIT_CPU` in some cases ([#225](https://github.com/src-d/sourced-ce/issues/225)).
+- Fix gitbase `LOG_LEVEL` environment variable in the compose file ([#228](https://github.com/src-d/sourced-ce/issues/228)).
 
 ### Removed
 
-- `completion` sub-command on Windows ([#169](https://github.com/src-d/sourced-ce/issues/169))
+- Remove the `completion` sub-command on Windows, as it only works for bash ([#169](https://github.com/src-d/sourced-ce/issues/169)).
 
-### Fixed
+### Upgrading
 
-- Fix incorrect value for GITCOLLECTOR_LIMIT_CPU in some cases ([#225](https://github.com/src-d/sourced-ce/issues/225))
-- Fix gitbase `LOG_LEVEL` environment variable in the compose file ([#228](https://github.com/src-d/sourced-ce/issues/228)).
+Install the new `v0.15.1` binary, then run `sourced compose download`.
+
+For an upgrade from `v0.15.0`, you just need to run `sourced restart` to re-deploy the containers.
+
+For an upgrade from `v0.14.0`, please see the upgrade instructions in the release notes for `v0.15.0`.
+
 
 ## [v0.15.0](https://github.com/src-d/sourced-ce/releases/tag/v0.15.0) - 2019-08-21
 
