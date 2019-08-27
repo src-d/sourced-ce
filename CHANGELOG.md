@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix incompatibility of empty resourse limits ([#227](https://github.com/src-d/sourced-ce/issues/227))
+
 ### Removed
 
 - `completion` sub-command on Windows ([#169](https://github.com/src-d/sourced-ce/issues/169))
