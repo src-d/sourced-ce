@@ -177,7 +177,13 @@ func (f *envFile) MarshalEnv() ([]byte, error) {
 	if runtime.NumCPU() == dockerCPUs {
 		gitbaseLimitCPU = fmt.Sprintf("%.1f", float32(dockerCPUs)-0.1)
 	}
-	gitcollectorLimitCPU = fmt.Sprintf("%.1f", float32(dockerCPUs)/2-0.1)
+	if dockerCPUs > 0 {
+		halfCPUs := float32(dockerCPUs)/2.0
+		if halfCPUs < 1 {
+			halfCPUs = 1
+		}
+		gitcollectorLimitCPU = fmt.Sprintf("%.1f", halfCPUs-0.1)
+	}
 
 	// limit memory for containers
 	gitbaseLimitMem := "0"

@@ -10,6 +10,10 @@
 
 - `completion` sub-command on Windows ([#169](https://github.com/src-d/sourced-ce/issues/169))
 
+### Fixed
+
+- Fix incorrect value for GITCOLLECTOR_LIMIT_CPU in some cases ([#225](https://github.com/src-d/sourced-ce/issues/225))
+
 ## [v0.15.0](https://github.com/src-d/sourced-ce/releases/tag/v0.15.0) - 2019-08-21
 
 ### Components
