@@ -59,7 +59,7 @@ services:
     environment:
       BBLFSH_ENDPOINT: bblfsh:9432
       SIVA: ${GITBASE_SIVA}
-      GITBASE_LOG_LEVEL: ${LOG_LEVE-info}
+      GITBASE_LOG_LEVEL: ${LOG_LEVEL-info}
     depends_on:
       - bblfsh
     volumes:

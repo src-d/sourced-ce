@@ -13,6 +13,7 @@
 ### Fixed
 
 - Fix incorrect value for GITCOLLECTOR_LIMIT_CPU in some cases ([#225](https://github.com/src-d/sourced-ce/issues/225))
+- Fix gitbase `LOG_LEVEL` environment variable in the compose file ([#228](https://github.com/src-d/sourced-ce/issues/228)).
 
 ## [v0.15.0](https://github.com/src-d/sourced-ce/releases/tag/v0.15.0) - 2019-08-21
 
