@@ -54,7 +54,8 @@ func (s *IntegrationSuite) SetupTest() {
 	p, _ := filepath.Abs(filepath.FromSlash("../docker-compose.yml"))
 	os.Symlink(p, filepath.Join(s.sourcedDir, "compose-files", "local", "docker-compose.yml"))
 
-	r := s.RunCommand("compose", "set", "local")
+	//"0" refers to local
+	r := s.RunCommand("compose", "set", "0")
 	s.Require().NoError(r.Error, r.Combined())
 }
 

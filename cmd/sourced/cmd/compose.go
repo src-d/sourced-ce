@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
 
 	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
 
@@ -51,7 +52,8 @@ func (c *composeListCmd) Execute(args []string) error {
 		return err
 	}
 
-	for _, file := range files {
+	for index, file := range files {
+		fmt.Printf("[%d]", index)
 		if file == active {
 			fmt.Printf("* %s\n", file)
 		} else {
@@ -66,14 +68,32 @@ type composeSetDefaultCmd struct {
 	Command `name:"set" short-description:"Set the active docker compose file" long-description:"Set the active docker compose file"`
 
 	Args struct {
-		Version string `positional-arg-name:"version" description:"Either a revision (tag, full sha1) or a URL to a docker-compose.yml file"`
+		File string `positional-arg-name:"index/name" description:"Provide name or index of compose file on 'sourced compose list'"`
 	} `positional-args:"yes" required:"yes"`
 }
 
 func (c *composeSetDefaultCmd) Execute(args []string) error {
-	err := composefile.SetActive(c.Args.Version)
+	files, err := composefile.List()
+
 	if err != nil {
 		return err
+	}
+
+	index, err := strconv.Atoi(c.Args.File)
+
+	if err == nil {
+		if index >= 0 && index < len(files) {
+			active := files[index]
+			err = composefile.SetActive(active)
+		} else {
+			return fmt.Errorf("File not found with provided index check the output of 'sourced compose list'")
+		}
+
+	} else if err != nil {
+		err := composefile.SetActive(c.Args.File)
+		if err != nil {
+			return err
+		}
 	}
 
 	fmt.Println("Active docker compose file was changed successfully.")

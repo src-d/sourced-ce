@@ -7,8 +7,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -39,6 +41,60 @@ func (s *InitLocalTestSuite) TestWithInvalidWorkdir() {
 		fmt.Sprintf("path '%s' is not a valid directory\n", invalidWorkDir),
 		r.Stderr(),
 	)
+}
+
+func (s *InitLocalTestSuite) TestListComposeFiles() {
+	list := "list"
+	s.T().Run(list, func(t *testing.T) {
+		assert := assert.New(t)
+
+		r := s.RunCommand("compose", list)
+		stdOut := r.Stdout()
+		check := strings.Contains(stdOut, "[0]  local")
+		assert.True(check)
+	})
+}
+
+func (s *InitLocalTestSuite) TestSetComposeFile() {
+	set := "set"
+	s.T().Run(set, func(t *testing.T) {
+		assert := assert.New(t)
+
+		r := s.RunCommand("compose", set, "0")
+		stdOut := r.Stdout()
+		check := strings.Contains(stdOut, "Active docker compose file was changed successfully")
+		assert.True(check)
+	})
+}
+
+func (s *InitLocalTestSuite) TestSetComposeFilIndexOutOfRange() {
+	set := "set"
+	s.T().Run(set, func(t *testing.T) {
+		assert := assert.New(t)
+
+		r := s.RunCommand("compose", set, "5")
+		stdErr := r.Stderr()
+		check := strings.Contains(stdErr, "File not found with provided index check the output of 'sourced compose list'")
+		assert.True(check)
+	})
+}
+
+func (s *InitLocalTestSuite) TestSetComposeNotFound() {
+	require := s.Require()
+	r := s.RunCommand("compose", "set", "NotFound")
+	require.Error(r.Error)
+}
+
+func (s *InitLocalTestSuite) TestSetComposeFilesWithStringIndex() {
+	set := "set"
+	s.T().Run(set, func(t *testing.T) {
+		assert := assert.New(t)
+
+		r := s.RunCommand("compose", set, "local")
+		stdOut := r.Stdout()
+		check := strings.Contains(stdOut, "Active docker compose file was changed successfully")
+		assert.True(check)
+	})
 }
 
 func (s *InitLocalTestSuite) TestChangeWorkdir() {
