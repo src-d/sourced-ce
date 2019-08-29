@@ -74,7 +74,6 @@ type composeSetDefaultCmd struct {
 
 func (c *composeSetDefaultCmd) Execute(args []string) error {
 	files, err := composefile.List()
-
 	if err != nil {
 		return err
 	}
@@ -86,10 +85,10 @@ func (c *composeSetDefaultCmd) Execute(args []string) error {
 			active := files[index]
 			err = composefile.SetActive(active)
 		} else {
-			return fmt.Errorf("File not found with provided index check the output of 'sourced compose list'")
+			return fmt.Errorf("Index is out of range, please check the output of 'sourced compose list'")
 		}
 
-	} else if err != nil {
+	} else {
 		err := composefile.SetActive(c.Args.File)
 		if err != nil {
 			return err

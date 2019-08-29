@@ -47,15 +47,17 @@ func (s *IntegrationSuite) SetupTest() {
 	s.TestDir = testDir
 	s.Commander = &Commander{bin: srcdBin, sourcedDir: filepath.Join(s.TestDir, "sourced")}
 
-	// Instead of downloading the compose file, create a link to the local file
+	// Instead of downloading the compose file, copy the local file
 	err = os.MkdirAll(filepath.Join(s.sourcedDir, "compose-files", "local"), os.ModePerm)
 	s.Require().NoError(err)
 
 	p, _ := filepath.Abs(filepath.FromSlash("../docker-compose.yml"))
-	os.Symlink(p, filepath.Join(s.sourcedDir, "compose-files", "local", "docker-compose.yml"))
+	bytes, err := ioutil.ReadFile(p)
+	s.Require().NoError(err)
+	err = ioutil.WriteFile(filepath.Join(s.sourcedDir, "compose-files", "local", "docker-compose.yml"), bytes, 0644)
+	s.Require().NoError(err)
 
-	//"0" refers to local
-	r := s.RunCommand("compose", "set", "0")
+	r := s.RunCommand("compose", "set", "local")
 	s.Require().NoError(r.Error, r.Combined())
 }
 
