@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
+	"regexp"
 	"runtime"
 	"sort"
 	"strconv"
@@ -22,11 +24,7 @@ import (
 // InitLocal initializes the workdir for local path and returns the Workdir instance
 func InitLocal(reposdir string) (*Workdir, error) {
 	dirName := encodeDirName(reposdir)
-
-	envf := envFile{
-		Workdir:  dirName,
-		ReposDir: reposdir,
-	}
+	envf := newLocalEnvFile(dirName, reposdir)
 
 	return initialize(dirName, "local", envf)
 }
@@ -39,7 +37,7 @@ func InitOrgs(orgs []string, token string, withForks bool) (*Workdir, error) {
 
 	envf := envFile{}
 	err := readEnvFile(dirName, "orgs", &envf)
-	if err == nil && envf.WithForks != withForks {
+	if err == nil && envf.NoForks == withForks {
 		return nil, ErrInitFailed.Wrap(
 			fmt.Errorf("workdir was previously initialized with a different value for forks support"))
 	}
@@ -48,12 +46,7 @@ func InitOrgs(orgs []string, token string, withForks bool) (*Workdir, error) {
 	}
 
 	// re-create env file to make sure all fields are updated
-	envf = envFile{
-		Workdir:             dirName,
-		GithubOrganizations: orgs,
-		GithubToken:         token,
-		WithForks:           withForks,
-	}
+	envf = newOrgEnvFile(dirName, orgs, token, withForks)
 
 	return initialize(dirName, "orgs", envf)
 }
@@ -143,31 +136,54 @@ func initialize(dirName string, subPath string, envf envFile) (*Workdir, error) 
 }
 
 type envFile struct {
-	Workdir             string
-	ReposDir            string
+	ComposeProjectName string
+
+	GitbaseVolumeType   string
+	GitbaseVolumeSource string
+	GitbaseSiva         bool
+
 	GithubOrganizations []string
 	GithubToken         string
-	WithForks           bool
+
+	NoForks bool
+
+	GitbaseLimitCPU      float32
+	GitcollectorLimitCPU float32
+	GitbaseLimitMem      uint64
 }
 
-func (f *envFile) MarshalEnv() ([]byte, error) {
-	volumeType := "bind"
-	volumeSource := f.ReposDir
-	gitbaseSiva := ""
-	if f.ReposDir == "" {
-		volumeType = "volume"
-		volumeSource = "gitbase_repositories"
-		gitbaseSiva = "true"
-	}
+func newLocalEnvFile(dirName, repoDir string) envFile {
+	f := envFile{
+		ComposeProjectName: fmt.Sprintf("srcd-%s", dirName),
 
-	noForks := "true"
-	if f.WithForks {
-		noForks = "false"
+		GitbaseVolumeType:   "bind",
+		GitbaseVolumeSource: repoDir,
 	}
+	f.addResourceLimits()
 
+	return f
+}
+
+func newOrgEnvFile(dirName string, orgs []string, token string, withForks bool) envFile {
+	f := envFile{
+		ComposeProjectName: fmt.Sprintf("srcd-%s", dirName),
+
+		GitbaseVolumeType:   "volume",
+		GitbaseVolumeSource: "gitbase_repositories",
+		GitbaseSiva:         true,
+
+		GithubOrganizations: orgs,
+		GithubToken:         token,
+
+		NoForks: !withForks,
+	}
+	f.addResourceLimits()
+
+	return f
+}
+
+func (f *envFile) addResourceLimits() {
 	// limit CPU for containers
-	gitbaseLimitCPU := "0.0"
-	gitcollectorLimitCPU := "0.0"
 	dockerCPUs, err := dockerNumCPU()
 	if err != nil { // show warning
 		fmt.Println(err)
@@ -175,18 +191,20 @@ func (f *envFile) MarshalEnv() ([]byte, error) {
 	// apply gitbase resource limits only when docker runs without any global limits
 	// it's default behaviour on linux
 	if runtime.NumCPU() == dockerCPUs {
-		gitbaseLimitCPU = fmt.Sprintf("%.1f", float32(dockerCPUs)-0.1)
+		f.GitbaseLimitCPU = float32(dockerCPUs) - 0.1
 	}
+	// always apply gitcollector limit
 	if dockerCPUs > 0 {
-		halfCPUs := float32(dockerCPUs)/2.0
+		halfCPUs := float32(dockerCPUs) / 2.0
+		// let container consume more than a half if there is only one cpu available
+		// otherwise it will be too slow
 		if halfCPUs < 1 {
 			halfCPUs = 1
 		}
-		gitcollectorLimitCPU = fmt.Sprintf("%.1f", halfCPUs-0.1)
+		f.GitcollectorLimitCPU = halfCPUs - 0.1
 	}
 
 	// limit memory for containers
-	gitbaseLimitMem := "0"
 	dockerMem, err := dockerTotalMem()
 	if err != nil { // show warning
 		fmt.Println(err)
@@ -194,27 +212,55 @@ func (f *envFile) MarshalEnv() ([]byte, error) {
 	// apply memory limits only when only when docker runs without any global limits
 	// it's default behaviour on linux
 	if dockerMem == memory.TotalMemory() {
-		gitbaseLimitMem = strconv.FormatUint(uint64(float64(dockerMem)*0.9), 10)
+		f.GitbaseLimitMem = uint64(float64(dockerMem) * 0.9)
 	}
-
-	result := fmt.Sprintf(`COMPOSE_PROJECT_NAME=srcd-%s
-GITBASE_VOLUME_TYPE=%s
-GITBASE_VOLUME_SOURCE=%s
-GITBASE_SIVA=%s
-GITHUB_ORGANIZATIONS=%s
-GITHUB_TOKEN=%s
-NO_FORKS=%s
-GITBASE_LIMIT_CPU=%s
-GITCOLLECTOR_LIMIT_CPU=%s
-GITBASE_LIMIT_MEM=%s
-`, f.Workdir, volumeType, volumeSource, gitbaseSiva,
-		strings.Join(f.GithubOrganizations, ","), f.GithubToken, noForks,
-		gitbaseLimitCPU, gitcollectorLimitCPU, gitbaseLimitMem)
-
-	return []byte(result), nil
 }
 
+var newlineChar = "\n"
+
+func init() {
+	if runtime.GOOS == "windows" {
+		newlineChar = "\r\n"
+	}
+}
+
+// implementation can be moved to separate package if we need to marshal any other structs
+// supports only simple types
+func (f envFile) MarshalEnv() ([]byte, error) {
+	var b bytes.Buffer
+
+	v := reflect.ValueOf(f)
+	rType := v.Type()
+
+	for i := 0; i < rType.NumField(); i++ {
+		field := rType.Field(i)
+		fieldEl := v.Field(i)
+		if field.Anonymous {
+			panic("struct composition isn't supported")
+		}
+
+		name := nameToVar(field.Name)
+		switch field.Type.Kind() {
+		case reflect.Slice:
+			slice := make([]string, fieldEl.Len())
+			for i := 0; i < fieldEl.Len(); i++ {
+				slice[i] = fmt.Sprintf("%v", fieldEl.Index(i).Interface())
+			}
+			fmt.Fprintf(&b, "%s=%v%s", name, strings.Join(slice, ","), newlineChar)
+		default:
+			fmt.Fprintf(&b, "%s=%v%s", name, fieldEl.Interface(), newlineChar)
+		}
+
+	}
+
+	return b.Bytes(), nil
+}
+
+// implementation can be moved to separate package if we need to unmarshal any other structs
+// supports only simple types
 func (f *envFile) UnmarshalEnv(b []byte) error {
+	v := reflect.ValueOf(f).Elem()
+
 	r := bytes.NewReader(b)
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -224,31 +270,96 @@ func (f *envFile) UnmarshalEnv(b []byte) error {
 		}
 
 		parts := strings.SplitN(line, "=", 2)
+		name := parts[0]
 		value := parts[1]
-
-		switch parts[0] {
-		case "COMPOSE_PROJECT_NAME":
-			f.Workdir = strings.TrimPrefix(value, "srcd-")
-		case "GITBASE_VOLUME_SOURCE":
-			f.ReposDir = value
-		case "GITHUB_ORGANIZATIONS":
-			if value != "" {
-				f.GithubOrganizations = strings.Split(value, ",")
+		field := v.FieldByName(varToName(name))
+		// skip unknown values
+		if !field.IsValid() {
+			continue
+		}
+		// skip empty values
+		if value == "" {
+			continue
+		}
+		switch field.Kind() {
+		case reflect.String:
+			field.SetString(value)
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			i, err := strconv.ParseInt(value, 10, 64)
+			if err != nil {
+				return fmt.Errorf("can't parse variable %s with value %s: %v", name, value, err)
 			}
-		case "GITHUB_TOKEN":
-			f.GithubToken = value
-		case "NO_FORKS":
-			if value == "false" {
-				f.WithForks = true
+			field.SetInt(i)
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			i, err := strconv.ParseUint(value, 10, 64)
+			if err != nil {
+				return fmt.Errorf("can't parse variable %s with value %s: %v", name, value, err)
 			}
+			field.SetUint(i)
+		case reflect.Float32, reflect.Float64:
+			i, err := strconv.ParseFloat(value, 64)
+			if err != nil {
+				return fmt.Errorf("can't parse variable %s with value %s: %v", name, value, err)
+			}
+			field.SetFloat(i)
+		case reflect.Bool:
+			if value == "true" {
+				field.SetBool(true)
+			} else {
+				field.SetBool(false)
+			}
+		case reflect.Slice:
+			if field.Type().Elem().Kind() != reflect.String {
+				panic("only slices of strings are supported")
+			}
+			vs := strings.Split(value, ",")
+			slice := reflect.MakeSlice(field.Type(), len(vs), len(vs))
+			for i, v := range vs {
+				slice.Index(i).SetString(v)
+			}
+			field.Set(slice)
+		default:
+			panic(fmt.Sprintf("unsupported type: %v", field.Kind()))
 		}
 	}
 
-	if len(f.GithubOrganizations) > 0 {
-		f.ReposDir = ""
+	return scanner.Err()
+}
+
+var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+
+func nameToVar(name string) string {
+	name = matchAllCap.ReplaceAllString(name, "${1}_${2}")
+	return strings.ToUpper(name)
+}
+
+var nameExceptions = map[string]bool{
+	"Id":  true,
+	"Cpu": true,
+}
+
+func varToName(name string) string {
+	name = strings.ToLower(name)
+	n := ""
+	capNext := true
+	for _, v := range name {
+		if v == '_' {
+			capNext = true
+		} else {
+			if capNext {
+				n += strings.ToUpper(string(v))
+			} else {
+				n += string(v)
+			}
+			capNext = false
+		}
 	}
 
-	return scanner.Err()
+	for e := range nameExceptions {
+		n = strings.ReplaceAll(n, e, strings.ToUpper(e))
+	}
+
+	return n
 }
 
 // returns number of CPUs available to docker

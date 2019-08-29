@@ -56,8 +56,8 @@ func (s *FactorySuite) TestInitLocal() {
 	envf := envFile{}
 	s.Nil(readEnvFile(encodeDirName(reposdir), "local", &envf))
 
-	s.Equal(reposdir, envf.ReposDir)
-	s.False(envf.WithForks)
+	s.Equal(reposdir, envf.GitbaseVolumeSource)
+	s.False(envf.NoForks)
 }
 
 func (s *FactorySuite) TestInitOrgs() {
@@ -82,10 +82,10 @@ func (s *FactorySuite) TestInitOrgs() {
 	envf := envFile{}
 	s.Nil(readEnvFile(encodeDirName(name), "orgs", &envf))
 
-	s.Equal("", envf.ReposDir)
+	s.Equal("gitbase_repositories", envf.GitbaseVolumeSource)
 	s.Equal(orgs, envf.GithubOrganizations)
 	s.Equal(token, envf.GithubToken)
-	s.True(envf.WithForks)
+	s.False(envf.NoForks)
 }
 
 func (s *FactorySuite) TestReInitForksOrgs() {
