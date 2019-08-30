@@ -1,17 +1,15 @@
-# SQL Examples to Analyze Your Data
+# SQL Examples
 
-_If you want to know what the database schema looks like, you can refer to the [diagram about gitbase entities and relations](https://docs.sourced.tech/gitbase/using-gitbase/schema#database-diagram), or just use regular `SHOW` or `DESCRIBE` queries._
+_If you want to know what the database schema looks like, you can refer to the_ [_diagram about gitbase entities and relations_](https://docs.sourced.tech/gitbase/using-gitbase/schema#database-diagram)_, or just use regular `SHOW` or `DESCRIBE` queries._
 
-_In gitbase repository, you will find more [SQL examples of queries](https://docs.sourced.tech/gitbase/using-gitbase/examples)._
-
+_In gitbase repository, you will find more_ [_SQL examples of queries_](https://docs.sourced.tech/gitbase/using-gitbase/examples)_._
 
 ## Index
 
-* [Queries For Repositories](#queries-for-repositories)
-* [Queries With Files](#queries-with-files)
-* [Queries With UASTs](#queries-with-uasts)
-* [Queries About Comitters](#queries-about-comitters)
-
+* [Queries For Repositories](examples.md#queries-for-repositories)
+* [Queries With Files](examples.md#queries-with-files)
+* [Queries With UASTs](examples.md#queries-with-uasts)
+* [Queries About Comitters](examples.md#queries-about-comitters)
 
 ## Queries For Repositories
 
@@ -30,7 +28,7 @@ NATURAL JOIN commits
 WHERE ref_name = 'HEAD';
 ```
 
-**Top 10 repositories by commit count from [HEAD](https://git-scm.com/book/en/v2/Git-Internals-Git-References#ref_the_ref):**
+**Top 10 repositories by commit count from** [**HEAD**](https://git-scm.com/book/en/v2/Git-Internals-Git-References#ref_the_ref)**:**
 
 ```sql
 SELECT repository_id,commit_count
@@ -60,7 +58,6 @@ ORDER BY num_files DESC
 LIMIT 10;
 ```
 
-
 ## Queries With Files
 
 **Query for all LICENSE & README files across history:**
@@ -73,7 +70,7 @@ WHERE
     OR file_path = 'README.md';
 ```
 
-**Query all files at [HEAD](https://git-scm.com/book/en/v2/Git-Internals-Git-References#ref_the_ref):**
+**Query all files at** [**HEAD**](https://git-scm.com/book/en/v2/Git-Internals-Git-References#ref_the_ref)**:**
 
 ```sql
 SELECT cf.file_path, f.blob_size
@@ -85,12 +82,11 @@ WHERE
     AND rc.history_index = 0;
 ```
 
-
 ## Queries With UASTs
 
 _**Note**: UAST values are returned as binary blobs; they're best visualized in the web UI interface rather than the CLI where are seen as binary data._
 
-**Retrieve the UAST for all files at [HEAD](https://git-scm.com/book/en/v2/Git-Internals-Git-References#ref_the_ref):**
+**Retrieve the UAST for all files at** [**HEAD**](https://git-scm.com/book/en/v2/Git-Internals-Git-References#ref_the_ref)**:**
 
 ```sql
 SELECT * FROM (
@@ -104,7 +100,6 @@ SELECT * FROM (
         AND r.history_index = 0
 ) t WHERE uast != '';
 ```
-
 
 ## Queries About Comitters
 
@@ -121,3 +116,4 @@ SELECT * FROM (
 ) AS t
 ORDER BY num_commits DESC;
 ```
+
