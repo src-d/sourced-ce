@@ -86,5 +86,5 @@ All activities under source{d} projects are governed by the [source{d} code of c
 
 ## License
 
-GPL v3.0, see [LICENSE](docs/learn-more/license.md).
+GPL v3.0, see [LICENSE](LICENSE.md).
 

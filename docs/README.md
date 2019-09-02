@@ -20,7 +20,7 @@
 * [Troubleshooting](learn-more/troubleshooting.md)
 * [Architecture](learn-more/architecture.md)
 * [Contribute](learn-more/contributing.md)
-* [License](learn-more/license.md)
+* [License](../LICENSE.md)
 
 ## Resources
 
