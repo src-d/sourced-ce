@@ -6,6 +6,10 @@
 
 - Increase timeout for start command ([#219](https://github.com/src-d/sourced-ce/pull/219))
 
+### Changed
+
+- `sourced compose list` shows an index number for each compose entry, and `sourced compose set` now accepts both the name or the index number (@cmbahadir) ([#199](https://github.com/src-d/sourced-ce/issues/199)).
+
 ## [v0.15.1](https://github.com/src-d/sourced-ce/releases/tag/v0.15.1) - 2019-08-27
 
 ### Fixed
