@@ -247,10 +247,16 @@ func (f envFile) MarshalEnv() ([]byte, error) {
 				slice[i] = fmt.Sprintf("%v", fieldEl.Index(i).Interface())
 			}
 			fmt.Fprintf(&b, "%s=%v%s", name, strings.Join(slice, ","), newlineChar)
+		case reflect.Bool:
+			// marshal false value as empty string instead of "false" string
+			if fieldEl.Interface().(bool) {
+				fmt.Fprintf(&b, "%s=true%s", name, newlineChar)
+			} else {
+				fmt.Fprintf(&b, "%s=%s", name, newlineChar)
+			}
 		default:
 			fmt.Fprintf(&b, "%s=%v%s", name, fieldEl.Interface(), newlineChar)
 		}
-
 	}
 
 	return b.Bytes(), nil
