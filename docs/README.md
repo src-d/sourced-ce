@@ -21,6 +21,7 @@
 * [Troubleshooting](learn-more/troubleshooting.md)
 * [Architecture](learn-more/architecture.md)
 * [Contribute](learn-more/contributing.md)
+* [Changelog](../CHANGELOG.md)
 * [License](../LICENSE.md)
 
 ## Resources
