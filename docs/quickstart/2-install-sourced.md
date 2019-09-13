@@ -1,6 +1,6 @@
-# Install source{d} CE
+# Install source{d} Community Edition
 
-Download the [**latest release**](https://github.com/src-d/sourced-ce/releases/latest) for your Linux, macOS \(Darwin\) or Windows.
+Download the **[latest release](https://github.com/src-d/sourced-ce/releases/latest)** for your Linux, macOS (Darwin) or Windows.
 
 ## On Linux or macOS
 
@@ -13,11 +13,10 @@ $ sudo mv path/to/sourced-ce_REPLACE-OS_amd64/sourced /usr/local/bin/
 
 ## On Windows
 
-_Please note that from now on we assume that the commands are executed in `powershell` and not in `cmd`._
+*Please note that from now on we assume that the commands are executed in `powershell` and not in `cmd`.*
 
 Create a directory for `sourced.exe` and add it to your `$PATH`, running these commands in a powershell as administrator:
-
-```text
+```powershell
 mkdir 'C:\Program Files\sourced'
 # Add the directory to the `%path%` to make it available from anywhere
 setx /M PATH "$($env:path);C:\Program Files\sourced"
@@ -25,8 +24,6 @@ setx /M PATH "$($env:path);C:\Program Files\sourced"
 ```
 
 Extract the `sourced.exe` executable from the release you downloaded, and copy it into the directory you created in the previous step:
-
-```text
+```powershell
 mv \path\to\sourced-ce_windows_amd64\sourced.exe 'C:\Program Files\sourced'
 ```
-
