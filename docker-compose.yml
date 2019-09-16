@@ -76,7 +76,7 @@ services:
           memory: ${GITBASE_LIMIT_MEM-0}
 
   bblfsh-web:
-    image: bblfsh/web:v0.11.1
+    image: bblfsh/web:v0.11.3
     restart: unless-stopped
     command: -bblfsh-addr bblfsh:9432
     ports:
