@@ -76,7 +76,7 @@ services:
           memory: ${GITBASE_LIMIT_MEM-0}
 
   bblfsh-web:
-    image: bblfsh/web:v0.11.1
+    image: bblfsh/web:v0.11.3
     restart: unless-stopped
     command: -bblfsh-addr bblfsh:9432
     ports:
@@ -117,7 +117,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.5.0
+    image: srcd/sourced-ui:v0.6.0
     restart: unless-stopped
     environment:
       SYNC_MODE: ${GITBASE_SIVA}

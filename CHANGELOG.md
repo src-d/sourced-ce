@@ -10,13 +10,47 @@ The changes listed under `Unreleased` section have landed in master but are not 
 
 ## [Unreleased]
 
+## [v0.16.0](https://github.com/src-d/sourced-ce/releases/tag/v0.16.0) - 2019-09-16
+
+### Components
+
+- `srcd/sourced-ui` has been updated to [v0.6.0](https://github.com/src-d/sourced-ui/releases/tag/v0.6.0).
+- `bblfsh/web` has been updated to [v0.11.3](https://github.com/bblfsh/web/releases/tag/v0.11.3).
+
 ### Fixed
 
-- Increase timeout for start command ([#219](https://github.com/src-d/sourced-ce/pull/219))
+- Increase the timeout for the `start` command ([#219](https://github.com/src-d/sourced-ce/pull/219)).
 
 ### Changed
 
 - `sourced compose list` shows an index number for each compose entry, and `sourced compose set` now accepts both the name or the index number (@cmbahadir) ([#199](https://github.com/src-d/sourced-ce/issues/199)).
+
+### Upgrading
+
+Install the new `v0.16.0` binary, then run `sourced compose download`. If you had a deployment running, you can re-deploy the containers with `sourced restart`.
+
+Please note: `sourced-ui` contains changes to the color palettes for the default dashboard charts, and these changes will only be visible when you run `sourced init local/org` with a new path or organization. This is a cosmetic improvement that you can ignore safely.
+
+If you want to apply the new default dashboards over your existing deployment, you will need to run `sourced prune` (or `sourced prune --all`) and `sourced init local/org` again.
+
+Important: running `prune` will delete all your current data and customizations, including charts or dashboards. You can choose to not `prune` your existing deployments, keeping you previous default dashboards and charts.
+
+```shell
+$ sourced version
+sourced version v0.16.0
+
+$ sourced compose download
+Docker compose file successfully downloaded to your ~/.sourced/compose-files directory. It is now the active compose file.
+To update your current installation use `sourced restart`
+
+$ sourced status workdirs
+  bblfsh
+* src-d
+
+$ sourced prune --all
+$ sourced init orgs src-d
+$ sourced init orgs bblfsh
+```
 
 ## [v0.15.1](https://github.com/src-d/sourced-ce/releases/tag/v0.15.1) - 2019-08-27
 
