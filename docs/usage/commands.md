@@ -30,7 +30,7 @@ Use login: `admin` and password: `admin`, to access the web interface.
 #### sourced init orgs
 
 ```shell
-$ sourced init orgs --token=_USER_TOKEN_ org1,org2...
+$ sourced init orgs --token=_USER_TOKEN_ [--with-forks] org1,org2...
 ```
 
 Installs and initializes **source{d} CE** for a list of GitHub organizations, downloading their repositories and
@@ -40,6 +40,8 @@ The `orgs` argument must be a comma-separated list of GitHub organizations.
 
 The `--token` must contain a valid GitHub user token for the given organizations. It should be granted with
 'repo' and'read:org' scopes.
+
+If `--with-forks` is passed, it will also fetch repositories who are marked as forks.
 
 #### sourced init local
 
@@ -86,11 +88,23 @@ $ sourced logs --follow gitbase bblfsh
 
 ### sourced status
 
-Shows the status of **source{d} CE** components.
+Shows the status of **source{d} CE** components, the installed working directories and the current deployment.
 
-### sourced workdirs
+#### sourced status all
 
-Lists previously initialized working directories.
+Show all the available status information, from the `components`, `config` and `workdirs`, sub-commands below.
+
+#### sourced status components
+
+Shows the status of the components containers of the running working directory
+
+#### sourced status config
+
+Shows the docker-compose environment variables configuration for the active working directory
+
+#### sourced status workdirs
+
+Lists all the previously initialized working directories
 
 ### sourced compose
 
@@ -115,7 +129,7 @@ You can activate any other with `compose set`.
 
 ### sourced compose set
 
-Sets the active `docker-compose.yml` file.
+Sets the active `docker-compose.yml` file. Accepts either the name or index of the compose file as returned by 'compose list'.
 
 #### sourced restart
 
