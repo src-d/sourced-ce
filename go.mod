@@ -1,6 +1,6 @@
 module github.com/src-d/sourced-ce
 
-go 1.12
+go 1.13
 
 // See https://github.com/gotestyourself/gotest.tools/issues/156
 // replace gotest.tools => gotest.tools v2.3.0
