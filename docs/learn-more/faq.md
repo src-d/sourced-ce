@@ -38,19 +38,29 @@ and proceed as it follows:
 (You can also follow these steps if you want to update to any beta version, to
 downgrade, or to use your own built version of **source{d} CE**)
 
-1. download the new binary for your OS
-1. move the binary to the right place ([see Quickstart. Install](quickstart/2-install-sourced.md))
-1. run `sourced compose download`
+1. replace your current version of `sourced` from its current location with the
+one you're installing ([see Quickstart. Install](quickstart/2-install-sourced.md)),
+and confirm it was done by running `sourced version`.
+1. run `sourced compose download` to download the new configuration.
 1. run `sourced restart` to apply the new configuration.
 
 This process will reinstall **source{d} CE** with the new components, but it will
-keep your data (repositories, charts, dashboards, etc).
+keep your current data (repositories, metadata, charts, dashboards, etc) of your
+existent workdirs.
 
-If you want to replace all the current dashboards with the ones from the release
-that you just installed, the official way to proceed is to run `sourced prune --all`
-before running `sourced init`; please, notice that it will also delete your saved
-queries and charts, and if you were using repositories and metadata downloaded
-from a GitHub organization, they will be deleted, and downloaded again.
+If you want to replace all your current customizations &mdash;including charts and
+dashboards&mdash;, with the ones from the release that you just installed, the
+official way to proceed is to `prune` the running workdirs, and `init` them again.
+
+_**disclaimer:** pruning a workdir will delete all its data: its saved queries
+and charts, and if you were using repositories and metadata downloaded from a
+GitHub organization, they will be deleted, and downloaded again._
+
+1. `sourced status workdirs` to get the list of your current workdirs
+1. Prune the workdirs you need, or prune all of them at once running
+`sourced prune --all`
+1. `sourced init [local|orgs] ...` for each workdir again, to initialize them with
+the new configuration.
 
 
 ## How to Update the Data from the Organizations Being Analyzed
