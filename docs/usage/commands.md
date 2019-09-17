@@ -129,7 +129,7 @@ You can activate any other with `compose set`.
 
 ### sourced compose set
 
-Sets the active `docker-compose.yml` file providing either the name or index of the compose file to activate as you can get from 'compose list'.
+Sets the active `docker-compose.yml` file. Accepts either the name or index of the compose file as returned by 'compose list'.
 
 #### sourced restart
 
