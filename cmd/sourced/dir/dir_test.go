@@ -1,6 +1,7 @@
 package dir
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -8,6 +9,7 @@ import (
 	"path"
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -114,5 +116,10 @@ func TestDownloadURL(t *testing.T) {
 	}
 	server = httptest.NewServer(http.HandlerFunc(handler))
 	err = DownloadURL(server.URL, "/dev/null")
-	assert.EqualError(err, "HTTP status 404 Not Found")
+	errExpected := errors.Wrapf(
+		fmt.Errorf("HTTP status %v", "404 Not Found"),
+		"network error downloading %s", server.URL,
+	)
+
+	assert.EqualError(err, errExpected.Error())
 }

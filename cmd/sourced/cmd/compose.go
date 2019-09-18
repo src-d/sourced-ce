@@ -27,7 +27,7 @@ func (c *composeDownloadCmd) Execute(args []string) error {
 		v = version
 	}
 
-	err := composefile.Download(v)
+	err := composefile.ActivateFromRemote(v)
 	if err != nil {
 		return err
 	}

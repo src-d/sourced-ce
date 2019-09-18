@@ -5,6 +5,8 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/src-d/sourced-ce/cmd/sourced/compose"
+	"github.com/src-d/sourced-ce/cmd/sourced/compose/file"
 	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
 	"github.com/src-d/sourced-ce/cmd/sourced/dir"
 	"github.com/src-d/sourced-ce/cmd/sourced/format"
@@ -65,10 +67,28 @@ func log(err error) {
 		printRed("Cannot perform this action, full re-initialization is needed, run 'prune' command first")
 	case dir.ErrNotValid.Is(err):
 		printRed("Cannot perform this action, config directory is not valid")
+	case compose.ErrComposeAlternative.Is(err):
+		printRed("docker-compose is not installed, and there was an error while trying to use the container alternative")
+		printRed("  see: https://docs.sourced.tech/community-edition/quickstart/1-install-requirements#docker-compose")
+	case file.ErrConfigDownload.Is(err):
+		printRed("The source{d} CE config file could not be set as active")
 	case fmt.Sprintf("%T", err) == "*flags.Error":
 		// syntax error is already logged by go-cli
 	default:
 		// unknown errors have no special message
+	}
+
+	switch {
+	case dir.ErrNetwork.Is(err):
+		// TODO(dpordomingo): if start using "https://golang.org/pkg/errors/",
+		//					  we could do `var myErr ErrNetwork; errors.As(err, &myErr)`
+		// 					  to provide more info about the actual network error
+		printRed("The resource could not be downloaded from the Internet")
+		printRed("  see: https://docs.sourced.tech/community-edition/quickstart/1-install-requirements#internet-connection")
+	case dir.ErrWrite.Is(err):
+		// TODO(dpordomingo): see todo above
+		printRed("could not write file")
+
 	}
 }
 

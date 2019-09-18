@@ -13,7 +13,14 @@ import (
 	datadir "github.com/src-d/sourced-ce/cmd/sourced/dir"
 
 	"github.com/pkg/errors"
+	goerrors "gopkg.in/src-d/go-errors.v1"
 )
+
+// ErrConfigDownload is returned when docker-compose.yml could not be downloaded
+var ErrConfigDownload = goerrors.NewKind("docker-compose.yml config file could not be downloaded")
+
+// ErrConfigActivation is returned when docker-compose.yml could not be set as active
+var ErrConfigActivation = goerrors.NewKind("docker-compose.yml could not be set as active")
 
 const (
 	orgName         = "src-d"
@@ -61,7 +68,7 @@ func InitDefault() (string, error) {
 		return "", err
 	}
 
-	err = Download(version)
+	err = ActivateFromRemote(version)
 	if err != nil {
 		return "", err
 	}
@@ -96,9 +103,9 @@ func InitDefaultOverride() (string, error) {
 	return globalOverridePath, nil
 }
 
-// Download downloads the docker-compose.yml file from the given revision
-// or URL. The file is set as the active compose file.
-func Download(revOrURL RevOrURL) error {
+// ActivateFromRemote downloads the docker-compose.yml file from the given revision
+// or URL, and sets it as the active compose file.
+func ActivateFromRemote(revOrURL RevOrURL) (err error) {
 	var url string
 	if isURL(revOrURL) {
 		url = revOrURL
@@ -113,10 +120,15 @@ func Download(revOrURL RevOrURL) error {
 
 	err = datadir.DownloadURL(url, outPath)
 	if err != nil {
-		return err
+		return ErrConfigDownload.Wrap(err)
 	}
 
-	return SetActive(revOrURL)
+	err = SetActive(revOrURL)
+	if err != nil {
+		return ErrConfigActivation.Wrap(err)
+	}
+
+	return nil
 }
 
 // SetActive makes a symlink from
