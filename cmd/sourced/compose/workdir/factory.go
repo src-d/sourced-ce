@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"regexp"
 	"runtime"
 	"sort"
 	"strconv"
@@ -18,6 +17,7 @@ import (
 
 	"github.com/pbnjay/memory"
 	"github.com/pkg/errors"
+	"github.com/serenize/snaker"
 	composefile "github.com/src-d/sourced-ce/cmd/sourced/compose/file"
 )
 
@@ -239,7 +239,7 @@ func (f envFile) MarshalEnv() ([]byte, error) {
 			panic("struct composition isn't supported")
 		}
 
-		name := nameToVar(field.Name)
+		name := strings.ToUpper(snaker.CamelToSnake(field.Name))
 		switch field.Type.Kind() {
 		case reflect.Slice:
 			slice := make([]string, fieldEl.Len())
@@ -278,7 +278,7 @@ func (f *envFile) UnmarshalEnv(b []byte) error {
 		parts := strings.SplitN(line, "=", 2)
 		name := parts[0]
 		value := parts[1]
-		field := v.FieldByName(varToName(name))
+		field := v.FieldByName(snaker.SnakeToCamel(strings.ToLower(name)))
 		// skip unknown values
 		if !field.IsValid() {
 			continue
@@ -330,42 +330,6 @@ func (f *envFile) UnmarshalEnv(b []byte) error {
 	}
 
 	return scanner.Err()
-}
-
-var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
-
-func nameToVar(name string) string {
-	name = matchAllCap.ReplaceAllString(name, "${1}_${2}")
-	return strings.ToUpper(name)
-}
-
-var nameExceptions = map[string]bool{
-	"Id":  true,
-	"Cpu": true,
-}
-
-func varToName(name string) string {
-	name = strings.ToLower(name)
-	n := ""
-	capNext := true
-	for _, v := range name {
-		if v == '_' {
-			capNext = true
-		} else {
-			if capNext {
-				n += strings.ToUpper(string(v))
-			} else {
-				n += string(v)
-			}
-			capNext = false
-		}
-	}
-
-	for e := range nameExceptions {
-		n = strings.ReplaceAll(n, e, strings.ToUpper(e))
-	}
-
-	return n
 }
 
 // returns number of CPUs available to docker
