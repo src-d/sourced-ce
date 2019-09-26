@@ -10,6 +10,10 @@ The changes listed under `Unreleased` section have landed in master but are not 
 
 ## [Unreleased]
 
+### Components
+
+- `srcd/gitcollector` has been updated to [v0.0.4](https://github.com/src-d/gitcollector/releases/tag/v0.0.4).
+
 ### Internal
 
 - Development and building of source{d} CE requires now `go 1.13` ([#242](https://github.com/src-d/sourced-ce/pull/242))
