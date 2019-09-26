@@ -1,4 +1,32 @@
-version: '3.2'
+version: '3.4'
+
+x-superset-env: &superset-env
+  SYNC_MODE: ${GITBASE_SIVA}
+  ADMIN_LOGIN: admin
+  ADMIN_FIRST_NAME: admin
+  ADMIN_LAST_NAME: admin
+  ADMIN_EMAIL: admin@example.com
+  ADMIN_PASSWORD: admin
+  POSTGRES_DB: superset
+  POSTGRES_USER: superset
+  POSTGRES_PASSWORD: superset
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  GITBASE_DB: gitbase
+  GITBASE_USER: root
+  GITBASE_PASSWORD:
+  GITBASE_HOST: gitbase
+  GITBASE_PORT: 3306
+  METADATA_DB: metadata
+  METADATA_USER: metadata
+  METADATA_PASSWORD: metadata
+  METADATA_HOST: metadatadb
+  METADATA_PORT: 5432
+  BBLFSH_WEB_HOST: bblfsh-web
+  BBLFSH_WEB_PORT: 8080
+
 services:
   bblfsh:
     image: bblfsh/bblfshd:v2.14.0-drivers
@@ -117,34 +145,10 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.6.0
+    image: srcd/sourced-ui:v0.7.0
     restart: unless-stopped
     environment:
-      SYNC_MODE: ${GITBASE_SIVA}
-      ADMIN_LOGIN: admin
-      ADMIN_FIRST_NAME: admin
-      ADMIN_LAST_NAME: admin
-      ADMIN_EMAIL: admin@example.com
-      ADMIN_PASSWORD: admin
-      POSTGRES_DB: superset
-      POSTGRES_USER: superset
-      POSTGRES_PASSWORD: superset
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      GITBASE_DB: gitbase
-      GITBASE_USER: root
-      GITBASE_PASSWORD:
-      GITBASE_HOST: gitbase
-      GITBASE_PORT: 3306
-      METADATA_DB: metadata
-      METADATA_USER: metadata
-      METADATA_PASSWORD: metadata
-      METADATA_HOST: metadatadb
-      METADATA_PORT: 5432
-      BBLFSH_WEB_HOST: bblfsh-web
-      BBLFSH_WEB_PORT: 8080
+      <<: *superset-env
       SUPERSET_ENV: production
     ports:
       - 8088:8088
@@ -154,6 +158,19 @@ services:
       - redis
       - gitbase
       - bblfsh-web
+
+  sourced-ui-celery:
+    image: srcd/sourced-ui:v0.7.0
+    restart: unless-stopped
+    environment:
+      <<: *superset-env
+      SUPERSET_ENV: celery
+    depends_on:
+      - postgres
+      - metadatadb
+      - redis
+      - gitbase
+      - sourced-ui
 
 volumes:
   gitbase_repositories:
