@@ -8,7 +8,7 @@ services:
       - 9432:9432
 
   gitcollector:
-    image: srcd/gitcollector:v0.0.3
+    image: srcd/gitcollector:v0.0.4
     # wait for db
     command: ['/bin/sh', '-c', 'sleep 10s && gitcollector download']
     environment:
