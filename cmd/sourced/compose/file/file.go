@@ -88,7 +88,7 @@ func InitDefaultOverride() (string, error) {
 		return "", errors.Wrap(err, "could not read the global docker-compose.override.yml file")
 	}
 
-	content := []byte(`version: '3.2'`)
+	content := []byte(`version: '3.4'`)
 	if err := ioutil.WriteFile(globalOverridePath, content, 0644); err != nil {
 		return "", errors.Wrap(err, "could not create the global docker-compose.override.yml file")
 	}
