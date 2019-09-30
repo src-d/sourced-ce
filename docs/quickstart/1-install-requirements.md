@@ -15,6 +15,12 @@ Follow the instructions based on your OS:
 
 ## Docker Compose
 
-**source{d} CE** is deployed as Docker containers, using [Docker Compose](https://docs.docker.com/compose), but it is not required to have a local installation of Docker Compose; if it is not found it will be deployed inside a container.
+**source{d} CE** is deployed as Docker containers, using [Docker Compose](https://docs.docker.com/compose), but it is not required to have a local installation of Docker Compose; if it is not found it will be downloaded from docker sources, and deployed inside a container.
 
-If you prefer a local installation of Docker Compose, you can follow the [Docker Compose install guide](https://docs.docker.com/compose/install)
+If you prefer a local installation of Docker Compose, or you have no access to internet to download it, you can follow the [Docker Compose install guide](https://docs.docker.com/compose/install)
+
+## Internet Connection
+
+source{d} CE automatically fetches some resources from the Internet when they are not found locally, so in order to use all source{d} CE capacities, Internet connection is needed.
+
+For more details, you can refer to [Why Do I Need Internet Connection?](../learn-more/faq.md#why-do-i-need-internet-connection)

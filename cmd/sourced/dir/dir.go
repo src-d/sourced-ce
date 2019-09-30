@@ -18,6 +18,12 @@ var ErrNotExist = goerrors.NewKind("%s does not exist")
 // ErrNotValid is returned when config dir is not valid
 var ErrNotValid = goerrors.NewKind("%s is not a valid config directory: %s")
 
+// ErrNetwork is returned when could not download
+var ErrNetwork = goerrors.NewKind("network error downloading %s")
+
+// ErrWrite is returned when could not write
+var ErrWrite = goerrors.NewKind("write error at %s")
+
 // Path returns the absolute path for $SOURCED_DIR, or $HOME/.sourced if unset
 // and returns an error if it does not exist or it could not be read.
 func Path() (string, error) {
@@ -96,29 +102,33 @@ func validate(path string) error {
 
 // DownloadURL downloads the given url to a file to the
 // dst path, creating the directory if it's needed
-func DownloadURL(url, dst string) error {
+func DownloadURL(url, dst string) (err error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return ErrNetwork.Wrap(err, url)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("HTTP status %v", resp.Status)
+		return ErrNetwork.Wrap(fmt.Errorf("HTTP status %v", resp.Status), url)
 	}
 
 	if err := os.MkdirAll(filepath.Dir(dst), os.ModePerm); err != nil {
-		return err
+		return ErrWrite.Wrap(err, filepath.Dir(dst))
 	}
 
 	out, err := os.Create(dst)
 	if err != nil {
-		return err
+		return ErrWrite.Wrap(err, dst)
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, resp.Body)
-	return err
+	if err != nil {
+		return ErrWrite.Wrap(err, dst)
+	}
+
+	return nil
 }
 
 // TmpPath returns the absolute path for /tmp/srcd

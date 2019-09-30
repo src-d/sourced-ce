@@ -10,6 +10,8 @@ _For tips and advices to deal with unexpected errors, please refer to [Troublesh
 - [Can I Query Gitbase or Babelfish with External Tools?](#can-i-query-gitbase-or-babelfish-with-external-tools)
 - [Where Can I Read More About the Web Interface?](#where-can-i-read-more-about-the-web-interface)
 - [I Get IOError Permission denied](#i-get-ioerror-permission-denied)
+- [Why Do I Need Internet Connection?](#why-do-i-need-internet-connection)
+
 
 ## Where Can I Find More Assistance to Run source{d} or Notify You About Any Issue or Suggestion?
 
@@ -118,6 +120,7 @@ The user interface is based in the open-sourced [Apache Superset](http://superse
 so you can also refer to [Superset tutorials](http://superset.apache.org/tutorial.html)
 for advanced usage of the web interface.
 
+
 ## I Get IOError Permission denied
 
 If you get this error message:
@@ -127,3 +130,15 @@ IOError: [Errno 13] Permission denied: u'./.env'
 ```
 
 This may happen if you have installed Docker from a snap package. This installation mode is not supported, please install it following [the official documentation](./quickstart/1-install-requirements.md#install-docker) (See [#78](https://github.com/src-d/sourced-ce/issues/78)).
+
+
+## Why Do I Need Internet Connection?
+
+source{d} CE automatically fetches some resources from the Internet when they are not found locally:
+
+- the source{d} CE configuration is fetched automatically when initializing it for the first time, using the proper version for the current version of `sourced`, e.g. if using `v0.16.0` it will automatically fetch `https://raw.githubusercontent.com/src-d/sourced-ce/v0.16.0/docker-compose.yml`.
+- to download the docker images of the source{d} CE components when initializing source{d} for the first time, or when initializing it after changing its configuration.
+- to download repositories and its metadata from GitHub when you initialize source{d} CE with `sourced init orgs`.
+- to download and install [Docker Compose alternative](#docker-compose) if there is no local installation of Docker Compose.
+
+If your connection to the network does not let source{d} CE to access to Internet, you should manually provide all these dependencies.

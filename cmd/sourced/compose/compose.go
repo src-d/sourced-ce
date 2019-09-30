@@ -14,6 +14,7 @@ import (
 	"github.com/src-d/sourced-ce/cmd/sourced/dir"
 
 	"github.com/pkg/errors"
+	goerrors "gopkg.in/src-d/go-errors.v1"
 )
 
 // dockerComposeVersion is the version of docker-compose to download
@@ -21,6 +22,9 @@ import (
 const dockerComposeVersion = "1.24.0"
 
 var composeContainerURL = fmt.Sprintf("https://github.com/docker/compose/releases/download/%s/run.sh", dockerComposeVersion)
+
+// ErrComposeAlternative is returned when docker-compose alternative could not be installed
+var ErrComposeAlternative = goerrors.NewKind("error while trying docker-compose container alternative")
 
 type Compose struct {
 	bin            string
@@ -81,13 +85,13 @@ func getOrInstallComposeBinary() (string, error) {
 
 	path, err = getOrInstallComposeContainer()
 	if err != nil {
-		return "", errors.Wrapf(err, "error while getting docker-compose container")
+		return "", ErrComposeAlternative.Wrap(err)
 	}
 
 	return path, nil
 }
 
-func getOrInstallComposeContainer() (string, error) {
+func getOrInstallComposeContainer() (altPath string, err error) {
 	datadir, err := dir.Path()
 	if err != nil {
 		return "", err
@@ -96,19 +100,20 @@ func getOrInstallComposeContainer() (string, error) {
 	dirPath := filepath.Join(datadir, "bin")
 	path := filepath.Join(dirPath, fmt.Sprintf("docker-compose-%s.sh", dockerComposeVersion))
 
-	if _, err := os.Stat(path); err == nil {
+	readExecAccessMode := os.FileMode(0500)
+
+	if info, err := os.Stat(path); err == nil {
+		if info.Mode()&readExecAccessMode != readExecAccessMode {
+			return "", fmt.Errorf("%s can not be run", path)
+		}
+
 		return path, nil
 	} else if !os.IsNotExist(err) {
 		return "", err
 	}
 
-	err = os.MkdirAll(dirPath, os.ModePerm)
-	if err != nil {
-		return "", errors.Wrapf(err, "error while creating directory %s", dirPath)
-	}
-
 	if err := downloadCompose(path); err != nil {
-		return "", errors.Wrapf(err, "error downloading %s", composeContainerURL)
+		return "", err
 	}
 
 	cmd := exec.CommandContext(context.Background(), "chmod", "+x", path)

@@ -126,7 +126,7 @@ func (c *initOrgsCmd) validate(orgs []string) error {
 	client := &http.Client{Transport: &authTransport{token: c.Token}}
 	r, err := client.Get("https://api.github.com/user")
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "could not validate user token")
 	}
 	if r.StatusCode == http.StatusUnauthorized {
 		return fmt.Errorf("github token is not valid")
@@ -135,7 +135,7 @@ func (c *initOrgsCmd) validate(orgs []string) error {
 	for _, org := range orgs {
 		r, err := client.Get("https://api.github.com/orgs/" + org)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "could not validate organization")
 		}
 		if r.StatusCode == http.StatusNotFound {
 			return fmt.Errorf("organization '%s' is not found", org)
