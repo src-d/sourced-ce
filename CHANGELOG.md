@@ -10,17 +10,43 @@ The changes listed under `Unreleased` section have landed in master but are not 
 
 ## [Unreleased]
 
+## [v0.17.0](https://github.com/src-d/sourced-ce/releases/tag/v0.17.0) - 2019-10-01
+
 ### Components
 
+- `srcd/sourced-ui` has been updated to [v0.7.0](https://github.com/src-d/sourced-ui/releases/tag/v0.7.0).
 - `srcd/gitcollector` has been updated to [v0.0.4](https://github.com/src-d/gitcollector/releases/tag/v0.0.4).
+
+### Fixed
+
+- More detailed error messages for file downloads ([#245](https://github.com/src-d/sourced-ce/pull/245)).
 
 ### Changed
 
-- Make celery workers to run as separate containers ([#269](https://github.com/src-d/sourced-ui/issues/269)).
+- Make `sourced-ui` Superset celery workers run as separate containers ([#269](https://github.com/src-d/sourced-ui/issues/269)).
 
 ### Internal
 
-- Development and building of source{d} CE requires now `go 1.13` ([#242](https://github.com/src-d/sourced-ce/pull/242)).
+- Development and building of source{d} CE now requires `go 1.13` ([#242](https://github.com/src-d/sourced-ce/pull/242)).
+
+### Upgrading
+
+Install the new `v0.17.0` binary, then run `sourced compose download`. Because of a change in the `docker-compose.yml` file version, you must delete the file `~/.sourced/compose-files/__active__/docker-compose.override.yml` manually.
+
+If you had a deployment running, you must re-deploy the containers with `sourced restart`. All your existing data will continue to work after the upgrade.
+
+```shell
+$ sourced version
+sourced version v0.16.0
+
+$ rm ~/.sourced/compose-files/__active__/docker-compose.override.yml
+
+$ sourced compose download
+Docker compose file successfully downloaded to your ~/.sourced/compose-files directory. It is now the active compose file.
+To update your current installation use `sourced restart`
+
+$ sourced restart
+```
 
 
 ## [v0.16.0](https://github.com/src-d/sourced-ce/releases/tag/v0.16.0) - 2019-09-16
