@@ -29,7 +29,7 @@ x-superset-env: &superset-env
 
 services:
   bblfsh:
-    image: bblfsh/bblfshd:v2.14.0-drivers
+    image: bblfsh/bblfshd:v2.15.0-drivers
     restart: unless-stopped
     privileged: true
     ports:

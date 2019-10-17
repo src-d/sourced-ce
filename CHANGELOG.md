@@ -10,6 +10,10 @@ The changes listed under `Unreleased` section have landed in master but are not 
 
 ## [Unreleased]
 
+### Components
+
+- `bblfsh/bblfshd` has been updated to [v2.15.0](https://github.com/bblfsh/bblfshd/releases/tag/v2.15.0).
+
 ## [v0.17.0](https://github.com/src-d/sourced-ce/releases/tag/v0.17.0) - 2019-10-01
 
 ### Components
