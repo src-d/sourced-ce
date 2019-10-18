@@ -14,6 +14,10 @@ The changes listed under `Unreleased` section have landed in master but are not 
 
 - `bblfsh/bblfshd` has been updated to [v2.15.0](https://github.com/bblfsh/bblfshd/releases/tag/v2.15.0).
 
+### Fixed
+
+- Identify and show errors for old unsupported version of docker/docker-compose ([#253](https://github.com/src-d/sourced-ce/issues/253))
+
 ## [v0.17.0](https://github.com/src-d/sourced-ce/releases/tag/v0.17.0) - 2019-10-01
 
 ### Components
