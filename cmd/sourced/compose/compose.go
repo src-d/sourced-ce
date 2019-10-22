@@ -7,15 +7,36 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 
+	"github.com/blang/semver"
 	"github.com/src-d/sourced-ce/cmd/sourced/compose/workdir"
 	"github.com/src-d/sourced-ce/cmd/sourced/dir"
 
 	"github.com/pkg/errors"
 	goerrors "gopkg.in/src-d/go-errors.v1"
 )
+
+// v1.20.0 is the first version that supports `--compatibility` flag we rely on
+// there is no mention of it in changelog
+// the version has been found by trying downgrading unless it started to error
+var minDockerComposeVersion = semver.Version{
+	Major: 1,
+	Minor: 20,
+	Patch: 0,
+}
+
+// this version is choosen to be always compatible with docker-compose version
+// docker-compose v1.20.0 introduced compose files version 3.6
+// which requires Docker Engine 18.02.0 or above
+var minDockerVersion = semver.Version{
+	Major: 18,
+	Minor: 2,
+	Patch: 0,
+}
 
 // dockerComposeVersion is the version of docker-compose to download
 // if docker-compose isn't already present in the system
@@ -58,6 +79,15 @@ func (c *Compose) RunWithIO(ctx context.Context, stdin io.Reader,
 }
 
 func newCompose() (*Compose, error) {
+	// check docker first and exit fast
+	dockerVersion, err := getDockerVersion()
+	if err != nil {
+		return nil, err
+	}
+	if !dockerVersion.GE(minDockerVersion) {
+		return nil, fmt.Errorf("Minimal required docker version is %s but %s found", minDockerVersion, dockerVersion)
+	}
+
 	workdirHandler, err := workdir.NewHandler()
 	if err != nil {
 		return nil, err
@@ -66,6 +96,13 @@ func newCompose() (*Compose, error) {
 	bin, err := getOrInstallComposeBinary()
 	if err != nil {
 		return nil, err
+	}
+	dockerComposeVersion, err := getDockerComposeVersion(bin)
+	if err != nil {
+		return nil, err
+	}
+	if !dockerComposeVersion.GE(minDockerComposeVersion) {
+		return nil, fmt.Errorf("Minimal required docker-compose version is %s but %s found", minDockerComposeVersion, dockerComposeVersion)
 	}
 
 	return &Compose{
@@ -148,4 +185,60 @@ func RunWithIO(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer, a
 	}
 
 	return comp.RunWithIO(ctx, stdin, stdout, stderr, arg...)
+}
+
+var dockerVersionRe = regexp.MustCompile(`version (\d+).(\d+).(\d+)`)
+var dockerComposeVersionRe = regexp.MustCompile(`version (\d+.\d+.\d+)`)
+
+// docker doesn't use semver, so simple `semver.Parse` would fail
+// but semver.Version struct fits us to allow simple comparation
+func getDockerVersion() (*semver.Version, error) {
+	if _, err := exec.LookPath("docker"); err != nil {
+		return nil, err
+	}
+
+	out, err := exec.Command("docker", "--version").Output()
+	if err != nil {
+		return nil, err
+	}
+
+	submatches := dockerVersionRe.FindSubmatch(out)
+	if len(submatches) != 4 {
+		return nil, fmt.Errorf("can't parse docker version")
+	}
+
+	v := &semver.Version{}
+	v.Major, err = strconv.ParseUint(string(submatches[1]), 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("can't parse docker version")
+	}
+	v.Minor, err = strconv.ParseUint(string(submatches[2]), 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("can't parse docker version")
+	}
+	v.Patch, err = strconv.ParseUint(string(submatches[3]), 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("can't parse docker version")
+	}
+
+	return v, nil
+}
+
+func getDockerComposeVersion(bin string) (*semver.Version, error) {
+	out, err := exec.Command(bin, "--version").Output()
+	if err != nil {
+		return nil, err
+	}
+
+	submatches := dockerComposeVersionRe.FindSubmatch(out)
+	if len(submatches) != 2 {
+		return nil, fmt.Errorf("can't parse docker-compose version")
+	}
+
+	v, err := semver.ParseTolerant(string(submatches[1]))
+	if err != nil {
+		return nil, fmt.Errorf("can't parse docker-compose version: %s", err)
+	}
+
+	return &v, nil
 }
