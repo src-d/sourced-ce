@@ -29,7 +29,7 @@ These isolated environments also allow you to deploy **source{d} CE** using a lo
 $ sourced init local ~/repos
 ```
 
-You can list all the installed instances, and know which one is active at any moment by running `sourced workdirs`.
+You can list all the installed instances, and know which one is active at any moment by running `sourced status workdirs`.
 
 If you are familiar with Docker Compose and you want more control over the underlying resources, you can explore the contents of your `~/.sourced` directory. There you will find a `docker-compose.yml` and `.env` files for each set of repositories used by `sourced init`.
 
