@@ -13,6 +13,7 @@ The changes listed under `Unreleased` section have landed in master but are not 
 ### Components
 
 - `bblfsh/bblfshd` has been updated to [v2.15.0](https://github.com/bblfsh/bblfshd/releases/tag/v2.15.0).
+- `srcd/sourced-ui` has been updated to [v0.8.1](https://github.com/src-d/sourced-ui/releases/tag/v0.8.1).
 
 ### Fixed
 
