@@ -110,16 +110,6 @@ func initialize(dirName string, subPath string, envf envFile) (*Workdir, error) 
 		return nil, err
 	}
 
-	defaultOverridePath, err := composefile.InitDefaultOverride()
-	if err != nil {
-		return nil, err
-	}
-
-	workdirOverridePath := filepath.Join(workdir, "docker-compose.override.yml")
-	if err := link(defaultOverridePath, workdirOverridePath); err != nil {
-		return nil, err
-	}
-
 	envPath := filepath.Join(workdir, ".env")
 	contents, err := envf.MarshalEnv()
 	if err != nil {
