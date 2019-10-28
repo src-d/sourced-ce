@@ -20,9 +20,6 @@ var (
 	// RequiredFiles list of required files in a directory to treat it as a working directory
 	RequiredFiles = []string{".env", "docker-compose.yml"}
 
-	// OptionalFiles list of optional files that could be deleted when pruning
-	OptionalFiles = []string{"docker-compose.override.yml"}
-
 	// ErrMalformed is the returned error when the workdir is wrong
 	ErrMalformed = goerrors.NewKind("workdir %s is not valid")
 

@@ -76,33 +76,6 @@ func InitDefault() (string, error) {
 	return activeFilePath, nil
 }
 
-// InitDefaultOverride returns the path of the default docker-compose.override.yml file,
-// if it does not exists, it is created.
-func InitDefaultOverride() (string, error) {
-	composeDirPath, err := dir()
-	if err != nil {
-		return "", err
-	}
-
-	globalOverridePath := filepath.Join(composeDirPath, activeDir, "docker-compose.override.yml")
-
-	_, err = os.Stat(globalOverridePath)
-	if err == nil {
-		return globalOverridePath, nil
-	}
-
-	if !os.IsNotExist(err) {
-		return "", errors.Wrap(err, "could not read the global docker-compose.override.yml file")
-	}
-
-	content := []byte(`version: '3.4'`)
-	if err := ioutil.WriteFile(globalOverridePath, content, 0644); err != nil {
-		return "", errors.Wrap(err, "could not create the global docker-compose.override.yml file")
-	}
-
-	return globalOverridePath, nil
-}
-
 // ActivateFromRemote downloads the docker-compose.yml file from the given revision
 // or URL, and sets it as the active compose file.
 func ActivateFromRemote(revOrURL RevOrURL) (err error) {

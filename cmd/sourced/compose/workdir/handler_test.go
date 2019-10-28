@@ -201,13 +201,6 @@ func (s *HandlerSuite) TestRemoveOk() {
 	s.Nil(s.h.Remove(wd))
 	_, err = os.Stat(wd.Path)
 	s.Nil(err)
-
-	// deleting wd without optional file
-	wd = s.createWd("another-one")
-	s.Nil(os.Remove(path.Join(wd.Path, OptionalFiles[0])))
-	s.Nil(s.h.Remove(wd))
-	_, err = os.Stat(wd.Path)
-	s.True(os.IsNotExist(err))
 }
 
 func (s *HandlerSuite) createWd(name string) *Workdir {

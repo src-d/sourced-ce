@@ -33,6 +33,7 @@ The changes listed under `Unreleased` section have landed in master but are not 
 ### Changed
 
 - Make `sourced-ui` Superset celery workers run as separate containers ([#269](https://github.com/src-d/sourced-ui/issues/269)).
+- Remove need for `docker-compose.override.yml` ([#252](https://github.com/src-d/sourced-ui/issues/252)).
 
 ### Internal
 

@@ -152,7 +152,7 @@ func (h *Handler) Remove(w *Workdir) error {
 
 	basePath := filepath.Join(h.workdirsPath, subPath)
 
-	for _, f := range append(RequiredFiles, OptionalFiles...) {
+	for _, f := range RequiredFiles {
 		file := filepath.Join(path, f)
 		if _, err := os.Stat(file); os.IsNotExist(err) {
 			continue
