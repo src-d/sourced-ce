@@ -104,13 +104,15 @@ services:
           memory: ${GITBASE_LIMIT_MEM-0}
 
   bblfsh-web:
-    image: bblfsh/web:v0.11.3
+    image: bblfsh/web:v0.11.4
     restart: unless-stopped
     command: -bblfsh-addr bblfsh:9432
     ports:
       - 9999:8080
     depends_on:
       - bblfsh
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL-info}
 
   redis:
     image: redis:5-alpine
