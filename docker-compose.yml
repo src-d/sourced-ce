@@ -145,7 +145,7 @@ services:
       - metadata:/var/lib/postgresql/data
 
   sourced-ui:
-    image: srcd/sourced-ui:v0.7.0
+    image: srcd/sourced-ui:v0.8.1
     restart: unless-stopped
     environment:
       <<: *superset-env
@@ -160,7 +160,7 @@ services:
       - bblfsh-web
 
   sourced-ui-celery:
-    image: srcd/sourced-ui:v0.7.0
+    image: srcd/sourced-ui:v0.8.1
     restart: unless-stopped
     environment:
       <<: *superset-env
