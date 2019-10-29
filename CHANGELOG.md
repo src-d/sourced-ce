@@ -12,10 +12,11 @@ The changes listed under `Unreleased` section have landed in master but are not 
 
 ### Components
 
-- `bblfsh/bblfshd` has been updated to [v2.15.0](https://github.com/bblfsh/bblfshd/releases/tag/v2.15.0).
-- `bblfsh/web` has been updated to [v0.11.4](https://github.com/bblfsh/web/releases/tag/v0.11.4).
-	- Use the same logging level as the other components reading `LOG_LEVEL` enviroment value (default: `info`) (([#263](https://github.com/src-d/sourced-ce/pull/263)).
 - `srcd/sourced-ui` has been updated to [v0.8.1](https://github.com/src-d/sourced-ui/releases/tag/v0.8.1).
+
+Babelfish components were updated in order to use the same logging level as the other components reading the `LOG_LEVEL` enviroment value (default: `info`):
+- `bblfsh/bblfshd` has been updated to [v2.16.1](https://github.com/bblfsh/bblfshd/releases/tag/v2.16.1) (([#264](https://github.com/src-d/sourced-ce/pull/264)).
+- `bblfsh/web` has been updated to [v0.11.4](https://github.com/bblfsh/web/releases/tag/v0.11.4) (([#263](https://github.com/src-d/sourced-ce/pull/263)).
 
 
 ### Fixed

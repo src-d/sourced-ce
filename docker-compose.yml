@@ -29,11 +29,13 @@ x-superset-env: &superset-env
 
 services:
   bblfsh:
-    image: bblfsh/bblfshd:v2.15.0-drivers
+    image: bblfsh/bblfshd:v2.16.1-drivers-2019-10-29
     restart: unless-stopped
     privileged: true
     ports:
       - 9432:9432
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL-info}
 
   gitcollector:
     image: srcd/gitcollector:v0.0.4
